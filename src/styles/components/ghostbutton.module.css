@@ -1,0 +1,14 @@
+.ghostButton {
+  color: #3a4158;
+  background-color: white;
+  border-color: #3a4158;
+  font-size: 40px;
+  width: 450px;
+  height: 100px;
+  margin-top: 20px;
+}
+
+.ghostButton:hover {
+  background-color: #3a4158 !important;
+  color: white;
+}
