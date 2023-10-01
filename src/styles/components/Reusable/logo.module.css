@@ -1,0 +1,19 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logoSpin {
+  transition: transform 0.3s ease; /* Add smooth transition effect */
+  /* Set initial transform state */
+  transform: rotate(0deg);
+}
+
+/* Apply the spin animation when hovering over the image */
+.logoSpin:hover {
+  animation: spin 2s linear infinite; /* Start the spin animation on hover */
+}

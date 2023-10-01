@@ -1,0 +1,16 @@
+.mainColor {
+  color: #3a4158;
+}
+
+.avatar {
+  background-color: #3a4158 !important;
+  color: white;
+}
+
+.burgerMenu {
+  display: inline-block;
+  cursor: pointer;
+}
+.burgerMenu:hover {
+  transform: scale(1.2);
+}

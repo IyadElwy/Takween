@@ -1,5 +1,5 @@
 import { Button } from "@nextui-org/react";
-import style from "../../styles/components/ghostbutton.module.css";
+import style from "../../styles/components/Reusable/ghostbutton.module.css";
 
 export default function GhostButton({ customStyle, text }) {
   return (
