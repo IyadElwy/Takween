@@ -1,44 +1,18 @@
-import {
-  Listbox,
-  ListboxItem,
-  Card, CardBody, CardFooter, Image,
-} from "@nextui-org/react";
+import { useState } from "react";
+
+import AnnotationTypeSelection from "./annotationTypeSelection";
+import AnnotationFieldSelection from "./annotationSetup";
 
 export default function NewProjectAnnotationComponent() {
+  const [renderedComponent, setRenderedComponent] = useState("default");
+
   return (
-    <div className="flex">
-      <div className="w-1/4 bg-300 p-4">
-        <Listbox
-          aria-label="Actions"
-          // onAction={(key) => {}}
-          disallowEmptySelection
-          selectionMode="single"
-          selectedKeys={["structuredData"]}
-        >
-          <ListboxItem key="structuredData" isSe>Structured Data</ListboxItem>
-        </Listbox>
-
-      </div>
-      <div className="w-3/4 bg-300 p-4">
-
-        <div className="gap-2 grid grid-cols-2 sm:grid-cols-4">
-          <Card shadow="sm" key={0} isPressable onPress={() => console.log("item pressed")}>
-            <CardBody className="overflow-visible p-0">
-              <Image
-                width="100%"
-                alt="Tabular Data"
-                className="w-full object-cover h-[140px]"
-                src="/images/structured_data.svg"
-              />
-            </CardBody>
-            <CardFooter className="text-small justify-between">
-              <b>Tabular Data</b>
-            </CardFooter>
-          </Card>
-        </div>
-
-      </div>
-    </div>
-
+    renderedComponent === "default"
+      ? (
+        <AnnotationTypeSelection setRenderedComponent={setRenderedComponent} />
+      )
+      : (
+        <AnnotationFieldSelection />
+      )
   );
 }

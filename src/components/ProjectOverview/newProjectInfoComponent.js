@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 export default function NewProjectInfoComponent() {
   return (
     <>
-      <p className="text-sm">Please enter any required information</p>
+      <p style={{ fontSize: "25px", marginBottom: "10px" }} className="text-sm">Please enter any required information</p>
       <div className="flex flex-col">
         <div className="bg-300 p-4">
           <TextField
