@@ -1,14 +1,16 @@
 import React from "react";
 import {
   Navbar, NavbarBrand, NavbarContent, DropdownTrigger, Dropdown, Avatar,
+
 } from "@nextui-org/react";
+import Link from "next/link";
 
 import Image from "next/image";
 import styles from "../../../styles/components/Reusable/navbar.module.css";
 import GhostButton from "../ghostButton";
 import Logo from "../logo";
 
-export default function NavBar({ drawerState, setDrawerState }) {
+export default function NavBar({ drawerState, setDrawerState, breadcrumbs = [] }) {
   return (
     <Navbar maxWidth="2xl" isBordered isBlurred>
       <NavbarBrand>
@@ -25,6 +27,19 @@ export default function NavBar({ drawerState, setDrawerState }) {
         />
         <Logo spin height={50} width={50} />
         <p className="font-bold text-inherit">MML</p>
+
+        <div style={{ marginLeft: "50px" }} className="flex">
+          {breadcrumbs.map((crumb) => (
+            <>
+              {" "}
+              <Link href={crumb.href}>
+                <p className={styles.breadcrumb}>{crumb.text}</p>
+              </Link>
+              <p>/</p>
+            </>
+          ))}
+
+        </div>
 
       </NavbarBrand>
 
