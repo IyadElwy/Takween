@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Navbar, NavbarBrand, NavbarContent, DropdownTrigger, Dropdown, Avatar,
 
@@ -27,18 +26,16 @@ export default function NavBar({ drawerState, setDrawerState, breadcrumbs = [] }
         />
         <Logo spin height={50} width={50} />
         <p className="font-bold text-inherit">MML</p>
-
         <div style={{ marginLeft: "50px" }} className="flex">
           {breadcrumbs.map((crumb) => (
-            <>
+            <div key={crumb.text} className="flex">
               {" "}
               <Link href={crumb.href}>
                 <p className={styles.breadcrumb}>{crumb.text}</p>
               </Link>
-              <p>/</p>
-            </>
+              <p style={{ marginRight: "10px" }}> / </p>
+            </div>
           ))}
-
         </div>
 
       </NavbarBrand>
