@@ -211,6 +211,7 @@ export default function ProjectDetailPage() {
   return (
     <>
       <Navigation
+        showCreateProjectButton={false}
         breadcrumbs={[
           { text: "Projects", href: "/home/projects" },
           { text: "Project Title", href: "/home/projects/1" },

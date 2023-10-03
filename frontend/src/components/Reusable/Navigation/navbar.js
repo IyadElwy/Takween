@@ -11,6 +11,7 @@ import Logo from "../logo";
 
 export default function NavBar({
   drawerState, setDrawerState, breadcrumbs = [], createProjectTrigger,
+  showCreateProjectButton = true,
 }) {
   return (
     <Navbar maxWidth="2xl" isBordered isBlurred>
@@ -44,6 +45,7 @@ export default function NavBar({
 
       <NavbarContent as="div" justify="end">
 
+        {showCreateProjectButton && (
         <GhostButton
           onPress={createProjectTrigger}
           customStyle={{
@@ -54,6 +56,7 @@ export default function NavBar({
           }}
           text="Create Project"
         />
+        )}
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
