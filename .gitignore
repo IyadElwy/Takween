@@ -39,3 +39,7 @@ data
 db.sqlite
 
 .vscode
+
+__pycache__
+
+db.*
