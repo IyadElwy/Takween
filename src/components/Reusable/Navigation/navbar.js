@@ -9,7 +9,9 @@ import styles from "../../../styles/components/Reusable/navbar.module.css";
 import GhostButton from "../ghostButton";
 import Logo from "../logo";
 
-export default function NavBar({ drawerState, setDrawerState, breadcrumbs = [] }) {
+export default function NavBar({
+  drawerState, setDrawerState, breadcrumbs = [], createProjectTrigger,
+}) {
   return (
     <Navbar maxWidth="2xl" isBordered isBlurred>
       <NavbarBrand>
@@ -43,6 +45,7 @@ export default function NavBar({ drawerState, setDrawerState, breadcrumbs = [] }
       <NavbarContent as="div" justify="end">
 
         <GhostButton
+          onPress={createProjectTrigger}
           customStyle={{
             fontSize: "15px",
             width: "130px",

@@ -14,7 +14,7 @@ export default function ProjectsHome() {
 
   return (
     <>
-      <NoProjectsComponent onOpen={onOpenCreateNewProjectModal} />
+      <NoProjectsComponent createProjectTrigger={onOpenCreateNewProjectModal} />
       <CreateNewProjectModal
         isOpen={isOpenCreateNewProjectModal}
         onOpenChange={onOpenChangeCreateNewProjectModal}
