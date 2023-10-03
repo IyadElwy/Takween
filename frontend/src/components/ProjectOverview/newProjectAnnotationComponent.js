@@ -3,16 +3,26 @@ import { useState } from "react";
 import AnnotationTypeSelection from "./annotationTypeSelection";
 import AnnotationFieldSelection from "./annotationSetup";
 
-export default function NewProjectAnnotationComponent() {
+export default function NewProjectAnnotationComponent(
+  {
+    project,
+    setChosenAnnotationType,
+  },
+) {
   const [renderedComponent, setRenderedComponent] = useState("default");
 
   return (
     renderedComponent === "default"
       ? (
-        <AnnotationTypeSelection setRenderedComponent={setRenderedComponent} />
+        <AnnotationTypeSelection
+          setChosenAnnotationType={setChosenAnnotationType}
+          setRenderedComponent={setRenderedComponent}
+        />
       )
       : (
-        <AnnotationFieldSelection />
+        <AnnotationFieldSelection
+          project={project}
+        />
       )
   );
 }

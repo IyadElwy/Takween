@@ -8,12 +8,25 @@
 }
 
 .logoSpin {
-  transition: transform 0.3s ease; /* Add smooth transition effect */
-  /* Set initial transform state */
+  transition: transform 0.3s ease;
   transform: rotate(0deg);
 }
 
-/* Apply the spin animation when hovering over the image */
 .logoSpin:hover {
-  animation: spin 2s linear infinite; /* Start the spin animation on hover */
+  animation: spin 2s linear infinite;
+}
+
+.loadingLogoSpin {
+  transition: transform 0.3s ease;
+  transform: rotate(0deg);
+  animation: spin 2s linear infinite;
+}
+
+.centerDivLogoSpin {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
 }

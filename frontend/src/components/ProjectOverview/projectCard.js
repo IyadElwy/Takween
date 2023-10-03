@@ -1,7 +1,7 @@
 import React from "react";
 
 import {
-  Card, CardHeader, CardBody, Divider, Image,
+  Card, CardHeader, CardBody, CardFooter, Divider, Image,
 } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -28,6 +28,13 @@ export default function App({ projectData }) {
         <CardBody>
           <p>{projectData.description}</p>
         </CardBody>
+        <Divider />
+        <CardFooter className="flex justify-between">
+          <span className="text-xs text-gray-500">
+            {projectData.author}
+          </span>
+        </CardFooter>
+
       </Card>
     </Link>
   );

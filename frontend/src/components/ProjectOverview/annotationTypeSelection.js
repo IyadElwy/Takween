@@ -4,7 +4,10 @@ import {
   Card, CardBody, CardFooter, Image,
 } from "@nextui-org/react";
 
-export default function AnnotationTypeSelection({ setRenderedComponent }) {
+export default function AnnotationTypeSelection({
+  setRenderedComponent,
+  setChosenAnnotationType,
+}) {
   return (
     <div className="flex">
       <div className="w-1/4 bg-300 p-4">
@@ -27,6 +30,7 @@ export default function AnnotationTypeSelection({ setRenderedComponent }) {
             key="dededfrefkm"
             isPressable
             onPress={() => {
+              setChosenAnnotationType("tabular");
               setRenderedComponent("tabular");
             }}
           >
