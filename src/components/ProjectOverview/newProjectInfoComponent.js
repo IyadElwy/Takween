@@ -1,4 +1,6 @@
-import TextField from "@mui/material/TextField";
+import {
+  Input, Textarea,
+} from "@nextui-org/react";
 
 export default function NewProjectInfoComponent() {
   return (
@@ -6,21 +8,18 @@ export default function NewProjectInfoComponent() {
       <p style={{ fontSize: "25px", marginBottom: "10px" }} className="text-sm">Please enter any required information</p>
       <div className="flex flex-col">
         <div className="bg-300 p-4">
-          <TextField
-            id="outlined-error"
-            label="Title"
-            helperText="Enter your project's title"
-            fullWidth
+          <Input
+            type="text"
+            label="Project Title"
+            size="lg"
+            placeholder="Enter your project's title"
           />
         </div>
         <div className="bg-300 p-4">
-          <TextField
-            id="outlined-error-helper-text"
-            label="Description "
-            helperText="Enter your project's description (optional)"
-            multiline
-            rows={5}
-            fullWidth
+          <Textarea
+            label="Description (optional)"
+            size="lg"
+            placeholder="Enter your description"
           />
         </div>
       </div>
