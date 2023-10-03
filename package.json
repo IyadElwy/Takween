@@ -11,10 +11,13 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.11",
     "@mui/material": "^5.14.11",
     "@nextui-org/react": "^2.1.13",
     "axios": "^1.5.1",
+    "export-to-csv": "^1.0.0",
     "framer-motion": "^10.16.4",
+    "material-react-table": "^1.15.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"

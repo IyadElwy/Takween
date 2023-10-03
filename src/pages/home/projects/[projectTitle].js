@@ -34,7 +34,7 @@ export default function ProjectDetailPage() {
           <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>Annotation Jobs</h1>
           <ScrollShadow className="w-[300px] h-[400px]">
 
-            <Link href="#e">
+            <Link href="job/1">
               <div className="mr-2 ml-2">
                 <Card className="mb-4 mt-4 mr-3 w-full" isPressable>
                   <CardHeader className="flex gap-3">
