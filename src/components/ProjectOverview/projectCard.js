@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function App({ projectData }) {
   return (
-    <Link href={projectData.href}>
+    <Link href={`projects/${projectData.id}`}>
       <Card
         className="max-w-[400px]"
         isPressable

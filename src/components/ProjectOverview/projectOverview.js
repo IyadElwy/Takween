@@ -13,10 +13,11 @@ export default function ProjectOverview({ createProjectTrigger }) {
       <div style={{ margin: "20px" }} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         <ProjectCard
           projectData={{
+            id: 1,
             title: "My First Project",
             author: "John Doe",
             description: "Praesent non ornare massa duis magnis ut eros at ad facilisi senectus nascetur, blandit rutrum cursus porttitor tempor lectus sociosqu augue tempus vestibulum.",
-            href: "/project1",
+            href: "home/projects/project1",
           }}
         />
       </div>
