@@ -8,7 +8,9 @@ import GhostButton from "../Reusable/ghostButton";
 
 export default function AnnotationFieldSelection() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["0"]));
-  const [newField, setNewField] = useState({ name: "", type: "string" });
+  const [newField, setNewField] = useState({ name: "", type: "" });
+  const [errorStateFieldName, setErrorStateFieldName] = useState(false);
+  const [errorStateFielType, setErrorStateFieldType] = useState(false);
   const [fields, setFields] = useState([
     {
       name: "id",
@@ -74,6 +76,8 @@ export default function AnnotationFieldSelection() {
               size="lg"
               placeholder="Enter Field Name"
               onValueChange={(name) => setNewField({ ...newField, name })}
+              isInvalid={errorStateFieldName}
+              errorMessage={errorStateFieldName && "Please enter a field name"}
             />
           </div>
           <div className="bg-300 p-4">
@@ -82,6 +86,8 @@ export default function AnnotationFieldSelection() {
               variant="bordered"
               size="lg"
               onChange={(e) => setNewField({ ...newField, type: e.target.value })}
+              isInvalid={errorStateFielType}
+              errorMessage={errorStateFielType && "Please select a field type"}
             >
               {typeOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
@@ -94,8 +100,11 @@ export default function AnnotationFieldSelection() {
             <div className="flex justify-end">
               <GhostButton
                 onPress={() => {
-                  setFields([...fields, newField]);
-                  // setNewField({ name: "", type: "string" });
+                  if (!newField.name) setErrorStateFieldName(true);
+                  if (!newField.type) setErrorStateFieldType(true);
+                  if (newField.name) setErrorStateFieldName(false);
+                  if (newField.type) setErrorStateFieldType(false);
+                  if (newField.name && newField.type) setFields([...fields, newField]);
                 }}
                 text="Add Field"
                 customStyle={{

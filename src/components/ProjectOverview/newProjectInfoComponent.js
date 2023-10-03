@@ -2,7 +2,7 @@ import {
   Input, Textarea,
 } from "@nextui-org/react";
 
-export default function NewProjectInfoComponent() {
+export default function NewProjectInfoComponent({ info, setInfo, error }) {
   return (
     <>
       <p style={{ fontSize: "25px", marginBottom: "10px" }} className="text-sm">Please enter any required information</p>
@@ -13,6 +13,10 @@ export default function NewProjectInfoComponent() {
             label="Project Title"
             size="lg"
             placeholder="Enter your project's title"
+            value={info.title}
+            onValueChange={(value) => setInfo({ ...info, title: value })}
+            isInvalid={error}
+            errorMessage={error && "Please enter a title"}
           />
         </div>
         <div className="bg-300 p-4">
@@ -20,6 +24,8 @@ export default function NewProjectInfoComponent() {
             label="Description (optional)"
             size="lg"
             placeholder="Enter your description"
+            value={info.description}
+            onValueChange={(value) => setInfo({ ...info, description: value })}
           />
         </div>
       </div>
