@@ -37,6 +37,7 @@ export default function AnnotationTypeSelection({
             <CardBody className="overflow-visible p-0">
               <Image
                 width="100%"
+                height="auto"
                 alt="Tabular Data"
                 className="w-full object-cover h-[140px]"
                 src="/images/structured_data.svg"

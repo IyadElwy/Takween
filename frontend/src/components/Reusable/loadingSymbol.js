@@ -7,6 +7,7 @@ export default function LoadingSymbol({
   return (
     <div className={styles.centerDivLogoSpin}>
       <Image
+        priority
         style={style}
         className={styles.loadingLogoSpin}
         src="/images/logo_3.svg"
