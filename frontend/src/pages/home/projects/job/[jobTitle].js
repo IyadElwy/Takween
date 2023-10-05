@@ -45,7 +45,7 @@ export default function ProjectDetailPage() {
     return data.data.map((item) => {
       const resultObject = {};
 
-      for (let i = 0; i < columns.length; i++) {
+      for (let i = 0; i < columns.length; i += 1) {
         const key = columns[i];
         const value = item[i];
         resultObject[key] = value;

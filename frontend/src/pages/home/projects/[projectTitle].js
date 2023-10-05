@@ -7,13 +7,11 @@ import {
 
 } from "@nextui-org/react";
 import Link from "next/link";
-import useSWR from "swr";
 import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
 import CreateNewProjectModal from "../../../components/ProjectOverview/createNewProjectModal";
 import LoadingSymbol from "../../../components/Reusable/loadingSymbol";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function ProjectDetailPage() {
   const {
@@ -21,11 +19,23 @@ export default function ProjectDetailPage() {
     onOpen: onOpenCreateNewProjectModal,
     onOpenChange: onOpenChangeCreateNewProjectModal,
   } = useDisclosure();
+  const [data, setData] = useState(null);
   const router = useRouter();
-  const { data, isLoading } = useSWR(`http://localhost:8000/projects/${router.asPath.split("/home/projects/")[1]}`, fetcher);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (router.isReady) {
+        const res = await fetch(`http://localhost:8000/projects/${router.asPath.split("/home/projects/")[1]}`);
+        const responseData = await res.json();
+        setData(responseData);
+      }
+    };
+
+    fetchData();
+  }, [router]);
 
   return (
-    isLoading ? <LoadingSymbol width={350} height={350} />
+    !data ? <LoadingSymbol width={350} height={350} />
       : (
         <>
           <Navigation
