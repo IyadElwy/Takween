@@ -4,6 +4,7 @@ import {
 } from "@nextui-org/react";
 
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 import NewProjectInfoComponent from "./newProjectInfoComponent";
 import NewProjectDataComponent from "./newProjectDataComponent";
@@ -18,6 +19,7 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
   const [project, setProject] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
   const [chosenAnnotationType, setChosenAnnotationType] = useState("");
+  const router = useRouter();
 
   return (
     <Modal
@@ -103,7 +105,12 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
                   if (dataErrorState) setSelectedTab("annotation");
                 }
                 if (selectedTab === "annotation") {
-                  if (chosenAnnotationType) onClose();
+                  if (chosenAnnotationType) {
+                    router.push({
+                      pathname: "projects/[projectId]",
+                      query: { projectId: project.id },
+                    });
+                  }
                 }
               }}
               >
