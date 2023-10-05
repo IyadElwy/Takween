@@ -27,7 +27,6 @@ export default function AnnotationTypeSelection({
         <div className="gap-2 grid grid-cols-2 sm:grid-cols-4">
           <Card
             shadow="sm"
-            key="dededfrefkm"
             isPressable
             onPress={() => {
               setChosenAnnotationType("tabular");

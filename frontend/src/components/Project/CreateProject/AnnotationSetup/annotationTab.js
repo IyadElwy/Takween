@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import AnnotationTypeSelection from "./annotationTypeSelection";
-import AnnotationFieldSelection from "./annotationSetup";
+import AnnotationSetupTabular from "./StructuredData/tabularData";
 
 export default function NewProjectAnnotationComponent(
   {
@@ -20,7 +20,7 @@ export default function NewProjectAnnotationComponent(
         />
       )
       : (
-        <AnnotationFieldSelection
+        <AnnotationSetupTabular
           project={project}
         />
       )

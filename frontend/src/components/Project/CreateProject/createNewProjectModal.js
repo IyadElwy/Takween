@@ -6,20 +6,21 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-import NewProjectInfoComponent from "./newProjectInfoComponent";
-import NewProjectDataComponent from "./newProjectDataComponent";
-import NewProjectAnnotationComponent from "./newProjectAnnotationComponent";
+import NewProjectInfoComponent from "./ProjectSetup/infoTab";
+import NewProjectDataComponent from "./DataSetup/dataTab";
+import NewProjectAnnotationComponent from "./AnnotationSetup/annotationTab";
 
 export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
   const [selectedTab, setSelectedTab] = useState("information");
+  const [project, setProject] = useState({});
   const [info, setInfo] = useState({ title: "", description: "" });
   const [infoErrorState, setInfoErrorState] = useState(false);
   const [infoDescriptionErrorState, setInfoDescriptionErrorState] = useState(false);
   const [dataErrorState, setDataErrorState] = useState(false);
-  const [project, setProject] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
-  const [chosenAnnotationType, setChosenAnnotationType] = useState("");
   const router = useRouter();
+
+  const [chosenAnnotationType, setChosenAnnotationType] = useState("");
 
   return (
     <Modal
@@ -114,7 +115,7 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
                 }
               }}
               >
-                Next
+                {selectedTab === "annotation" && chosenAnnotationType ? "Finish" : "Next"}
               </Button>
             </ModalFooter>
           </>

@@ -5,8 +5,8 @@ import {
 } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
-import GhostButton from "../../Reusable/ghostButton";
-import LoadingSymbol from "../../Reusable/loadingSymbol";
+import GhostButton from "../../../../Reusable/ghostButton";
+import LoadingSymbol from "../../../../Reusable/loadingSymbol";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
