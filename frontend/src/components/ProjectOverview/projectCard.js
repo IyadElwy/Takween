@@ -4,15 +4,18 @@ import {
   Card, CardHeader, CardBody, CardFooter, Divider, Image,
 } from "@nextui-org/react";
 import Link from "next/link";
+import style from "../../styles/components/Reusable/projectCard.module.css";
 
 export default function App({ projectData }) {
   return (
     <Link href={`projects/${projectData.id}`}>
       <Card
-        className="max-w-[400px]"
+        className="min-w-[200px] min-h-[250px] max-h-[250px]"
         isPressable
       >
+
         <CardHeader className="flex gap-3">
+
           <Image
             alt="nextui logo"
             height={40}
@@ -26,7 +29,7 @@ export default function App({ projectData }) {
         </CardHeader>
         <Divider />
         <CardBody>
-          <p>{projectData.description}</p>
+          <p className={style.truncateText}>{projectData.description}</p>
         </CardBody>
         <Divider />
         <CardFooter className="flex justify-between">

@@ -10,17 +10,20 @@ export default function ProjectOverview({ createProjectTrigger, data }) {
       />
       <div
         style={{ margin: "20px" }}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
       >
         {data.map((project) => (
 
-          <ProjectCard
-            key={project.id}
-            projectData={{
-              ...project,
-              href: `home/projects/${project.title}`,
-            }}
-          />
+          <div className="p-4">
+            <ProjectCard
+              key={project.id}
+              projectData={{
+                ...project,
+                href: `home/projects/${project.title}`,
+              }}
+            />
+          </div>
+
         ))}
       </div>
 
