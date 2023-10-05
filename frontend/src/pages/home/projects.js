@@ -2,9 +2,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import useSWR from "swr";
-import NoProjectsComponent from "../../components/ProjectOverview/noProjectsCreated";
-import ProjectsOverview from "../../components/ProjectOverview/projectOverview";
-import CreateNewProjectModal from "../../components/ProjectOverview/createNewProjectModal";
+import NoProjectsComponent from "../../components/Project/noProjectsComponent";
+import ProjectsOverview from "../../components/Project/projectsOverview";
+import CreateNewProjectModal from "../../components/Project/CreateProject/createNewProjectModal";
 import LoadingSymbol from "../../components/Reusable/loadingSymbol";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());

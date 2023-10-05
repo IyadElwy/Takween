@@ -1,5 +1,5 @@
 import Head from "next/head";
-import styles from "../../styles/components/ProjectOverview/projectOverview.module.css";
+import styles from "../../styles/components/Project/projectOverview.module.css";
 import GhostButton from "../Reusable/ghostButton";
 import Navigation from "../Reusable/Navigation/navBarSideBar";
 import Logo from "../Reusable/logo";

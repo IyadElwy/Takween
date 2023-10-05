@@ -5,7 +5,7 @@ import { MaterialReactTable } from "material-react-table";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Navigation from "../../../../components/Reusable/Navigation/navBarSideBar";
-import CreateNewProjectModal from "../../../../components/ProjectOverview/createNewProjectModal";
+import CreateNewProjectModal from "../../../../components/Project/CreateProject/createNewProjectModal";
 import LoadingSymbol from "../../../../components/Reusable/loadingSymbol";
 
 export default function ProjectDetailPage() {
