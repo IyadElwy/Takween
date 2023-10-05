@@ -14,7 +14,7 @@ export default function ProjectOverview({ createProjectTrigger, data }) {
       >
         {data.map((project) => (
 
-          <div className="p-4">
+          <div key={project.id} className="p-4">
             <ProjectCard
               key={project.id}
               projectData={{
