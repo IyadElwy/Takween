@@ -6,7 +6,7 @@ import {
 import Link from "next/link";
 import style from "../../styles/components/Reusable/projectCard.module.css";
 
-export default function App({ projectData }) {
+export default function ProjectCard({ projectData }) {
   return (
     <Link href={`projects/${projectData.id}`}>
       <Card

@@ -109,13 +109,14 @@ export default function AnnotationFieldSelection({ project }) {
                       if (newField.type) setErrorStateFieldType(false);
                       if (newField.name && newField.type) setFields([...fields, newField]);
                     }}
-                    text="Add Field"
                     customStyle={{
                       fontSize: "15px",
                       width: "50px",
                       height: "50px",
                     }}
-                  />
+                  >
+                    Add Field
+                  </GhostButton>
 
                 </div>
 

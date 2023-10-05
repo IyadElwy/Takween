@@ -2,7 +2,12 @@ import {
   Input, Textarea,
 } from "@nextui-org/react";
 
-export default function NewProjectInfoComponent({ info, setInfo, error }) {
+export default function NewProjectInfoComponent({
+  info,
+  setInfo,
+  error,
+  infoDescriptionErrorState,
+}) {
   return (
     <>
       <p style={{ fontSize: "25px", marginBottom: "10px" }} className="text-sm">Please enter any required information</p>
@@ -26,6 +31,8 @@ export default function NewProjectInfoComponent({ info, setInfo, error }) {
             placeholder="Enter your description"
             value={info.description}
             onValueChange={(value) => setInfo({ ...info, description: value })}
+            isInvalid={infoDescriptionErrorState}
+            errorMessage={infoDescriptionErrorState && "Description too long, stick to a maximum of 400 characters"}
           />
         </div>
       </div>

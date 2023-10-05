@@ -30,10 +30,9 @@ export default function NavBar({
         <Logo spin height={50} width={50} />
         <p className="font-bold text-inherit">MML</p>
         <div style={{ marginLeft: "50px" }} className="flex">
-          {breadcrumbs.map((crumb) => (
+          {breadcrumbs.map((crumb, index) => (
             <div key={`${crumb.text}-div`} className="flex">
-              {" "}
-              <Link key={`${crumb.text}-link`} href={crumb.href}>
+              {index === breadcrumbs.length - 1 ? (
                 <p
                   key={`${crumb.text}-p1`}
                   className={styles.breadcrumb}
@@ -41,16 +40,31 @@ export default function NavBar({
                   {crumb.text}
 
                 </p>
-              </Link>
-              <p
-                key={`${crumb.text}-p2`}
-                style={{ marginRight: "10px" }}
-              >
-                {" "}
-                /
-                {" "}
+              )
+                : (
+                  <>
+                    <Link key={`${crumb.text}-link`} href={crumb.href}>
+                      <p
+                        key={`${crumb.text}-p1`}
+                        className={styles.breadcrumb}
+                      >
+                        {crumb.text}
 
-              </p>
+                      </p>
+                    </Link>
+                    <p
+                      key={`${crumb.text}-p2`}
+                      style={{ marginRight: "10px" }}
+                    >
+                      {" "}
+                      /
+                      {" "}
+
+                    </p>
+                  </>
+
+                )}
+
             </div>
           ))}
         </div>
@@ -60,17 +74,20 @@ export default function NavBar({
       <NavbarContent as="div" justify="end">
 
         {showCreateProjectButton && (
-        <GhostButton
-          onPress={createProjectTrigger}
-          customStyle={{
-            fontSize: "15px",
-            width: "130px",
-            height: "35px",
-            marginTop: "0px",
-          }}
-          text="Create Project"
-        />
+          <GhostButton
+            onPress={createProjectTrigger}
+            customStyle={{
+              fontSize: "15px",
+              width: "130px",
+              height: "35px",
+              marginTop: "0px",
+            }}
+          >
+            Create Project
+          </GhostButton>
+
         )}
+
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar

@@ -13,6 +13,7 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
   const [selectedTab, setSelectedTab] = useState("information");
   const [info, setInfo] = useState({ title: "", description: "" });
   const [infoErrorState, setInfoErrorState] = useState(false);
+  const [infoDescriptionErrorState, setInfoDescriptionErrorState] = useState(false);
   const [dataErrorState, setDataErrorState] = useState(false);
   const [project, setProject] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,6 +21,9 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
 
   return (
     <Modal
+      style={{
+        height: "500px",
+      }}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       isDismissable={false}
@@ -38,7 +42,12 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
                 selectedKey={selectedTab}
               >
                 <Tab key="information" title="Information">
-                  <NewProjectInfoComponent info={info} setInfo={setInfo} error={infoErrorState} />
+                  <NewProjectInfoComponent
+                    info={info}
+                    infoDescriptionErrorState={infoDescriptionErrorState}
+                    setInfo={setInfo}
+                    error={infoErrorState}
+                  />
                 </Tab>
                 <Tab key="data" title="Data">
                   <NewProjectDataComponent
@@ -74,9 +83,11 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
               </Button>
               <Button onPress={async () => {
                 if (selectedTab === "information") {
-                  if (!info.title) {
-                    setInfoErrorState(true);
+                  if (!info.title || info.description.length >= 400) {
+                    if (!info.title) setInfoErrorState(true);
+                    if (info.description.length >= 400) setInfoDescriptionErrorState(true);
                   } else {
+                    setInfoDescriptionErrorState(false);
                     setInfoErrorState(false);
                     const res = await fetch("http://127.0.0.1:8000/projects", {
                       method: "POST",

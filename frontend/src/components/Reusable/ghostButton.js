@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 import style from "../../styles/components/Reusable/ghostbutton.module.css";
 
-export default function GhostButton({ customStyle, text, onPress = () => {} }) {
+export default function GhostButton({ customStyle, onPress = () => {}, children }) {
   return (
     <Button
       variant="ghost"
@@ -9,7 +9,7 @@ export default function GhostButton({ customStyle, text, onPress = () => {} }) {
       style={{ ...customStyle }}
       onPress={onPress}
     >
-      {text}
+      {children}
     </Button>
   );
 }

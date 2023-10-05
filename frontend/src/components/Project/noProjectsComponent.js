@@ -24,7 +24,9 @@ export default function NoProjectsComponent({ createProjectTrigger }) {
       <div className={styles.noProjectDiv}>
         <Logo spin height={350} width={350} />
         <h1>Create a project and start labeling your data</h1>
-        <GhostButton text="Create Project" onPress={createProjectTrigger} />
+        <GhostButton onPress={createProjectTrigger}>
+          Create Project
+        </GhostButton>
       </div>
 
     </>
