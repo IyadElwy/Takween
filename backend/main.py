@@ -1,10 +1,12 @@
-from fastapi import FastAPI, HTTPException, Request, File, UploadFile
+from fastapi import FastAPI, HTTPException, Request, File, UploadFile, Form
 from tortoise.contrib.fastapi import register_tortoise
 from models.models import Project
 from fastapi.middleware.cors import CORSMiddleware
 from asyncio import sleep
 from slugify import slugify
 import pandas as pd
+import json
+
 
 app = FastAPI()
 app.add_middleware(
@@ -34,15 +36,24 @@ async def get_all_projects():
 
 
 @app.post("/projects")
-async def create_project(request: Request):
+async def create_project(file: UploadFile = Form(...), data: str = Form(...)):
     try:
-        data = await request.json()
-        createdItem = await Project.create(
+        project_data = json.loads(data)
+        created_project = await Project.create(
             author="admin",
-            title=data.get('title'),
-            description=data.get('description'),
-            dataFileName=data.get('dataFileName'),)
-        return {"message": "Item created successfully", "data": createdItem}
+            title=project_data.get('title'),
+            description=project_data.get('description'),
+            dataFileName=project_data.get('dataFileName'),)
+
+        file_name = f'{created_project.id}-{file.filename.replace(" ", "-").replace(".csv", "")}'
+
+        with open(f"data/{file_name}.csv", "wb") as f:
+            f.write(file.file.read())
+
+        setattr(created_project, 'dataFileName', file_name)
+        await created_project.save()
+
+        return {"message": "Item created successfully", "data": created_project}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -66,23 +77,6 @@ async def update_project(id, request: Request):
             setattr(data, key, value)
 
         await data.save()
-        return data
-    except Exception as e:
-        raise HTTPException(status_code=404, detail="Item not found")
-
-
-@app.post("/projects/upload-file/{id}")
-async def upload_file(id, file: UploadFile):
-    try:
-        data = await Project.get(id=id)
-        file_name = f'{id}-{file.filename.replace(" ", "-").replace(".csv", "")}'
-
-        with open(f"data/{file_name}.csv", "wb") as f:
-            f.write(file.file.read())
-
-        setattr(data, 'dataFileName', file_name)
-        await data.save()
-
         return data
     except Exception as e:
         raise HTTPException(status_code=404, detail="Item not found")
