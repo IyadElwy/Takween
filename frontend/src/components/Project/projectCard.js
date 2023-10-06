@@ -10,7 +10,7 @@ export default function ProjectCard({ projectData }) {
   return (
     <Link href={`projects/${projectData.id}`}>
       <Card
-        className="min-w-[200px] min-h-[250px] max-h-[250px]"
+        className="max-w-[220px] min-w-[220px] min-h-[250px] max-h-[250px]"
         isPressable
       >
 

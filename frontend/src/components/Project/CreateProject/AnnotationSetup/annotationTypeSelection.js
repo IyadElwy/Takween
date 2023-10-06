@@ -5,7 +5,7 @@ import {
 } from "@nextui-org/react";
 
 export default function AnnotationTypeSelection({
-  setRenderedComponent,
+  setShowAnnotationSelectionPage,
   setChosenAnnotationType,
 }) {
   return (
@@ -30,7 +30,7 @@ export default function AnnotationTypeSelection({
             isPressable
             onPress={() => {
               setChosenAnnotationType("tabular");
-              setRenderedComponent("tabular");
+              setShowAnnotationSelectionPage(false);
             }}
           >
             <CardBody className="overflow-visible p-0">

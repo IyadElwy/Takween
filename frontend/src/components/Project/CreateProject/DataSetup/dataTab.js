@@ -1,61 +1,40 @@
 import {
   Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+  Popover, PopoverTrigger, PopoverContent,
 } from "@nextui-org/react";
-import axios from "axios";
-
-import { useState } from "react";
+import byteSize from "byte-size";
+import { useState, useRef } from "react";
 
 export default function NewProjectDataComponent({
-  project, setProject, selectedFile, setSelectedFile,
-  setDataErrorState,
+  project, setProject, onClose, setSelectedTab,
 }) {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [error, setError] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-
-      const response = await axios.post(`http://127.0.0.1:8000/projects/upload-file/${project.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      const data = await response.data;
-      setUploadedFiles([data.dataFileName]);
-      setDataErrorState(true);
-      setProject({
-        ...project,
-        dataFileName: data.dataFileName,
-      });
-    } catch (error) {
-      console.error("Error:", error);
+    if (e.target.files.length > 0) {
+      setSelectedFiles([...selectedFiles, e.target.files[0]]);
     }
   };
 
   return (
     <>
-      <input
-        type="file"
-        onChange={handleFileChange}
-        className="border rounded-lg px-4 py-2 mr-5"
-      />
 
       <Button
-        onPress={handleUpload}
+        onPress={() => fileInputRef.current.click()}
         style={{ marginBottom: "10px" }}
         variant="bordered"
       >
-        Upload
+        Add File
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="border rounded-lg px-4 py-2 mr-5"
+          style={{ display: "none" }}
+        />
+
       </Button>
       <Table aria-label="Example empty table">
         <TableHeader>
@@ -64,18 +43,63 @@ export default function NewProjectDataComponent({
           <TableColumn>Size</TableColumn>
         </TableHeader>
         <TableBody emptyContent="No rows to display.">
-          {uploadedFiles.map((file) => (
-            <TableRow key={file}>
-              <TableCell>{file}</TableCell>
-              <TableCell>Not Yet</TableCell>
-              <TableCell>Not Yet</TableCell>
-            </TableRow>
-          ))}
+          {selectedFiles.map((file) => {
+            const { name, size, type } = file;
+            return (
+              <TableRow key={name}>
+                <TableCell>{name}</TableCell>
+                <TableCell>{type}</TableCell>
+                <TableCell>
+                  {byteSize(size).value}
+                  {" "}
+                  {byteSize(size).unit}
+                </TableCell>
+              </TableRow>
+            );
+          })}
 
         </TableBody>
       </Table>
+      <div className="absolute bottom-0 right-0 mr-5 mb-5">
+        <div className="flex space-x-4">
+          <Button
+            color="danger"
+            variant="light"
+            onPress={() => {
+              // if
+              onClose();
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Popover placement="left">
+            <PopoverTrigger>
+              <Button onPress={async () => {
+                if (selectedFiles.length === 0) {
+                  setError("Please add one or more data sources");
+                } else {
+                  setProject({ ...project, dataSources: { fileUploads: selectedFiles } });
+                  setSelectedTab("annotation");
+                }
+              }}
+              >
+                Next
+              </Button>
+            </PopoverTrigger>
+            {error ? (
+              <PopoverContent>
+                <div className="px-1 py-2">
+                  <div className="text-small font-bold text-red-500">{error}</div>
+                </div>
+              </PopoverContent>
+            )
+              : ""}
+          </Popover>
+
+        </div>
+      </div>
 
     </>
-
   );
 }
