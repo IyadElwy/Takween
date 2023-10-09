@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Request, UploadFile, Form
 from tortoise.contrib.fastapi import register_tortoise
-from models.models import Project
+from models.models import Project, Job
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import json
-
+from enums.annotation_type import parse_to_enum
 
 app = FastAPI()
 app.add_middleware(
@@ -50,7 +50,14 @@ async def create_project(file: UploadFile = Form(...), data: str = Form(...)):
         setattr(created_project, 'dataFileName', file_name)
         await created_project.save()
 
-        return {"message": "Item created successfully", "data": created_project}
+        created_job = await Job.create(title='Job 1',
+                                       project=created_project,
+                                       annotation_type=parse_to_enum(project_data['job']['annotation']['type']))
+
+        return {"message": "Item created successfully", "data": {
+            "project": created_project,
+            "job": created_job
+        }}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

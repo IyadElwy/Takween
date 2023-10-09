@@ -168,7 +168,7 @@ export default function AnnotationFieldSelection({
               },
             });
 
-            const projectID = response.data.data.id;
+            const projectID = response.data.data.project.id;
             // eslint-disable-next-line no-undef
             window.location = `${window.location.href}/${projectID}`;
           }}
