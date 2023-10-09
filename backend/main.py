@@ -37,40 +37,18 @@ async def get_all_projects():
 
 
 @app.post("/projects")
-async def create_project(files: list[UploadFile] = Form(...), data: str = Form(...)):
+async def create_project(data: Request):
+    print(data)
     try:
-        project_data = json.loads(data)
+        project_data = await data.json()
+
         created_project = await Project.create(
             author="admin",
             title=project_data.get('title'),
             description=project_data.get('description'))
 
-        created_job = await Job.create(title='Job 1',
-                                       project=created_project,
-                                       annotation_type=parse_to_enum(project_data['job']['annotation']['type']))
-
-        created_file_data_sources = []
-        for file in files:
-            file_type = get_file_type(file.filename)  # type: ignore
-            file_name = f'{file.filename.lower().replace(" ", "-").replace(file_type, "")}'
-            file_location = f"data/{created_project.id}-{file_name}.{file_type}"
-
-            with open(file_location, "wb") as f:
-                f.write(file.file.read())
-
-            created_file_data_source = await FileDataSource.create(file_name=file_name,
-                                                                   file_type=parse_file_type_enum(
-                                                                       file_type),  # type: ignore
-                                                                   location=file_location,
-                                                                   project=created_project,)
-            await created_file_data_source.jobs.add(created_job)
-
-            created_file_data_sources.append(created_file_data_source)
-
         return {"message": "Item created successfully", "data": {
             "project": created_project,
-            "job": created_job,
-            "created_file_data_sources": created_file_data_sources
         }}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -145,6 +123,49 @@ async def get_job_data(projectId, jobId):
         except Exception as e:
             return {'message': f"error merging data-sources together| {e}", }
 
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.get("/projects/{projectId}/file-data-sources")
+async def get_job_data_sources(projectId):
+    try:
+        project = await Project.get(id=projectId)
+        file_data_sources = await project.file_data_sources.all()  # type: ignore
+
+        return file_data_sources
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post("/projects/{projectId}/file-data-sources")
+async def add_job_data(projectId, files: list[UploadFile] = Form(...)):
+    try:
+        project = await Project.get(id=projectId)
+        created_file_data_sources = []
+        for file in files:
+            file_type = get_file_type(file.filename)  # type: ignore
+            file_name = f'{file.filename.lower().replace(" ", "-").replace(".", "").replace(file_type, "")}'
+            file_location = f"data/{projectId}-{file_name}.{file_type}"
+
+            with open(file_location, "wb") as f:
+                f.write(file.file.read())
+
+            created_file_data_source = await FileDataSource.create(file_name=file_name,
+                                                                   file_type=parse_file_type_enum(
+                                                                       file_type),  # type: ignore
+                                                                   location=file_location,
+                                                                   size=file.file.tell(),
+                                                                   project=project,)
+
+            created_file_data_sources.append(created_file_data_source)
+
+        return {
+            "created_file_data_sources": created_file_data_sources
+        }
     except Exception as e:
         print(e)
         raise HTTPException(status_code=404, detail=str(e))

@@ -3,14 +3,12 @@ import {
 } from "@nextui-org/react";
 
 import { useState } from "react";
+import axios from "axios";
 
 export default function NewProjectInfoComponent({
   onClose,
   project,
   setProject,
-  setSelectedTab,
-  accessibleTabs,
-  setAccessibleTabs,
 }) {
   const [error, setError] = useState({ title: "", description: "" });
 
@@ -55,21 +53,19 @@ export default function NewProjectInfoComponent({
             Cancel
           </Button>
           <Button onPress={async () => {
-            if (!project.title) setError({ ...error, title: "Please enter a title" });
-            if (project.description && project.description.length >= 400) setError({ ...error, description: "Description too long, stick to a maximum of 400 characters" });
-            if (project.title && project.description) {
-              if (project.description.length < 400) {
-                setSelectedTab("data");
-                setAccessibleTabs({ ...accessibleTabs, data: true });
-              }
-            }
-            if (project.title && !project.description) {
-              setSelectedTab("data");
-              setAccessibleTabs({ ...accessibleTabs, data: true });
+            if (!project.title) {
+              setError({ ...error, title: "Please enter a title" });
+            } else if (project.description && project.description.length >= 400) {
+              setError({ ...error, description: "Description too long, stick to a maximum of 400 characters" });
+            } else {
+              const response = await axios.post("http://127.0.0.1:8000/projects", project);
+              const projectID = response.data.data.project.id;
+              // eslint-disable-next-line no-undef
+              window.location = `${window.location.href}/${projectID}`;
             }
           }}
           >
-            Next
+            Finish
           </Button>
         </div>
       </div>

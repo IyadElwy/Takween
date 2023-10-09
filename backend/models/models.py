@@ -30,8 +30,9 @@ class FileDataSource(Model):
     id = fields.UUIDField(pk=True)
     file_name = fields.CharField(max_length=300)
     file_type = fields.CharEnumField(FileType, max_length=20)
+    size = fields.IntField()
     project = fields.ForeignKeyField(
-        'models.Project', related_name='data_sources')
+        'models.Project', related_name='file_data_sources')
     jobs = fields.ManyToManyField(
         'models.Job', related_name='file_data_sources')
     location = fields.CharField(max_length=500)

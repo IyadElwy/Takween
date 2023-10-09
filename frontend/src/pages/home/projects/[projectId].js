@@ -1,15 +1,23 @@
 import {
   ScrollShadow,
   Divider,
-  Card, CardHeader, CardFooter,
-  Avatar, Skeleton,
+  Card, CardHeader, CardFooter, CardBody,
+  Avatar, useDisclosure, Modal, ModalBody, ModalContent,
 
 } from "@nextui-org/react";
 import Link from "next/link";
+import Image from "next/image";
 import moment from "moment-timezone";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
+import AddDataComponent from "../../../components/Project/EditProject/DataSetup/addDataComponent";
 
-export default function ProjectDetailPage({ project, jobs }) {
+export default function ProjectDetailPage({ projectId, project, jobs }) {
+  const {
+    isOpen,
+    onOpen,
+    onOpenChange,
+  } = useDisclosure();
+
   return (
     (
       <>
@@ -19,6 +27,28 @@ export default function ProjectDetailPage({ project, jobs }) {
             { text: "Projects", href: "/home/projects" },
             { text: project.title, href: `/home/projects/${project.id}` }]}
         />
+
+        <Modal
+          style={{
+            height: "500px",
+          }}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          isDismissable={false}
+          size="5xl"
+          scrollBehavior="inside"
+          backdrop="blur"
+          hideCloseButton
+        >
+          <ModalContent>
+            {(onClose) => (
+              <ModalBody>
+                <AddDataComponent projectId={projectId} onClose={onClose} />
+              </ModalBody>
+            )}
+          </ModalContent>
+        </Modal>
+
         <div className="flex">
           <div className="w-2/6 bg-300 p-4">
             <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>Annotation Jobs</h1>
@@ -57,101 +87,79 @@ export default function ProjectDetailPage({ project, jobs }) {
 
           <div className="w-5/6 bg-300 p-4">
 
-            <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Project Title</h1>
-
-            <div className="max-w-[300px] w-full flex items-center gap-3">
-              <div>
-                <Skeleton className="flex rounded-full w-12 h-12" />
-              </div>
-              <div className="w-full flex flex-col gap-2">
-                <Skeleton className="h-3 w-3/5 rounded-lg" />
-                <Skeleton className="h-3 w-4/5 rounded-lg" />
-              </div>
-            </div>
+            <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>{project.title}</h1>
+            <h4>{project.description}</h4>
             <br />
             <Divider />
             <br />
+            <Card
+              className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
+              isPressable
+              onPress={onOpen}
+            >
 
-            <div className="max-w-[300px] w-full flex items-center gap-3">
-              <div>
-                <Skeleton className="flex rounded-full w-12 h-12" />
-              </div>
-              <div className="w-full flex flex-col gap-2">
-                <Skeleton className="h-3 w-3/5 rounded-lg" />
-                <Skeleton className="h-3 w-4/5 rounded-lg" />
-              </div>
-            </div>
+              <CardHeader className="flex gap-3">
+
+                <Image
+                  alt="nextui logo"
+                  height={60}
+                  radius="sm"
+                  src="/images/files.svg"
+                  width={70}
+                />
+                <div className="flex flex-col">
+                  <p className="text-md">
+                    Add data by uploading
+                    {" "}
+                    <strong>Files</strong>
+                  </p>
+                </div>
+              </CardHeader>
+
+            </Card>
             <br />
             <Divider />
             <br />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Card className="w-[200px] space-y-5 p-4" radius="2xl">
-                <Skeleton className="rounded-lg">
-                  <div className="h-24 rounded-lg bg-default-300" />
-                </Skeleton>
-                <div className="space-y-3">
-                  <Skeleton className="w-3/5 rounded-lg">
-                    <div className="h-3 w-3/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-4/5 rounded-lg">
-                    <div className="h-3 w-4/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-2/5 rounded-lg">
-                    <div className="h-3 w-2/5 rounded-lg bg-default-300" />
-                  </Skeleton>
-                </div>
-              </Card>
-              <Card className="w-[200px] space-y-5 p-4" radius="2xl">
-                <Skeleton className="rounded-lg">
-                  <div className="h-24 rounded-lg bg-default-300" />
-                </Skeleton>
-                <div className="space-y-3">
-                  <Skeleton className="w-3/5 rounded-lg">
-                    <div className="h-3 w-3/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-4/5 rounded-lg">
-                    <div className="h-3 w-4/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-2/5 rounded-lg">
-                    <div className="h-3 w-2/5 rounded-lg bg-default-300" />
-                  </Skeleton>
-                </div>
-              </Card>
-              <Card className="w-[200px] space-y-5 p-4" radius="2xl">
-                <Skeleton className="rounded-lg">
-                  <div className="h-24 rounded-lg bg-default-300" />
-                </Skeleton>
-                <div className="space-y-3">
-                  <Skeleton className="w-3/5 rounded-lg">
-                    <div className="h-3 w-3/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-4/5 rounded-lg">
-                    <div className="h-3 w-4/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-2/5 rounded-lg">
-                    <div className="h-3 w-2/5 rounded-lg bg-default-300" />
-                  </Skeleton>
-                </div>
-              </Card>
-              <Card className="w-[200px] space-y-5 p-4" radius="2xl">
-                <Skeleton className="rounded-lg">
-                  <div className="h-24 rounded-lg bg-default-300" />
-                </Skeleton>
-                <div className="space-y-3">
-                  <Skeleton className="w-3/5 rounded-lg">
-                    <div className="h-3 w-3/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-4/5 rounded-lg">
-                    <div className="h-3 w-4/5 rounded-lg bg-default-200" />
-                  </Skeleton>
-                  <Skeleton className="w-2/5 rounded-lg">
-                    <div className="h-3 w-2/5 rounded-lg bg-default-300" />
-                  </Skeleton>
-                </div>
-              </Card>
+              <Card
+                className="py-4"
+                isPressable
+              >
+                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                  <h4 className="font-bold text-large">Create New Annotation Job</h4>
+                </CardHeader>
+                <CardBody className="overflow-visible py-2">
+                  <center>
+                    <Image
+                      height={200}
+                      alt="Card background"
+                      className="object-cover rounded-xl"
+                      src="/images/annotation.svg"
+                      width={130}
+                    />
 
+                  </center>
+                </CardBody>
+              </Card>
+              <Card className="py-4" isPressable>
+                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                  <h4 className="font-bold text-large">Edit your Project Settings</h4>
+                </CardHeader>
+                <CardBody className="overflow-visible py-2">
+                  <br />
+                  <center>
+                    <Image
+                      height={50}
+                      alt="Card background"
+                      className="object-cover rounded-xl"
+                      src="/images/settings.svg"
+                      width={80}
+                    />
+
+                  </center>
+                </CardBody>
+              </Card>
             </div>
-
           </div>
         </div>
       </>
@@ -167,5 +175,5 @@ export async function getServerSideProps(context) {
   const resJobData = await fetch(`http://localhost:8000/projects/${projectId}/jobs`);
   const jobs = await resJobData.json();
 
-  return { props: { project: project.project, jobs: jobs.jobs } };
+  return { props: { project: project.project, jobs: jobs.jobs, projectId } };
 }

@@ -6,8 +6,6 @@ import {
 import { useState } from "react";
 
 import NewProjectInfoComponent from "./ProjectSetup/infoTab";
-import NewProjectDataComponent from "./DataSetup/dataTab";
-import NewProjectAnnotationComponent from "./AnnotationSetup/annotationTab";
 
 export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
   const [selectedTab, setSelectedTab] = useState("information");
@@ -56,24 +54,6 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
                     setSelectedTab={setSelectedTab}
                     accessibleTabs={accessibleTabs}
                     setAccessibleTabs={setAccessibleTabs}
-                  />
-                </Tab>
-                <Tab key="data" title="Data">
-                  <NewProjectDataComponent
-                    project={project}
-                    setProject={setProject}
-                    onClose={closeModal}
-                    setSelectedTab={setSelectedTab}
-                    accessibleTabs={accessibleTabs}
-                    setAccessibleTabs={setAccessibleTabs}
-                  />
-                </Tab>
-                <Tab key="annotation" title="Annotation">
-                  <NewProjectAnnotationComponent
-                    project={project}
-                    setProject={setProject}
-                    onClose={closeModal}
-                    setSelectedTab={setSelectedTab}
                   />
                 </Tab>
               </Tabs>
