@@ -10,7 +10,7 @@ const getSetUpPage = (type, {
     case "tabular":
       return (
         <AnnotationSetupTabular
-          project={project}
+          project={{ ...project, job: { annotation: { type: "tabular" } } }}
           setProject={setProject}
           onClose={onClose}
           setSelectedTab={setSelectedTab}
