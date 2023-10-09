@@ -6,7 +6,7 @@ import {
 
 } from "@nextui-org/react";
 import Link from "next/link";
-import moment from "moment";
+import moment from "moment-timezone";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
 
 export default function ProjectDetailPage({ project, jobs }) {
@@ -36,7 +36,7 @@ export default function ProjectDetailPage({ project, jobs }) {
                       <Divider />
                       <CardFooter className="flex justify-between">
                         <span className="text-xs text-gray-500">
-                          {moment(job.created_at).format("llll")}
+                          {moment(job.created_at).tz("America/New_York").format("llll")}
                         </span>
                         <Avatar
                           isBordered

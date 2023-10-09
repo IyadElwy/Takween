@@ -20,6 +20,7 @@
     "framer-motion": "^10.16.4",
     "material-react-table": "^1.15.0",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "next": "latest",
     "papaparse": "^5.4.1",
     "react": "latest",
