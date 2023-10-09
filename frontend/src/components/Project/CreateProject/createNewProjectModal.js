@@ -12,6 +12,11 @@ import NewProjectAnnotationComponent from "./AnnotationSetup/annotationTab";
 export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
   const [selectedTab, setSelectedTab] = useState("information");
   const [project, setProject] = useState({});
+  const [accessibleTabs, setAccessibleTabs] = useState({
+    information: true,
+    data: false,
+    annotation: false,
+  });
 
   return (
     <Modal
@@ -36,6 +41,9 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
           return (
             <ModalBody>
               <Tabs
+                onSelectionChange={(key) => {
+                  if (accessibleTabs[key]) setSelectedTab(key);
+                }}
                 aria-label="Options"
                 fullWidth
                 selectedKey={selectedTab}
@@ -46,6 +54,8 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
                     setProject={setProject}
                     onClose={closeModal}
                     setSelectedTab={setSelectedTab}
+                    accessibleTabs={accessibleTabs}
+                    setAccessibleTabs={setAccessibleTabs}
                   />
                 </Tab>
                 <Tab key="data" title="Data">
@@ -54,6 +64,8 @@ export default function CreateNewProjectModal({ isOpen, onOpenChange }) {
                     setProject={setProject}
                     onClose={closeModal}
                     setSelectedTab={setSelectedTab}
+                    accessibleTabs={accessibleTabs}
+                    setAccessibleTabs={setAccessibleTabs}
                   />
                 </Tab>
                 <Tab key="annotation" title="Annotation">

@@ -1,9 +1,7 @@
-from fastapi import FastAPI, HTTPException, Request, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, Request, UploadFile, Form
 from tortoise.contrib.fastapi import register_tortoise
 from models.models import Project
 from fastapi.middleware.cors import CORSMiddleware
-from asyncio import sleep
-from slugify import slugify
 import pandas as pd
 import json
 
@@ -29,7 +27,6 @@ register_tortoise(
 async def get_all_projects():
     try:
         all_projects = await Project.all()
-        await sleep(2)
         return all_projects
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -6,15 +6,24 @@ import byteSize from "byte-size";
 import { useState, useRef } from "react";
 
 export default function NewProjectDataComponent({
-  project, setProject, onClose, setSelectedTab,
+  project,
+  setProject,
+  onClose,
+  setSelectedTab,
+  accessibleTabs,
+  setAccessibleTabs,
+
 }) {
   const [error, setError] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState(project.dataSources
+    ? project.dataSources.fileUploads : []);
   const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
-      setSelectedFiles([...selectedFiles, e.target.files[0]]);
+      const updatedSelectedFiles = [...selectedFiles, e.target.files[0]];
+      setSelectedFiles(updatedSelectedFiles);
+      setProject({ ...project, dataSources: { fileUploads: updatedSelectedFiles } });
     }
   };
 
@@ -81,6 +90,7 @@ export default function NewProjectDataComponent({
                 } else {
                   setProject({ ...project, dataSources: { fileUploads: selectedFiles } });
                   setSelectedTab("annotation");
+                  setAccessibleTabs({ ...accessibleTabs, annotation: true });
                 }
               }}
               >

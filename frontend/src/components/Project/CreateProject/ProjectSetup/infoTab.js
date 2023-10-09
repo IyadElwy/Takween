@@ -9,6 +9,8 @@ export default function NewProjectInfoComponent({
   project,
   setProject,
   setSelectedTab,
+  accessibleTabs,
+  setAccessibleTabs,
 }) {
   const [error, setError] = useState({ title: "", description: "" });
 
@@ -56,9 +58,15 @@ export default function NewProjectInfoComponent({
             if (!project.title) setError({ ...error, title: "Please enter a title" });
             if (project.description && project.description.length >= 400) setError({ ...error, description: "Description too long, stick to a maximum of 400 characters" });
             if (project.title && project.description) {
-              if (project.description.length < 400) setSelectedTab("data");
+              if (project.description.length < 400) {
+                setSelectedTab("data");
+                setAccessibleTabs({ ...accessibleTabs, data: true });
+              }
             }
-            if (project.title && !project.description) setSelectedTab("data");
+            if (project.title && !project.description) {
+              setSelectedTab("data");
+              setAccessibleTabs({ ...accessibleTabs, data: true });
+            }
           }}
           >
             Next
