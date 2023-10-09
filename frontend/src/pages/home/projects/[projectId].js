@@ -25,7 +25,7 @@ export default function ProjectDetailPage({ project, jobs }) {
             <ScrollShadow className="w-[300px] h-[400px]">
 
               {jobs.map((job) => (
-                <Link href="#test" key={job.id}>
+                <Link href={`${project.id}/jobs/${job.id}`} key={job.id}>
                   <div className="mr-2 ml-2">
                     <Card className="mb-4 mt-4 mr-3 w-full" isPressable>
                       <CardHeader className="flex gap-3">
@@ -161,10 +161,11 @@ export default function ProjectDetailPage({ project, jobs }) {
 
 export async function getServerSideProps(context) {
   const { projectId } = context.query;
-  const res = await fetch(`http://localhost:8000/projects/${projectId}`);
-  const rawData = await res.json();
-  const { project } = rawData;
-  const { jobs } = rawData;
 
-  return { props: { project, jobs } };
+  const resProjectData = await fetch(`http://localhost:8000/projects/${projectId}`);
+  const project = await resProjectData.json();
+  const resJobData = await fetch(`http://localhost:8000/projects/${projectId}/jobs`);
+  const jobs = await resJobData.json();
+
+  return { props: { project: project.project, jobs: jobs.jobs } };
 }

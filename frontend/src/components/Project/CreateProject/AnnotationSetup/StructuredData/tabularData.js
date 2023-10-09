@@ -158,8 +158,9 @@ export default function AnnotationFieldSelection({
 
             const formData = new FormData();
             finishedProjectObject.dataSources.fileUploads.forEach((fileSource) => {
-              formData.append("file", fileSource);
+              formData.append("files", fileSource);
             });
+
             formData.append("data", JSON.stringify(finishedProjectObject));
 
             const response = await axios.post("http://127.0.0.1:8000/projects", formData, {

@@ -1,7 +1,7 @@
 import { MaterialReactTable } from "material-react-table";
 import Navigation from "../../../../../components/Reusable/Navigation/navBarSideBar";
 
-export default function JobPage({ projectData, jobData }) {
+export default function JobPage({ project, job, jobData }) {
   const getColumns = () => Object.keys(jobData.columns).map((key) => ({
     accessorKey: key,
     header: key,
@@ -27,8 +27,8 @@ export default function JobPage({ projectData, jobData }) {
         showCreateProjectButton={false}
         breadcrumbs={[
           { text: "Projects", href: "/home/projects" },
-          { text: projectData.title, href: `/home/projects/${projectData.id}` },
-          { text: "Job 1", href: `/home/projects/${projectData.id}/jobs/job1` },
+          { text: project.title, href: `/home/projects/${project.id}` },
+          { text: job.title, href: `/home/projects/${project.id}/jobs/job1` },
         ]}
       />
 
@@ -38,6 +38,7 @@ export default function JobPage({ projectData, jobData }) {
         columns={getColumns()}
         data={getData()}
       />
+
     </>
 
   );
@@ -45,14 +46,17 @@ export default function JobPage({ projectData, jobData }) {
 
 export async function getServerSideProps(context) {
   const {
-    dataFileName, projectId,
-    // jobId,
+    projectId,
+    jobId,
   } = context.query;
 
-  const resProjectData = await fetch(`http://localhost:8000/projects/${projectId}`);
-  const projectData = await resProjectData.json();
-  const resJobData = await fetch(`http://localhost:8000/files/${dataFileName}`);
+  const resProject = await fetch(`http://localhost:8000/projects/${projectId}`);
+  const project = await resProject.json();
+  const resJob = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}`);
+  const job = await resJob.json();
+
+  const resJobData = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/data`);
   const jobData = await resJobData.json();
 
-  return { props: { projectData, jobData } };
+  return { props: { project: project.project, job: job.job, jobData } };
 }
