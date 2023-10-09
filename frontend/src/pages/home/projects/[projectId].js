@@ -6,9 +6,10 @@ import {
 
 } from "@nextui-org/react";
 import Link from "next/link";
+import moment from "moment";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
 
-export default function ProjectDetailPage({ projectData }) {
+export default function ProjectDetailPage({ project, jobs }) {
   return (
     (
       <>
@@ -16,37 +17,39 @@ export default function ProjectDetailPage({ projectData }) {
           showCreateProjectButton={false}
           breadcrumbs={[
             { text: "Projects", href: "/home/projects" },
-            { text: projectData.title, href: `/home/projects/${projectData.id}` }]}
+            { text: project.title, href: `/home/projects/${project.id}` }]}
         />
         <div className="flex">
           <div className="w-2/6 bg-300 p-4">
             <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>Annotation Jobs</h1>
             <ScrollShadow className="w-[300px] h-[400px]">
 
-              {/* <Link href={`${projectData.id}/jobs/job1?dataFileName=${projectData.dataFileName}`}>
-                <div className="mr-2 ml-2">
-                  <Card className="mb-4 mt-4 mr-3 w-full" isPressable>
-                    <CardHeader className="flex gap-3">
-                      <div className="flex flex-col">
-                        <p className="text-md">Annotation Job 1</p>
-                      </div>
-                    </CardHeader>
-                    <Divider />
-                    <CardFooter className="flex justify-between">
-                      <span className="text-xs text-gray-500">
-                        30 Sep ’23, 16:47
-                      </span>
-                      <Avatar
-                        isBordered
-                        className="transition-transform"
-                        name="Avatar"
-                        size="sm"
-                      />
-                    </CardFooter>
+              {jobs.map((job) => (
+                <Link href="#test" key={job.id}>
+                  <div className="mr-2 ml-2">
+                    <Card className="mb-4 mt-4 mr-3 w-full" isPressable>
+                      <CardHeader className="flex gap-3">
+                        <div className="flex flex-col">
+                          <p className="text-md">{job.title}</p>
+                        </div>
+                      </CardHeader>
+                      <Divider />
+                      <CardFooter className="flex justify-between">
+                        <span className="text-xs text-gray-500">
+                          {moment(job.created_at).format("llll")}
+                        </span>
+                        <Avatar
+                          isBordered
+                          className="transition-transform"
+                          name="Avatar"
+                          size="sm"
+                        />
+                      </CardFooter>
 
-                  </Card>
-                </div>
-              </Link> */}
+                    </Card>
+                  </div>
+                </Link>
+              ))}
 
               <Divider />
             </ScrollShadow>
@@ -159,7 +162,9 @@ export default function ProjectDetailPage({ projectData }) {
 export async function getServerSideProps(context) {
   const { projectId } = context.query;
   const res = await fetch(`http://localhost:8000/projects/${projectId}`);
-  const projectData = await res.json();
+  const rawData = await res.json();
+  const { project } = rawData;
+  const { jobs } = rawData;
 
-  return { props: { projectData } };
+  return { props: { project, jobs } };
 }

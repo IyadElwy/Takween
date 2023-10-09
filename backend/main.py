@@ -65,10 +65,11 @@ async def create_project(file: UploadFile = Form(...), data: str = Form(...)):
 @app.get("/projects/{id}")
 async def get_project(id):
     try:
-        data = await Project.get(id=id)
-        return data
+        project = await Project.get(id=id)
+        jobs = await project.Jobs.all()
+        return {'project': project, 'jobs': jobs}
     except Exception as e:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.put("/projects/{id}")
