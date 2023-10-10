@@ -6,7 +6,9 @@ import byteSize from "byte-size";
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import SplitPane from "react-split-pane-v2";
-import ReactJson from "react-json-view";
+import JsonView from "react18-json-view";
+import "react18-json-view/src/style.css";
+
 import LoadingSymbol from "../../../Reusable/loadingSymbol";
 
 export default function AddDataComponent({
@@ -88,9 +90,7 @@ export default function AddDataComponent({
 
       case "json":
         return (
-          <ReactJson
-            src={currentFile.exampleData}
-          />
+          <JsonView src={currentFile.exampleData} />
         );
 
       default:

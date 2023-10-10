@@ -25,8 +25,8 @@
     "papaparse": "^5.4.1",
     "react": "latest",
     "react-dom": "latest",
-    "react-json-view": "^1.21.3",
     "react-split-pane-v2": "^1.0.3",
+    "react18-json-view": "^0.2.6",
     "swr": "^2.2.4"
   },
   "devDependencies": {
