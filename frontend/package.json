@@ -25,6 +25,7 @@
     "papaparse": "^5.4.1",
     "react": "latest",
     "react-dom": "latest",
+    "react-split-pane-v2": "^1.0.3",
     "swr": "^2.2.4"
   },
   "devDependencies": {

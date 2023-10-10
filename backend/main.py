@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import json
 from enums.annotation_type import parse_to_enum
-from enums.file_types import parse_to_enum as parse_file_type_enum
+from enums.file_types import parse_to_enum as parse_file_type_enum, FileType
 from utils.files import get_file_type
 from utils.data_type_parsers import check_dtype
 
@@ -133,8 +133,15 @@ async def get_job_data_sources(projectId):
     try:
         project = await Project.get(id=projectId)
         file_data_sources = await project.file_data_sources.all()  # type: ignore
+        file_data_sources_list = [dict(val) for val in file_data_sources]
 
-        return file_data_sources
+        for data_source in file_data_sources_list:
+            if data_source['file_type'] is FileType.CSV:
+                df = pd.read_csv(data_source['location'], nrows=5)
+                data_source['exampleData'] = {"headers": df.columns.to_list(),
+                                              "data": df.to_dict(orient='records')}
+
+        return file_data_sources_list
 
     except Exception as e:
         print(e)
@@ -163,9 +170,17 @@ async def add_job_data(projectId, files: list[UploadFile] = Form(...)):
 
             created_file_data_sources.append(created_file_data_source)
 
+        file_data_source = dict(created_file_data_source)
+
+        if file_data_source['file_type'] is FileType.CSV:
+            df = pd.read_csv(file_data_source['location'], nrows=5)
+            file_data_source['exampleData'] = {"headers": df.columns.to_list(),
+                                               "data": df.to_dict(orient='records')}
+
         return {
-            "created_file_data_sources": created_file_data_sources
+            "created_file_data_sources": file_data_source
         }
+
     except Exception as e:
         print(e)
         raise HTTPException(status_code=404, detail=str(e))

@@ -109,9 +109,10 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
                 />
                 <div className="flex flex-col">
                   <p className="text-md">
-                    Add data by uploading
+                    Explore your Project&apos;s
                     {" "}
-                    <strong>Files</strong>
+                    <strong>Data</strong>
+
                   </p>
                 </div>
               </CardHeader>
