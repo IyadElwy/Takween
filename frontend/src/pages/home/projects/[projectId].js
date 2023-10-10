@@ -8,8 +8,10 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import moment from "moment-timezone";
+import { useState } from "react";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
 import AddDataComponent from "../../../components/Project/EditProject/DataSetup/addDataComponent";
+import NewJobComponent from "../../../components/Project/EditProject/AnnotationSetup/newJobComponent";
 
 export default function ProjectDetailPage({ projectId, project, jobs }) {
   const {
@@ -17,6 +19,20 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
     onOpen,
     onOpenChange,
   } = useDisclosure();
+  const [modalComponent, setModalComponent] = useState(null);
+
+  const getCurrentModalComponent = (onClose) => {
+    switch (modalComponent) {
+      case "data":
+        return <AddDataComponent projectId={projectId} onClose={onClose} />;
+
+      case "newAnnotationJob":
+        return <NewJobComponent projectId={projectId} onClose={onClose} />;
+
+      default:
+        return null;
+    }
+  };
 
   return (
     (
@@ -43,7 +59,7 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
           <ModalContent>
             {(onClose) => (
               <ModalBody>
-                <AddDataComponent projectId={projectId} onClose={onClose} />
+                {getCurrentModalComponent(onClose)}
               </ModalBody>
             )}
           </ModalContent>
@@ -95,7 +111,10 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
             <Card
               className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
               isPressable
-              onPress={onOpen}
+              onPress={() => {
+                setModalComponent("data");
+                onOpen();
+              }}
             >
 
               <CardHeader className="flex gap-3">
@@ -125,6 +144,10 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
               <Card
                 className="py-4"
                 isPressable
+                onPress={() => {
+                  setModalComponent("newAnnotationJob");
+                  onOpen();
+                }}
               >
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">Create New Annotation Job</h4>
@@ -137,24 +160,6 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
                       className="object-cover rounded-xl"
                       src="/images/annotation.svg"
                       width={130}
-                    />
-
-                  </center>
-                </CardBody>
-              </Card>
-              <Card className="py-4" isPressable>
-                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                  <h4 className="font-bold text-large">Edit your Project Settings</h4>
-                </CardHeader>
-                <CardBody className="overflow-visible py-2">
-                  <br />
-                  <center>
-                    <Image
-                      height={50}
-                      alt="Card background"
-                      className="object-cover rounded-xl"
-                      src="/images/settings.svg"
-                      width={80}
                     />
 
                   </center>
