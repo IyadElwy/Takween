@@ -8,7 +8,7 @@ from enums.annotation_type import parse_to_enum
 from enums.file_types import parse_to_enum as parse_file_type_enum, FileType
 from utils.files import get_file_type
 from utils.data_type_parsers import check_dtype
-
+from utils.data import get_json_sample_from_file
 
 app = FastAPI()
 app.add_middleware(
@@ -98,34 +98,33 @@ async def get_project_job_by_id(projectId, jobId):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@app.get("/projects/{projectId}/jobs/{jobId}/data")
-async def get_job_data(projectId, jobId):
-    try:
-        project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
-        file_data_sources = await job.file_data_sources.all()
+# @app.get("/projects/{projectId}/jobs/{jobId}/data")
+# async def get_job_data(projectId, jobId):
+#     try:
+#         project = await Project.get(id=projectId)
+#         job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+#         file_data_sources = await job.file_data_sources.all()
 
-        dfs = []
-        columns = None
-        for source in file_data_sources:
-            df = pd.read_csv(source.location)
-            columns = zip(list(df.dtypes.index), [
-                check_dtype(x) for x in list(df.dtypes.values)])
-            dfs.append(df)
+#         dfs = []
+#         columns = None
+#         for source in file_data_sources:
+#             df = pd.read_csv(source.location)
+#             columns = zip(list(df.dtypes.index), [
+#                 check_dtype(x) for x in list(df.dtypes.values)])
+#             dfs.append(df)
+#         try:
+#             df = pd.concat(dfs, ignore_index=True)
+#             return {
+#                 "columns": columns,
+#                 "data": df.values.tolist()
+#             }
 
-        try:
-            df = pd.concat(dfs, ignore_index=True)
-            return {
-                "columns": columns,
-                "data": df.values.tolist()
-            }
+#         except Exception as e:
+#             return {'message': f"error merging data-sources together| {e}", }
 
-        except Exception as e:
-            return {'message': f"error merging data-sources together| {e}", }
-
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=404, detail=str(e))
+#     except Exception as e:
+#         print(e)
+#         raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.get("/projects/{projectId}/file-data-sources")
@@ -140,6 +139,11 @@ async def get_job_data_sources(projectId):
                 df = pd.read_csv(data_source['location'], nrows=5)
                 data_source['exampleData'] = {"headers": df.columns.to_list(),
                                               "data": df.to_dict(orient='records')}
+            if data_source['file_type'] is FileType.JSON:
+                with open(data_source['location'], 'r') as json_file:
+                    json_data = json.load(json_file)
+                    data_source['exampleData'] = get_json_sample_from_file(
+                        json_data, depth=5, max_elements=1)
 
         return file_data_sources_list
 
@@ -170,12 +174,17 @@ async def add_job_data(projectId, files: list[UploadFile] = Form(...)):
 
             created_file_data_sources.append(created_file_data_source)
 
-        file_data_source = dict(created_file_data_source)
+        file_data_source = dict(created_file_data_source)  # type: ignore
 
         if file_data_source['file_type'] is FileType.CSV:
             df = pd.read_csv(file_data_source['location'], nrows=5)
             file_data_source['exampleData'] = {"headers": df.columns.to_list(),
                                                "data": df.to_dict(orient='records')}
+        if file_data_source['file_type'] is FileType.JSON:
+            with open(file_data_source['location'], 'r') as json_file:
+                json_data = json.load(json_file)
+                file_data_source['exampleData'] = get_json_sample_from_file(
+                    json_data, depth=5, max_elements=1)
 
         return {
             "created_file_data_sources": file_data_source

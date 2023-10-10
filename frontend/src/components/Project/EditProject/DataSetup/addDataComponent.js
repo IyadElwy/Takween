@@ -6,8 +6,8 @@ import byteSize from "byte-size";
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import SplitPane from "react-split-pane-v2";
+import ReactJson from "react-json-view";
 import LoadingSymbol from "../../../Reusable/loadingSymbol";
-import splitPaneStyles from "../../../../styles/components/Reusable/splitPane.module.css";
 
 export default function AddDataComponent({
   onClose,
@@ -60,17 +60,59 @@ export default function AddDataComponent({
     }
   };
 
+  const getCurrentFile = () => selectedFiles.find((file) => file.id === selectedFileKey.currentKey);
+
+  const getDataSampleView = () => {
+    const currentFile = getCurrentFile();
+    switch (currentFile.type) {
+      case "csv":
+        return (
+          <Table
+            className="mt-3"
+            aria-label="Example empty table"
+            selectionMode="single"
+          >
+            <TableHeader>
+              {currentFile.exampleData.headers.map((col) => <TableColumn>{col}</TableColumn>)}
+            </TableHeader>
+            <TableBody emptyContent="No rows to display.">
+              {currentFile.exampleData.data.map((rec) => (
+                <TableRow key="id">
+                  {currentFile.exampleData.headers.map((col) => <TableCell>{rec[col]}</TableCell>)}
+                </TableRow>
+              ))}
+
+            </TableBody>
+          </Table>
+        );
+
+      case "json":
+        return (
+          <ReactJson
+            src={currentFile.exampleData}
+          />
+        );
+
+      default:
+        return undefined;
+    }
+  };
+
   return (
     isLoading ? <LoadingSymbol height={200} width={200} /> : (
       <>
         <SplitPane
-          split="horizontal"
-          minSize={50}
-          defaultSize={parseInt([38978, 9322], 10)}
-          resizerClassName={splitPaneStyles.Resizer}
+          split="vertical"
+          minSize={100}
+          maxSize={-100}
+          defaultSize="50%"
+
         >
 
-          <div className="m-1" style={{ maxHeight: "400px", overflowY: "auto" }}>
+          <div
+            className="m-1"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
             <Table
               className="mt-3"
               aria-label="Example empty table"
@@ -105,26 +147,21 @@ export default function AddDataComponent({
             </Table>
           </div>
 
-          <div className="m-1" style={{ maxHeight: "400", overflowY: "auto" }}>
-            {selectedFileKey.length === 0 ? <h1>Choose a file to see more</h1>
-              : (
-                <Table
-                  className="mt-3"
-                  aria-label="Example empty table"
-                  selectionMode="single"
-                >
-                  <TableHeader>
-                    {selectedFiles.find((file) => file.id === selectedFileKey.currentKey).exampleData.headers.map((col) => <TableColumn>{col}</TableColumn>)}
-                  </TableHeader>
-                  <TableBody emptyContent="No rows to display.">
-                    {selectedFiles.find((file) => file.id === selectedFileKey.currentKey).exampleData.data.map((rec) => (
-                      <TableRow key="id">
-                        {selectedFiles.find((file) => file.id === selectedFileKey.currentKey).exampleData.headers.map((col) => <TableCell>{rec[col]}</TableCell>)}
-                      </TableRow>
-                    ))}
+          <div
+            className="m-1"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            {selectedFileKey.length === 0 ? (
+              <center>
+                {" "}
+                <div className="min-h-screen flex items-center justify-center">
+                  <h1 className="text-2xl  text-center">Choose a file to see more</h1>
+                </div>
 
-                  </TableBody>
-                </Table>
+              </center>
+            )
+              : (
+                getDataSampleView()
               )}
           </div>
         </SplitPane>
