@@ -3,51 +3,73 @@ import {
   ListboxItem, Button,
   Card, CardBody, CardFooter, Image,
 } from "@nextui-org/react";
+import { useState } from "react";
+
+const annotationTypes = {
+  structuredData: [{
+    name: "tabular",
+    displayName: "Tabular Data",
+    img: "structured_data.svg",
+  }],
+  nlp: [
+    {
+      name: "textClassification",
+      displayName: "Text Classification",
+      img: "classification.svg",
+    },
+  ],
+};
 
 export default function AnnotationTypeSelection({
   setShowAnnotationSelectionPage,
   setChosenAnnotationType,
   onClose,
 }) {
+  const [selectedKeys, setSelectedKeys] = useState(null);
   return (
     <>
       <div className="flex">
         <div className="w-1/4 bg-300 p-4">
           <Listbox
             aria-label="Actions"
-    // onAction={(key) => {}}
+            onSelectionChange={setSelectedKeys}
             disallowEmptySelection
             selectionMode="single"
-            selectedKeys={["structuredData"]}
+            selectedKeys={selectedKeys}
           >
             <ListboxItem key="structuredData" isSe>Structured Data</ListboxItem>
+            <ListboxItem key="nlp" isSe>NLP</ListboxItem>
           </Listbox>
 
         </div>
         <div className="w-3/4 bg-300 p-4">
 
           <div className="gap-2 grid grid-cols-2 sm:grid-cols-4">
-            <Card
-              shadow="sm"
-              isPressable
-              onPress={() => {
-                setChosenAnnotationType("tabular");
-                setShowAnnotationSelectionPage(false);
-              }}
-            >
-              <CardBody className="overflow-visible p-0">
-                <Image
-                  width="100%"
-                  height="auto"
-                  alt="Tabular Data"
-                  className="w-full object-cover h-[140px]"
-                  src="/images/structured_data.svg"
-                />
-              </CardBody>
-              <CardFooter className="text-small justify-between">
-                <b>Tabular Data</b>
-              </CardFooter>
-            </Card>
+            {selectedKeys ? annotationTypes[selectedKeys.currentKey].map((type) => (
+              <Card
+                shadow="sm"
+                isPressable
+                onPress={() => {
+                  setChosenAnnotationType(type.name);
+                  setShowAnnotationSelectionPage(false);
+                }}
+              >
+                <CardBody className="overflow-visible p-0">
+                  <Image
+                    width="100%"
+                    height="auto"
+                    alt={type.name}
+                    className="w-full h-[120px]"
+                    src={`/images/${type.img}`}
+                  />
+                </CardBody>
+                <CardFooter className="text-small justify-between">
+                  <b>{type.displayName}</b>
+                </CardFooter>
+              </Card>
+            )) : (
+              <div />
+            )}
           </div>
 
         </div>
