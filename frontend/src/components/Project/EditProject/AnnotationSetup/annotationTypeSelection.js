@@ -17,6 +17,16 @@ const annotationTypes = {
       displayName: "Text Classification",
       img: "classification.svg",
     },
+    {
+      name: "ner",
+      displayName: "Named Entity Recognition",
+      img: "ner.svg",
+    },
+    {
+      name: "pos",
+      displayName: "Part Of Speech Tagging",
+      img: "pos.svg",
+    },
   ],
 };
 
