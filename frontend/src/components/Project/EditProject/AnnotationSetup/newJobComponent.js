@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import AnnotationTypeSelection from "./annotationTypeSelection";
-import AnnotationSetupTabular from "./StructuredData/tabular";
+import AnnotationSetupTabular from "./AnnotationTypes/tabular";
 
 const getSetUpPage = (type, onClose) => {
   switch (type) {
