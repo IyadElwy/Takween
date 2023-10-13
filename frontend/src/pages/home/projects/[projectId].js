@@ -104,7 +104,7 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
           <div className="w-5/6 bg-300 p-4">
 
             <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>{project.title}</h1>
-            <h4>{project.description}</h4>
+            <h4>{project.description ? project.description : "No description..."}</h4>
             <br />
             <Divider />
             <br />

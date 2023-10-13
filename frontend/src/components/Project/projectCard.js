@@ -29,7 +29,7 @@ export default function ProjectCard({ projectData }) {
         </CardHeader>
         <Divider />
         <CardBody>
-          <p className={style.truncateText}>{projectData.description}</p>
+          <p className={style.truncateText}>{projectData.description ? projectData.description : "No description..."}</p>
         </CardBody>
         <Divider />
         <CardFooter className="flex justify-between">

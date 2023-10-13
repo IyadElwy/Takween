@@ -17,7 +17,6 @@ async def get_all_projects():
 
 @router.post("/projects")
 async def create_project(data: Request):
-    print(data)
     try:
         project_data = await data.json()
 
