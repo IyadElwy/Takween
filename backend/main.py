@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.middleware.cors import CORSMiddleware
-from routers import data_sources, jobs, projects
+from routers import data_sources, jobs, projects, annotations
 
 app = FastAPI()
 app.add_middleware(
@@ -22,3 +22,4 @@ register_tortoise(
 app.include_router(projects.router)
 app.include_router(jobs.router)
 app.include_router(data_sources.router)
+app.include_router(annotations.router)
