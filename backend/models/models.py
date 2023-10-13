@@ -15,17 +15,6 @@ class Project(Model):
         return self.title
 
 
-class Job(Model):
-    id = fields.UUIDField(pk=True)
-    title = fields.CharField(max_length=100)
-    project = fields.ForeignKeyField('models.Project', related_name='Jobs')
-    annotation_type = fields.CharEnumField(AnnotationType, max_length=100)
-    created_at = fields.DatetimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return f"{self.title}"
-
-
 class FileDataSource(Model):
     id = fields.UUIDField(pk=True)
     file_name = fields.CharField(max_length=300)
@@ -33,10 +22,29 @@ class FileDataSource(Model):
     size = fields.IntField()
     project = fields.ForeignKeyField(
         'models.Project', related_name='file_data_sources')
-    jobs = fields.ManyToManyField(
-        'models.Job', related_name='file_data_sources')
     location = fields.CharField(max_length=500)
     created_at = fields.DatetimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.location}"
+
+
+class TextClassificationJob(Model):
+    id = fields.UUIDField(pk=True)
+    title = fields.CharField(max_length=100)
+    project = fields.ForeignKeyField(
+        'models.Project', related_name='Jobs')
+    created_at = fields.DatetimeField(auto_now_add=True)
+    field_to_annotate = fields.CharField(max_length=200)
+    classes_list_as_string = fields.CharField(max_length=1000)
+
+    def __str__(self) -> str:
+        return f"Text Classification: {self.title}"
+
+
+class TextClassificationAnnotation(Model):
+    id = fields.IntField(pk=True)
+    job = fields.ForeignKeyField(
+        'models.TextClassificationJob', related_name='Annotations')
+    data_as_json = fields.JSONField(null=True)
+    annotated_class = fields.CharField(max_length=200, null=True)

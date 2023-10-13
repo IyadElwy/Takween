@@ -66,36 +66,9 @@ export default function AddDataComponent({
 
   const getDataSampleView = () => {
     const currentFile = getCurrentFile();
-    switch (currentFile.type) {
-      case "csv":
-        return (
-          <Table
-            className="mt-3"
-            aria-label="Example empty table"
-            selectionMode="single"
-          >
-            <TableHeader>
-              {currentFile.exampleData.headers.map((col) => <TableColumn>{col}</TableColumn>)}
-            </TableHeader>
-            <TableBody emptyContent="No rows to display.">
-              {currentFile.exampleData.data.map((rec) => (
-                <TableRow key="id">
-                  {currentFile.exampleData.headers.map((col) => <TableCell>{rec[col]}</TableCell>)}
-                </TableRow>
-              ))}
-
-            </TableBody>
-          </Table>
-        );
-
-      case "json":
-        return (
-          <JsonView src={currentFile.exampleData} />
-        );
-
-      default:
-        return undefined;
-    }
+    return (
+      <JsonView src={currentFile.exampleData} />
+    );
   };
 
   return (

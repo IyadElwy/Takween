@@ -7,7 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import GhostButton from "../../../../Reusable/ghostButton";
 
-export default function AnnotationFieldSelection({
+export default function TabularAnnotationSetup({
   onClose,
 }) {
   const [newField, setNewField] = useState({ name: "", type: "" });
