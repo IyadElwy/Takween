@@ -47,8 +47,41 @@ export default function AnnotationTypeSelection({
             selectionMode="single"
             selectedKeys={selectedKeys}
           >
-            <ListboxItem key="structuredData" isSe>Structured Data</ListboxItem>
-            <ListboxItem key="nlp" isSe>NLP</ListboxItem>
+            <ListboxItem
+              startContent={
+                (
+                  <Image
+                    width="30px"
+                    height="30px"
+                    alt="tabular"
+                    src="/images/structured_data.svg"
+                  />
+)
+}
+              key="structuredData"
+              isSe
+            >
+              Structured Data
+
+            </ListboxItem>
+            <ListboxItem
+              startContent={
+                (
+                  <Image
+                    width="30px"
+                    height="30px"
+                    alt="tabular"
+                    src="/images/pos.svg"
+                  />
+)
+}
+
+              key="nlp"
+              isSe
+            >
+              NLP
+
+            </ListboxItem>
           </Listbox>
 
         </div>
