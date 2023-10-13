@@ -1,17 +1,26 @@
 import { MaterialReactTable } from "material-react-table";
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import {
+  Modal, ModalContent, ModalBody, ModalFooter, Button, useDisclosure,
+} from "@nextui-org/react";
+import JsonView from "react18-json-view";
 import Navigation from "../../../../../components/Reusable/Navigation/navBarSideBar";
 import LoadingSymbol from "../../../../../components/Reusable/loadingSymbol";
+import "react18-json-view/src/style.css";
+import closerLookButtonStyles from "../../../../../styles/components/Reusable/navbar.module.css";
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
 }) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [currentItemCloserLook, setCurrentItemCloserLook] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,27 +45,51 @@ export default function JobPage({
 
   const columns = [
     {
-      accessorKey: "id",
+      accessorFn: (row) => row.id,
+      id: "id",
       header: "ID",
       size: 150,
     },
     {
-      accessorKey: "annotation",
+      accessorFn: (row) => row.annotated_class || "None",
+      id: "annotation",
       header: "Annotation",
       size: 150,
     },
     {
-      accessorKey: "data",
+      accessorFn: (row) => row.data_as_json[job.field_to_annotate],
+      id: "data",
       header: "Data",
       size: 150,
     },
-  ];
+    {
+      // accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+      accessorKey: "ee",
+      header: "",
+      size: 150,
 
-  const formatData = (unformatedData) => unformatedData.map((item) => ({
-    id: item.id,
-    annotation: item.annotated_class || "None",
-    data: item.data_as_json[job.field_to_annotate],
-  }));
+      // eslint-disable-next-line react/no-unstable-nested-components
+      Cell: ({ cell }) => {
+        // eslint-disable-next-line camelcase
+        const { data_as_json } = cell.row.original;
+
+        return (
+          <Image
+            className={closerLookButtonStyles.burgerMenu}
+            onClick={() => {
+              setCurrentItemCloserLook(data_as_json);
+              onOpen();
+            }}
+            alt="nextui logo"
+            height={25}
+            radius="sm"
+            src="/images/magnifier.svg"
+            width={25}
+          />
+        );
+      },
+    },
+  ];
 
   return (
     <>
@@ -70,21 +103,41 @@ export default function JobPage({
       />
 
       {isLoading ? <LoadingSymbol height={200} width={200} /> : (
-        <MaterialReactTable
-          enableStickyHeader
-          enableRowSelection
-          columns={columns}
-          data={formatData(annotationData)}
-          page
-          manualPagination
-          onPaginationChange={handlePaginationChange}
-          rowCount={totalRowCount}
-          state={{
-            isLoading,
-            pagination,
-          }}
+        <>
+          <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalBody>
+                    <div className="m-4">
+                      <JsonView src={currentItemCloserLook} />
+                    </div>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={onClose}>
+                      Close
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
 
-        />
+          <MaterialReactTable
+            enableStickyHeader
+            enableRowSelection
+            columns={columns}
+            data={annotationData}
+            page
+            manualPagination
+            onPaginationChange={handlePaginationChange}
+            rowCount={totalRowCount}
+            state={{
+              isLoading,
+              pagination,
+            }}
+          />
+        </>
       )}
 
     </>
