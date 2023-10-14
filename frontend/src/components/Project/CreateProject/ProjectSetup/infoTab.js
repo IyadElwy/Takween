@@ -55,7 +55,7 @@ export default function NewProjectInfoComponent({
           <Button onPress={async () => {
             if (!project.title) {
               setError({ ...error, title: "Please enter a title" });
-            } else if (project.description && project.description.length >= 400) {
+            } else if (project.description && project.description.length >= 2000) {
               setError({ ...error, description: "Description too long, stick to a maximum of 400 characters" });
             } else {
               const response = await axios.post("http://127.0.0.1:8000/projects", project);

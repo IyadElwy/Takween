@@ -7,7 +7,7 @@ from enums.file_types import FileType
 class Project(Model):
     id = fields.UUIDField(pk=True)
     title = fields.CharField(max_length=20)
-    description = fields.CharField(max_length=1000, null=True)
+    description = fields.CharField(max_length=2000, null=True)
     author = fields.CharField(max_length=20)
     created_at = fields.DatetimeField(auto_now_add=True)
 
