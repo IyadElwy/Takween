@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 
 
 def get_json_sample_from_file(data, depth=1, max_elements=5):
@@ -27,4 +28,21 @@ def convert_csv_to_json_and_save(file_location: str):
     new_file_location = file_location.replace('.csv', '.json')
     df = pd.read_csv(file_location)
     df.to_json(new_file_location, 'records')
+    return new_file_location
+
+
+def convert_ndjson_to_json_and_save(file_location: str):
+    new_file_location = file_location.replace('.csv', '.json')
+
+    json_list = []
+    with open(file_location, 'r') as original_file:
+        for ndjson_line in original_file:
+            if not ndjson_line.strip():
+                continue
+            json_line = json.loads(ndjson_line)
+            json_list.append(json_line)
+
+    with open(new_file_location, 'w+') as new_file:
+        new_file.write(json.dumps(json_list))
+
     return new_file_location

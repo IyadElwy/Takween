@@ -4,6 +4,8 @@ from enum import Enum
 class FileType(Enum):
     CSV = 'csv'
     JSON = 'json'
+    JSONl = 'jsonl'
+    NDJSON = 'ndjson'
 
 
 def parse_to_enum(input_string: str):
@@ -12,3 +14,7 @@ def parse_to_enum(input_string: str):
             return FileType.CSV
         case 'json':
             return FileType.JSON
+        case 'jsonl':
+            return FileType.JSONl
+        case 'ndjson':
+            return FileType.NDJSON
