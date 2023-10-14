@@ -6,7 +6,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="icon" href="/images/logo_2.svg" sizes="any" />
+        <link rel="icon" href="/images/tab_logo.svg" sizes="any" />
       </Head>
       <body>
         <Main />
