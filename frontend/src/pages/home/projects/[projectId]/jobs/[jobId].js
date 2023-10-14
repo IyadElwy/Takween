@@ -51,33 +51,33 @@ export default function JobPage({
       size: 150,
     },
     {
-      accessorFn: (row) => row.annotated_class || "None",
+      accessorFn: (row) => (row.annotations.length === 0 ? "None" : "Annotated"),
       id: "annotation",
       header: "Annotation",
       size: 150,
     },
     {
-      accessorFn: (row) => row.data_as_json[job.field_to_annotate],
+      accessorFn: (row) => row.data[job.field_to_annotate],
       id: "data",
       header: "Data",
       size: 150,
     },
     {
       // accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-      accessorKey: "ee",
+      accessorKey: "none",
       header: "",
       size: 150,
 
       // eslint-disable-next-line react/no-unstable-nested-components
       Cell: ({ cell }) => {
         // eslint-disable-next-line camelcase
-        const { data_as_json } = cell.row.original;
+        const { data } = cell.row.original;
 
         return (
           <Image
             className={closerLookButtonStyles.burgerMenu}
             onClick={() => {
-              setCurrentItemCloserLook(data_as_json);
+              setCurrentItemCloserLook(data);
               onOpen();
             }}
             alt="nextui logo"

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import HTTPException, Request
-from models.models import Project, TextClassificationJob, TextClassificationAnnotation, FileDataSource
+from models.models import Project, TextClassificationJob, FileDataSource
 import json
 
 router = APIRouter()
@@ -23,21 +23,28 @@ async def create_job(id, request: Request):
         job_data = await request.json()
         file_data_source = await FileDataSource.get(id=job_data['dataSource']['id'])
         annotation_type = job_data['type']
+        annotation_file_location = f"annotations/{job_data['name']}-{file_data_source.file_name}.ndjson"
         match annotation_type:
             case "textClassification":
+                with open(file_data_source.location, 'r') as original_data:
+                    json_data = json.load(original_data)
+                    with open(annotation_file_location, 'a+') as annotation_file:
+                        for index, record in enumerate(json_data):
+                            annotation_record = {
+                                "id": index,
+                                "data": record,
+                                "classes": job_data['classes'],
+                                "annotations": []
+                            }
+                            annotation_file.write(
+                                json.dumps(annotation_record) + '\n')
+
                 created_job = await TextClassificationJob.create(title=job_data['name'],
                                                                  project=project,
                                                                  file_data_source=file_data_source,
+                                                                 annotation_file_location=annotation_file_location,
                                                                  field_to_annotate=job_data['fieldToAnnotate'],
                                                                  classes_list_as_string=str(job_data['classes']))
-                with open(file_data_source.location, 'r') as original_data:
-                    json_data = json.load(original_data)
-                    for record in json_data:
-                        await TextClassificationAnnotation.create(
-                            job=created_job,
-                            data_as_json=record
-                        )
-
                 return created_job
 
     except Exception as e:

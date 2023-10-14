@@ -36,17 +36,10 @@ class TextClassificationJob(Model):
         'models.Project', related_name='Jobs')
     file_data_source = fields.ForeignKeyField('models.FileDataSource',
                                               related_name='classificationJobs')
+    annotation_file_location = fields.CharField(max_length=200)
     created_at = fields.DatetimeField(auto_now_add=True)
     field_to_annotate = fields.CharField(max_length=200)
     classes_list_as_string = fields.CharField(max_length=1000)
 
     def __str__(self) -> str:
         return f"Text Classification: {self.title}"
-
-
-class TextClassificationAnnotation(Model):
-    id = fields.IntField(pk=True)
-    job = fields.ForeignKeyField(
-        'models.TextClassificationJob', related_name='Annotations')
-    data_as_json = fields.JSONField(null=True)
-    annotated_class = fields.CharField(max_length=200, null=True)

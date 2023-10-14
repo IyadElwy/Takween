@@ -37,6 +37,9 @@ next-env.d.ts
 multimodallabenv
 /backend/data/*
 !/backend/data/.gitkeep
+/backend/annotations/*
+!/backend/annotations/.gitkeep
+
 db.sqlite
 
 .vscode
