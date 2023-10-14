@@ -89,93 +89,99 @@ export default function TextClassificationSetup({ onClose, projectId }) {
           </Select>
 
         </div>
-        <div className="flex">
-          <div className="w-2/5 bg-300 p-4">
-            <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Choose Field to Annotate</h1>
-            {selectedDSKey.length === 0 ? <div />
-              : (
-                <>
-                  <JsonView src={getCurrentDataSource().exampleData} />
-                  <br />
-                  <Select
-                    label="Field to Annotate"
-                    variant="bordered"
-                    size="lg"
-                    onSelectionChange={(key) => {
-                      setJobData({ ...jobData, fieldToAnnotate: key.currentKey });
-                    }}
-                    isInvalid={chosenFieldError}
-                    errorMessage={chosenFieldError && "Please choose a field to annotate"}
-                  >
-                    {getKeysFromExampleData(getCurrentDataSource().exampleData).map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {`${option}`}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  <p className="text-xs text-gray-500 mt-3">If you can&apos;t see some fields, you might need to flatten your data-source</p>
-
-                </>
-              )}
-
-          </div>
-
-          <div className="w-3/5 bg-300 p-4">
-
-            <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Add Classes</h1>
-            <div className="flex flex-col">
-              <div className="bg-300 p-4">
-                <Input
-                  type="text"
-                  label="Class Name"
-                  size="lg"
-                  placeholder="Enter Class Name"
-                  value={currClassInput}
-                  onValueChange={(name) => setCurrClassInput(name)}
-                  isInvalid={addedClassesError}
-                  errorMessage={addedClassesError && "Please choose at least 2 classes"}
+        <div>
+          <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Choose Field to Annotate</h1>
+          {selectedDSKey.length === 0 ? <div />
+            : (
+              <>
+                <JsonView
+                  src={getCurrentDataSource().exampleData}
+                  displaySize="collapsed"
                 />
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {classes.map((classChip) => (
-                    <Chip
-                      key={classChip}
-                      onClose={() => {
-                        setClasses(classes.filter((currClass) => currClass !== classChip));
-                        setJobData({ ...jobData, classes: classes.filter((currClass) => currClass !== classChip) });
-                      }}
-                      variant="flat"
-                    >
-                      {classChip}
-                    </Chip>
+                <br />
+                <Select
+                  label="Field to Annotate"
+                  variant="bordered"
+                  size="lg"
+                  onSelectionChange={(key) => {
+                    setJobData({ ...jobData, fieldToAnnotate: key.currentKey });
+                  }}
+                  isInvalid={chosenFieldError}
+                  errorMessage={chosenFieldError && "Please choose a field to annotate"}
+                >
+                  {getKeysFromExampleData(getCurrentDataSource().exampleData).map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {`${option}`}
+                    </SelectItem>
                   ))}
-                </div>
-                <div className="bg-300 p-4">
-                  <div className="flex justify-end">
-                    <GhostButton
-                      onPress={() => {
-                        if (currClassInput && !classes.includes(currClassInput)) {
-                          setClasses([...classes, currClassInput]);
-                          setCurrClassInput("");
-                          setJobData({ ...jobData, classes: [...classes, currClassInput] });
-                        }
-                      }}
-                      customStyle={{
-                        fontSize: "15px",
-                        width: "50px",
-                        height: "50px",
-                      }}
-                    >
-                      Add Class
-                    </GhostButton>
+                </Select>
+                <p className="text-xs text-gray-500 mt-3">If you can&apos;t see some fields, you might need to flatten your data-source</p>
+                <p className="text-xs text-gray-500">
+                  MML can Only see fields on the
+                  {" "}
+                  <strong>first level</strong>
+                </p>
 
-                  </div>
+              </>
+            )}
+
+        </div>
+
+        <div>
+
+          <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Add Classes</h1>
+          <div className="flex flex-col">
+            <div className="bg-300 p-4">
+              <Input
+                type="text"
+                label="Class Name"
+                size="lg"
+                placeholder="Enter Class Name"
+                value={currClassInput}
+                onValueChange={(name) => setCurrClassInput(name)}
+                isInvalid={addedClassesError}
+                errorMessage={addedClassesError && "Please choose at least 2 classes"}
+              />
+              <div className="flex flex-wrap gap-2 mt-3">
+                {classes.map((classChip) => (
+                  <Chip
+                    key={classChip}
+                    onClose={() => {
+                      setClasses(classes.filter((currClass) => currClass !== classChip));
+                      setJobData({ ...jobData, classes: classes.filter((currClass) => currClass !== classChip) });
+                    }}
+                    variant="flat"
+                  >
+                    {classChip}
+                  </Chip>
+                ))}
+              </div>
+              <div className="bg-300 p-4">
+                <div className="flex justify-end">
+                  <GhostButton
+                    onPress={() => {
+                      if (currClassInput && !classes.includes(currClassInput)) {
+                        setClasses([...classes, currClassInput]);
+                        setCurrClassInput("");
+                        setJobData({ ...jobData, classes: [...classes, currClassInput] });
+                      }
+                    }}
+                    customStyle={{
+                      fontSize: "15px",
+                      width: "50px",
+                      height: "50px",
+                    }}
+                  >
+                    Add Class
+                  </GhostButton>
 
                 </div>
 
               </div>
-            </div>
 
+            </div>
           </div>
+
         </div>
         <br />
         <div className="absolute bottom-0 right-0 mr-5 mb-5">

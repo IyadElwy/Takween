@@ -173,6 +173,7 @@ export default function AddDataComponent({
           All data-sources will automatically be converted to
           {" "}
           <strong>json</strong>
+          {" "}
           for a more efficient
           <br />
           data annotation experience
