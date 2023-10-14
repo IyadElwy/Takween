@@ -141,6 +141,16 @@ export default function TextClassificationSetup({ onClose, projectId }) {
                 onValueChange={(name) => setCurrClassInput(name)}
                 isInvalid={addedClassesError}
                 errorMessage={addedClassesError && "Please choose at least 2 classes"}
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    if (currClassInput && !classes.includes(currClassInput)) {
+                      setClasses([...classes, currClassInput]);
+                      setCurrClassInput("");
+                      setJobData({ ...jobData, classes: [...classes, currClassInput] });
+                    }
+                  }
+                }}
               />
               <div className="flex flex-wrap gap-2 mt-3">
                 {classes.map((classChip) => (
