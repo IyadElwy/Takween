@@ -9,6 +9,7 @@ import Navigation from "../../../../../components/Reusable/Navigation/navBarSide
 import LoadingSymbol from "../../../../../components/Reusable/loadingSymbol";
 import "react18-json-view/src/style.css";
 import closerLookButtonStyles from "../../../../../styles/components/Reusable/navbar.module.css";
+import _ from "lodash";
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
@@ -57,7 +58,14 @@ export default function JobPage({
       size: 150,
     },
     {
-      accessorFn: (row) => row.data[job.field_to_annotate],
+      accessorFn: (row) => {
+        let dataToDisplay = row.data[job.field_to_annotate];
+        if (typeof dataToDisplay === "object" && dataToDisplay !== null) {
+          dataToDisplay = JSON.stringify(dataToDisplay);
+        }
+
+        return _.truncate(dataToDisplay, { length: 50 });
+      },
       id: "data",
       header: "Data",
       size: 150,
@@ -104,12 +112,17 @@ export default function JobPage({
 
       {isLoading ? <LoadingSymbol height={200} width={200} /> : (
         <>
-          <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <Modal
+            size="3xl"
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            hideCloseButton
+          >
             <ModalContent>
               {(onClose) => (
                 <>
                   <ModalBody>
-                    <div className="m-4">
+                    <div className="m-4" style={{ maxHeight: "400px", maxWidth: "1000px", overflow: "auto" }}>
                       <JsonView src={currentItemCloserLook} />
                     </div>
                   </ModalBody>
