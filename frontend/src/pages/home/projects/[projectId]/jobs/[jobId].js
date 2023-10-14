@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { MaterialReactTable } from "material-react-table";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -5,11 +6,12 @@ import {
   Modal, ModalContent, ModalBody, ModalFooter, Button, useDisclosure,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
+import { Allotment } from "allotment";
+import "allotment/dist/style.css";
 import Navigation from "../../../../../components/Reusable/Navigation/navBarSideBar";
 import LoadingSymbol from "../../../../../components/Reusable/loadingSymbol";
 import "react18-json-view/src/style.css";
 import closerLookButtonStyles from "../../../../../styles/components/Reusable/navbar.module.css";
-import _ from "lodash";
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
@@ -17,6 +19,7 @@ export default function JobPage({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
+  const [showDetailedSplit, setShowDetailedSplit] = useState(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -99,6 +102,59 @@ export default function JobPage({
     },
   ];
 
+  const mainBody = () => (
+    <>
+      <Modal
+        size="3xl"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <div className="m-4" style={{ maxHeight: "400px", maxWidth: "1000px", overflow: "auto" }}>
+                  <JsonView src={currentItemCloserLook} />
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <MaterialReactTable
+        enableStickyHeader
+        enableRowSelection
+        columns={columns}
+        data={annotationData}
+        page
+        manualPagination
+        onPaginationChange={handlePaginationChange}
+        rowCount={totalRowCount}
+        state={{
+          isLoading,
+          pagination,
+        }}
+        muiTableBodyRowProps={({ row }) => ({
+          onClick: () => {
+            console.info(row);
+            setShowDetailedSplit(true);
+          },
+          sx: {
+            cursor: "pointer",
+          },
+        })}
+
+      />
+    </>
+  );
+
   return (
     <>
       <Navigation
@@ -111,46 +167,22 @@ export default function JobPage({
       />
 
       {isLoading ? <LoadingSymbol height={200} width={200} /> : (
-        <>
-          <Modal
-            size="3xl"
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-            hideCloseButton
-          >
-            <ModalContent>
-              {(onClose) => (
-                <>
-                  <ModalBody>
-                    <div className="m-4" style={{ maxHeight: "400px", maxWidth: "1000px", overflow: "auto" }}>
-                      <JsonView src={currentItemCloserLook} />
-                    </div>
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                      Close
-                    </Button>
-                  </ModalFooter>
-                </>
-              )}
-            </ModalContent>
-          </Modal>
+        <div style={{ width: "100%", height: "100vh" }}>
 
-          <MaterialReactTable
-            enableStickyHeader
-            enableRowSelection
-            columns={columns}
-            data={annotationData}
-            page
-            manualPagination
-            onPaginationChange={handlePaginationChange}
-            rowCount={totalRowCount}
-            state={{
-              isLoading,
-              pagination,
-            }}
-          />
-        </>
+          {showDetailedSplit ? (
+            <Allotment
+              minSize={300}
+              defaultSizes={[50, 200]}
+            >
+              {mainBody()}
+              <div>
+                <h1>Hello</h1>
+              </div>
+            </Allotment>
+          ) : mainBody()}
+
+        </div>
+
       )}
 
     </>
