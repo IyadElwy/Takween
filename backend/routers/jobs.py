@@ -34,7 +34,8 @@ async def create_job(id, request: Request):
                                 "id": index,
                                 "data": record,
                                 "classes": job_data['classes'],
-                                "annotations": []
+                                "annotations": [],
+                                "allowMultiClassification": job_data['allowMultiClassification']
                             }
                             annotation_file.write(
                                 json.dumps(annotation_record) + '\n')
@@ -44,7 +45,9 @@ async def create_job(id, request: Request):
                                                                  file_data_source=file_data_source,
                                                                  annotation_file_location=annotation_file_location,
                                                                  field_to_annotate=job_data['fieldToAnnotate'],
-                                                                 classes_list_as_string=str(job_data['classes']))
+                                                                 classes_list_as_string=str(
+                                                                     job_data['classes']),
+                                                                 allow_multi_classification=job_data['allowMultiClassification'])
                 return created_job
 
     except Exception as e:

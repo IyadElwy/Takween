@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-  Button, Select, SelectItem, Input, Chip,
+  Button, Select, SelectItem, Input, Chip, Checkbox,
 } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -16,12 +16,14 @@ export default function TextClassificationSetup({ onClose, projectId }) {
     dataSource: null,
     fieldToAnnotate: null,
     classes: [],
+    allowMultiClassification: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [dataSources, setDataSources] = useState([]);
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currClassInput, setCurrClassInput] = useState("");
   const [classes, setClasses] = useState([]);
+  const [allowMultiClassification, setAllowMultiClassification] = useState(false);
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -130,6 +132,16 @@ export default function TextClassificationSetup({ onClose, projectId }) {
         <div>
 
           <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Add Classes</h1>
+          <Checkbox
+            isSelected={allowMultiClassification}
+            onValueChange={(value) => {
+              setJobData({ ...jobData, allowMultiClassification: value });
+              setAllowMultiClassification(value);
+            }}
+          >
+            Allow Multi-Classification
+
+          </Checkbox>
           <div className="flex flex-col">
             <div className="bg-300 p-4">
               <Input

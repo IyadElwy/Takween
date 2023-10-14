@@ -40,6 +40,7 @@ class TextClassificationJob(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     field_to_annotate = fields.CharField(max_length=200)
     classes_list_as_string = fields.CharField(max_length=1000)
+    allow_multi_classification = fields.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"Text Classification: {self.title}"
