@@ -33,9 +33,10 @@ async def create_job(id, request: Request):
                             annotation_record = {
                                 "id": index,
                                 "data": record,
+                                "fieldToAnnotate": job_data['fieldToAnnotate'],
                                 "classes": job_data['classes'],
+                                "allowMultiClassification": job_data['allowMultiClassification'],
                                 "annotations": [],
-                                "allowMultiClassification": job_data['allowMultiClassification']
                             }
                             annotation_file.write(
                                 json.dumps(annotation_record) + '\n')
