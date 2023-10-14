@@ -167,7 +167,16 @@ export default function AddDataComponent({
             </Button>
 
           </div>
+
         </div>
+        <p className="text-xs text-gray-500 mt-3">
+          All data-sources will automatically be converted to
+          {" "}
+          <strong>json</strong>
+          for a more efficient
+          <br />
+          data annotation experience
+        </p>
 
       </>
     )
