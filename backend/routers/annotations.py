@@ -1,7 +1,19 @@
 from fastapi import APIRouter, HTTPException
 from models.models import Project
 import pandas as pd
-import json
+import pymongo
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+username = os.getenv("MONGODB_USERNAME")
+password = os.getenv("MONGODB_PASSWORD")
+CONNECTION_URI = os.getenv("MONGODB_BASE_URI").replace(  # type: ignore
+    "{MONGODB_USERNAME}", username).replace("{MONGODB_PASSWORD}", password)  # type: ignore
+
+mongodb = pymongo.MongoClient(CONNECTION_URI)
+mongodb = mongodb["annotations"]
 
 router = APIRouter()
 
@@ -13,25 +25,21 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
         job = await project.Jobs.filter(id=jobId).first()  # type: ignore
 
         starting_line = page * itemsPerPage
-        ending_line = (page * itemsPerPage) + itemsPerPage
 
-        records = []
-        with open(job.annotation_file_location, 'r') as annotation_file:
-            for line_number, line in enumerate(annotation_file):
-                if ending_line > line_number >= starting_line:
-                    records.append(json.loads(line))
-
-        data = pd.DataFrame(records)
+        collection_name = job.annotation_collection_name
+        collection = mongodb[collection_name]
+        data = collection.find().sort([('_id', pymongo.ASCENDING)]).skip(
+            starting_line).limit(itemsPerPage)
 
         # line-count
         totalRowCount = 0
         if page == 0:
-            with open(job.annotation_file_location, 'r') as file:
-                totalRowCount = sum(1 for line in file if line.rstrip())
+            totalRowCount = collection.count_documents({})
 
         return {
-            "data": data.to_dict(orient='records'),
+            "data": list(data),
             "totalRowCount": totalRowCount
         }
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

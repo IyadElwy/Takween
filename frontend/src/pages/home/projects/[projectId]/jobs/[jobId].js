@@ -49,7 +49,8 @@ export default function JobPage({
 
   const columns = [
     {
-      accessorFn: (row) => row.id,
+      // eslint-disable-next-line no-underscore-dangle
+      accessorFn: (row) => row._id,
       id: "id",
       header: "ID",
       size: 150,
@@ -87,7 +88,8 @@ export default function JobPage({
         return (
           <Image
             className={closerLookButtonStyles.burgerMenu}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setCurrentItemCloserLook(data);
               onOpen();
             }}

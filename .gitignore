@@ -47,3 +47,4 @@ db.sqlite
 __pycache__
 
 db.*
+backend/.env

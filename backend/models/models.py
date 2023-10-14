@@ -36,7 +36,7 @@ class TextClassificationJob(Model):
         'models.Project', related_name='Jobs')
     file_data_source = fields.ForeignKeyField('models.FileDataSource',
                                               related_name='classificationJobs')
-    annotation_file_location = fields.CharField(max_length=200)
+    annotation_collection_name = fields.CharField(max_length=200)
     created_at = fields.DatetimeField(auto_now_add=True)
     field_to_annotate = fields.CharField(max_length=200)
     classes_list_as_string = fields.CharField(max_length=1000)
