@@ -28,7 +28,7 @@ async def get_project_data_sources(projectId):
 
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/projects/{projectId}/file-data-sources")
@@ -70,4 +70,4 @@ async def add_project_data(projectId, files: list[UploadFile] = Form(...)):
 
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))

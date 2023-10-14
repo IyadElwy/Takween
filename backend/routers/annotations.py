@@ -34,4 +34,4 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
             "totalRowCount": totalRowCount
         }
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))

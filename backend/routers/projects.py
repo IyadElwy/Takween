@@ -38,7 +38,7 @@ async def get_project_by_id(id):
         project = await Project.get(id=id)
         return {'project': project}
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.put("/projects/{id}")
@@ -53,4 +53,4 @@ async def update_project(id, request: Request):
         await data.save()
         return data
     except Exception as e:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=400, detail=str(e))
