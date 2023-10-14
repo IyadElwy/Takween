@@ -31,8 +31,10 @@ export default function TextClassificationSetup({ onClose, projectId }) {
 
   useEffect(() => {
     const retrieveDataSources = async () => {
+      setIsLoading(true);
       const dataSourcesRes = await axios.get(`http://localhost:8000/projects/${projectId}/file-data-sources`);
       setDataSources(dataSourcesRes.data);
+      setIsLoading(false);
     };
     retrieveDataSources();
   }, []);

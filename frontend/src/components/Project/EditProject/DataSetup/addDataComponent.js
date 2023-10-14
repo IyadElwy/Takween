@@ -21,6 +21,7 @@ export default function AddDataComponent({
 
   useEffect(() => {
     const fetchDataSources = async () => {
+      setIsLoading(true);
       const resDataSources = await fetch(`http://localhost:8000/projects/${projectId}/file-data-sources`);
       const dataSources = await resDataSources.json();
       setSelectedFiles(dataSources.map((ds) => ({
@@ -30,6 +31,7 @@ export default function AddDataComponent({
         size: ds.size,
         exampleData: ds.exampleData,
       })));
+      setIsLoading(false);
     };
 
     fetchDataSources();
