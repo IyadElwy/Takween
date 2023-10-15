@@ -194,7 +194,11 @@ export default function JobPage({
               defaultSizes={[50, 200]}
             >
               {mainBody()}
-              <MainAnnotationScreen data={currentDataToAnnotate} />
+              <MainAnnotationScreen
+                data={currentDataToAnnotate}
+                projectId={projectId}
+                jobId={jobId}
+              />
             </Allotment>
           ) : mainBody()}
 
