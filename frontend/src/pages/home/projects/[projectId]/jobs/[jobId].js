@@ -12,6 +12,7 @@ import Navigation from "../../../../../components/Reusable/Navigation/navBarSide
 import LoadingSymbol from "../../../../../components/Reusable/loadingSymbol";
 import "react18-json-view/src/style.css";
 import closerLookButtonStyles from "../../../../../styles/components/Reusable/navbar.module.css";
+import MainAnnotationScreen from "../../../../../components/Project/AnnotationScreens/mainScreen";
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
@@ -19,6 +20,7 @@ export default function JobPage({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
+  const [currentDataToAnnotate, setCurrentDataToAnnotate] = useState(null);
   const [showDetailedSplit, setShowDetailedSplit] = useState(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -145,8 +147,10 @@ export default function JobPage({
         }}
         muiTableBodyRowProps={({ row }) => ({
           onClick: () => {
-            console.info(row);
-            setShowDetailedSplit(true);
+            console.log(row.original);
+            // setShowDetailedSplit(true);
+            setCurrentDataToAnnotate(row.original);
+            setShowDetailedSplit(!showDetailedSplit);
           },
           sx: {
             cursor: "pointer",
@@ -173,13 +177,12 @@ export default function JobPage({
 
           {showDetailedSplit ? (
             <Allotment
-              minSize={300}
+              minSize={200}
+              // maxSize={}
               defaultSizes={[50, 200]}
             >
               {mainBody()}
-              <div>
-                <h1>Hello</h1>
-              </div>
+              <MainAnnotationScreen data={currentDataToAnnotate} />
             </Allotment>
           ) : mainBody()}
 
