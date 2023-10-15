@@ -139,18 +139,30 @@ export default function JobPage({
         data={annotationData}
         page
         manualPagination
-        onPaginationChange={handlePaginationChange}
+        onPaginationChange={(v) => {
+          handlePaginationChange(v);
+        }}
         rowCount={totalRowCount}
         state={{
           isLoading,
           pagination,
         }}
-        muiTableBodyRowProps={({ row }) => ({
+        muiTableBodyRowProps={({
+          row, table,
+          // staticRowIndex,
+        }) => ({
           onClick: () => {
-            console.log(row.original);
+            const rowData = {
+              ...row,
+              totalRowCount,
+              allRows: table.getRowModel().rowsById,
+              pagination,
+              setPagination,
+              setShowDetailedSplit,
+            };
             // setShowDetailedSplit(true);
-            setCurrentDataToAnnotate(row.original);
             setShowDetailedSplit(!showDetailedSplit);
+            setCurrentDataToAnnotate(rowData);
           },
           sx: {
             cursor: "pointer",
