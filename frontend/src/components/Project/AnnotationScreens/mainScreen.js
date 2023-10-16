@@ -143,15 +143,20 @@ export default function MainAnnotationScreen({ data, projectId, jobId }) {
                 height: "50px",
               }}
               onPress={async () => {
-                // eslint-disable-next-line no-underscore-dangle
-                const { _id } = currentRow.original;
-                axios.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
-                  _id,
-                  annotations: [...currentRow.original.annotations, {
+                const annotationsWithoutCurrent = [...currentRow.original.annotations].filter((ann) => ann.user !== "admin");
+                const newAnnotations = [...annotationsWithoutCurrent];
+                if (selectedClasses.length > 0) {
+                  newAnnotations.push({
                     user: "admin",
                     classes: selectedClasses,
-                  }],
+                  });
+                }
+                const { _id } = currentRow.original;
+                await axios.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+                  _id,
+                  annotations: newAnnotations,
                 }));
+                getNextRow();
               }}
             >
               Submit
