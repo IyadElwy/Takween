@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import FileResponse
 from models.models import Project
 import pandas as pd
 import pymongo
 import os
 from dotenv import load_dotenv
-
+import json
+import uuid
 
 load_dotenv()
 username = os.getenv("MONGODB_USERNAME")
@@ -49,6 +51,27 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
             "finishedAnnotations": finished_annotations,
             "finishedAnnotationsByUser": finished_annotations_by_user
         }
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/projects/{projectId}/jobs/{jobId}/annotations/export")
+async def export_data(projectId, jobId):
+    try:
+        project = await Project.get(id=projectId)
+        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        collection_name = job.annotation_collection_name
+        collection = mongodb[collection_name]
+        data_query = collection.find()
+
+        random_id = uuid.uuid4()
+        temp_file_path = f'annotations/temp/{collection_name}-{random_id}-data.ndjson'
+        with open(temp_file_path, 'a+') as temp:
+            for item in data_query:
+                temp.write(json.dumps(dict(item)) + '\n')
+
+        return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

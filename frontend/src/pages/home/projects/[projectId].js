@@ -77,7 +77,7 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
         <div className="flex">
           <div className="w-2/6 bg-300 p-4">
             <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>Annotation Jobs</h1>
-            <ScrollShadow className="w-[300px] h-[400px]">
+            <ScrollShadow className="w-[300px] h-[500px]">
 
               {jobs.map((job) => (
                 <Link href={`${project.id}/jobs/${job.id}`} key={job.id}>

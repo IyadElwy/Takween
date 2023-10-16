@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import _ from "lodash";
 import { MaterialReactTable } from "material-react-table";
 import { useState, useEffect } from "react";
@@ -112,6 +113,28 @@ export default function JobPage({
     },
   ];
 
+  const handleExport = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`);
+      if (response.status === 200) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        console.log(response);
+        a.download = "data.ndjson";
+        a.click();
+      } else {
+        console.error("Export failed.");
+      }
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const mainBody = () => (
     <>
       <Modal
@@ -208,13 +231,12 @@ export default function JobPage({
                 <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
                   <DropdownSection title="Actions">
                     <DropdownItem
+                      onClick={handleExport}
                       key="export"
                       description="Export Annotated Data"
                       startContent={(
                         <Image
                           className={closerLookButtonStyles.burgerMenu}
-                          onClick={() => {
-                          }}
                           alt="nextui logo"
                           height={25}
                           radius="sm"
