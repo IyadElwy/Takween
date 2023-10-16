@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Modal, ModalContent, ModalBody, ModalFooter, Button, useDisclosure,
+  Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
+  DropdownSection,
+  Progress,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
@@ -16,9 +19,12 @@ import MainAnnotationScreen from "../../../../../components/Project/AnnotationSc
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
+  finishedAnnotations,
+  // finishedAnnotationsByUser,
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
+  const [annotatedDataCount, setAnnotatedDataCount] = useState(finishedAnnotations);
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
   const [currentDataToAnnotate, setCurrentDataToAnnotate] = useState(null);
   const [showDetailedSplit, setShowDetailedSplit] = useState(false);
@@ -35,7 +41,7 @@ export default function JobPage({
       const nextAnnotationDataRes = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}`);
       const nextAnnotationData = await nextAnnotationDataRes.json();
       setAnnotationData(nextAnnotationData.data);
-
+      setAnnotatedDataCount(nextAnnotationData.finishedAnnotations);
       setIsLoading(false);
     };
 
@@ -168,6 +174,65 @@ export default function JobPage({
             cursor: "pointer",
           },
         })}
+      // add custom action buttons to top-left of top toolbar
+        renderTopToolbarCustomActions={() => (
+          <div className="w-full">
+
+            <div className="flex flex-col ml-3 mr-5 mb-3">
+              <Progress
+                aria-label="Downloading..."
+                size="md"
+                value={annotatedDataCount}
+                maxValue={totalRowCount}
+                minValue={0}
+                color="success"
+              />
+            </div>
+
+            <div className="w-full">
+
+              <Dropdown
+                showArrow
+                classNames={{
+                  base: "py-1 px-1 border border-default-200 bg-gradient-to-br from-white to-default-200 dark:from-default-50 dark:to-black",
+                  arrow: "bg-default-200",
+                }}
+              >
+                <DropdownTrigger>
+                  <Button
+                    variant="bordered"
+                  >
+                    Job Menu
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                  <DropdownSection title="Actions">
+                    <DropdownItem
+                      key="export"
+                      description="Export Annotated Data"
+                      startContent={(
+                        <Image
+                          className={closerLookButtonStyles.burgerMenu}
+                          onClick={() => {
+                          }}
+                          alt="nextui logo"
+                          height={25}
+                          radius="sm"
+                          src="/images/export.svg"
+                          width={25}
+                        />
+                  )}
+                    >
+                      Export
+                    </DropdownItem>
+                  </DropdownSection>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+
+          </div>
+
+        )}
 
       />
     </>
@@ -198,6 +263,8 @@ export default function JobPage({
                 data={currentDataToAnnotate}
                 projectId={projectId}
                 jobId={jobId}
+                annotatedDataCount={annotatedDataCount}
+                setAnnotatedDataCount={setAnnotatedDataCount}
               />
             </Allotment>
           ) : mainBody()}
@@ -225,6 +292,7 @@ export async function getServerSideProps(context) {
 
   const resFirstAnnotationDataBatch = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${0}&itemsPerPage=${10}`);
   const firstAnnotationDataBatch = await resFirstAnnotationDataBatch.json();
+
   return {
     props: {
       projectId,
@@ -233,6 +301,8 @@ export async function getServerSideProps(context) {
       job: job.job,
       firstAnnotationDataBatch: firstAnnotationDataBatch.data,
       totalRowCount: firstAnnotationDataBatch.totalRowCount,
+      finishedAnnotations: firstAnnotationDataBatch.finishedAnnotations,
+      finishedAnnotationsByUser: firstAnnotationDataBatch.finishedAnnotationsByUser,
     },
   };
 }

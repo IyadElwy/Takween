@@ -22,7 +22,13 @@ const getInitialAnnotations = (annotationsArray) => {
   return firstAnnotation;
 };
 
-export default function MainAnnotationScreen({ data, projectId, jobId }) {
+export default function MainAnnotationScreen({
+  data,
+  projectId,
+  jobId,
+  annotatedDataCount,
+  setAnnotatedDataCount,
+}) {
   const [currentRow, setCurrentRow] = useState(data);
   const [selectedClasses, setSelectedClasses] = useState(getInitialAnnotations(currentRow.original.annotations));
 
@@ -150,12 +156,15 @@ export default function MainAnnotationScreen({ data, projectId, jobId }) {
                     user: "admin",
                     classes: selectedClasses,
                   });
+                  setAnnotatedDataCount(annotatedDataCount + 1);
                 }
+
                 const { _id } = currentRow.original;
                 await axios.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
                   _id,
                   annotations: newAnnotations,
                 }));
+
                 getNextRow();
               }}
             >

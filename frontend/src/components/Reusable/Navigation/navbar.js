@@ -1,12 +1,12 @@
 import {
-  Navbar, NavbarBrand, NavbarContent, DropdownTrigger, Dropdown, Avatar,
+  Navbar, NavbarBrand, NavbarContent, DropdownTrigger, Dropdown,
+  DropdownItem, DropdownMenu, User,
 
 } from "@nextui-org/react";
 import Link from "next/link";
 
 import Image from "next/image";
 import styles from "../../../styles/components/Reusable/navbar.module.css";
-import GhostButton from "../ghostButton";
 import Logo from "../logo";
 
 export default function NavBar({
@@ -73,33 +73,51 @@ export default function NavBar({
 
       <NavbarContent as="div" justify="end">
 
-        {showCreateProjectButton && (
-          <GhostButton
-            onPress={createProjectTrigger}
-            customStyle={{
-              fontSize: "15px",
-              width: "130px",
-              height: "35px",
-              marginTop: "0px",
-            }}
-          >
-            Create Project
-          </GhostButton>
-
-        )}
-
-        <Dropdown placement="bottom-end">
+        <Dropdown placement="bottom-start">
           <DropdownTrigger>
-            <Avatar
-              isBordered
+            <User
               as="button"
-              className={`transition-transform ${styles.avatar}`}
-              name="Avatar"
-              size="sm"
+              avatarProps={{
+                isBordered: true,
+                // src: "avatar",
+              }}
+              className="transition-transform"
+              description="@admin"
+              name="John Doe"
             />
           </DropdownTrigger>
+          <DropdownMenu aria-label="User Actions" variant="flat">
+            <DropdownItem key="profile" className="h-14 gap-2">
+              <p className="font-bold">Signed in as</p>
+              <p className="font-bold">@admin</p>
+            </DropdownItem>
+            {showCreateProjectButton && (
+            <DropdownItem
+              key="new_project"
+              onPress={createProjectTrigger}
+              endContent={(
+                <Image
+                  height={18}
+                  alt="Card background"
+                  className="object-cover"
+                  src="/images/plus.svg"
+                  width={18}
+                />
+              )}
+            >
+              New Project
+            </DropdownItem>
+            )}
 
+            {/* <DropdownItem key="settings">
+              My Settings
+            </DropdownItem>
+            <DropdownItem key="logout" color="danger">
+              Log Out
+            </DropdownItem> */}
+          </DropdownMenu>
         </Dropdown>
+
       </NavbarContent>
     </Navbar>
   );

@@ -31,6 +31,13 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
         data = collection.find().sort([('_id', pymongo.ASCENDING)]).skip(
             starting_line).limit(itemsPerPage)
 
+        # number of finished annotations
+        finished_annotations = collection.count_documents(
+            {"annotations": {"$exists": True, "$not": {"$size": 0}}}
+        )
+        finished_annotations_by_user = collection.count_documents(
+            {"annotations": {"$exists": True, "$not": {"$size": 0}}, "annotations.user": "admin"})
+
         # line-count
         totalRowCount = 0
         if page == 0:
@@ -38,7 +45,9 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
 
         return {
             "data": list(data),
-            "totalRowCount": totalRowCount
+            "totalRowCount": totalRowCount,
+            "finishedAnnotations": finished_annotations,
+            "finishedAnnotationsByUser": finished_annotations_by_user
         }
 
     except Exception as e:
