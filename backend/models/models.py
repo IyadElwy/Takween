@@ -32,6 +32,7 @@ class FileDataSource(Model):
 class TextClassificationJob(Model):
     id = fields.UUIDField(pk=True)
     title = fields.CharField(max_length=100)
+    type = fields.CharField(max_length=200, default='text_classification')
     project = fields.ForeignKeyField(
         'models.Project', related_name='Jobs')
     file_data_source = fields.ForeignKeyField('models.FileDataSource',

@@ -34,6 +34,15 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
     }
   };
 
+  const getJobImageDependingOnType = (annotationType) => {
+    switch (annotationType) {
+      case "text_classification":
+        return "/images/classification.svg";
+
+      default:
+        return "";
+    }
+  };
   return (
     (
       <>
@@ -75,6 +84,13 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
                   <div className="mr-2 ml-2">
                     <Card className="mb-4 mt-4 mr-3 w-full" isPressable>
                       <CardHeader className="flex gap-3">
+                        <Image
+                          height={30}
+                          alt="Card background"
+                          className="object-cover rounded-xl"
+                          src={getJobImageDependingOnType(job.type)}
+                          width={30}
+                        />
                         <div className="flex flex-col">
                           <p className="text-md">{job.title}</p>
                         </div>
