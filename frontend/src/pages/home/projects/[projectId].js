@@ -92,7 +92,7 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
                           width={30}
                         />
                         <div className="flex flex-col">
-                          <p className="text-md">{job.title}</p>
+                          <p className="text-md text-left">{job.title}</p>
                         </div>
                       </CardHeader>
                       <Divider />

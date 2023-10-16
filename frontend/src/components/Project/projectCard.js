@@ -1,10 +1,11 @@
 import React from "react";
 
 import {
-  Card, CardHeader, CardBody, CardFooter, Divider, Image,
+  Card, CardHeader, CardBody, CardFooter, Divider,
 } from "@nextui-org/react";
 import Link from "next/link";
 import style from "../../styles/components/Reusable/projectCard.module.css";
+import Logo from "../Reusable/logo";
 
 export default function ProjectCard({ projectData }) {
   return (
@@ -15,14 +16,7 @@ export default function ProjectCard({ projectData }) {
       >
 
         <CardHeader className="flex gap-3">
-
-          <Image
-            alt="nextui logo"
-            height={40}
-            radius="sm"
-            src="/images/structured_data.svg"
-            width={40}
-          />
+          <Logo spin height={45} width={45} />
           <div className="flex flex-col">
             <p className="text-md">{projectData.title}</p>
           </div>
