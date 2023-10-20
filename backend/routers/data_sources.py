@@ -27,7 +27,6 @@ async def get_project_data_sources(projectId):
         return file_data_sources_list
 
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -72,5 +71,4 @@ async def add_project_data(projectId, files: list[UploadFile] = Form(...)):
         }
 
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))

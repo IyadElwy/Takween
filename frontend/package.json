@@ -17,8 +17,10 @@
     "allotment": "^1.19.3",
     "axios": "^1.5.1",
     "byte-size": "^8.1.1",
+    "email-validator": "^2.0.4",
     "export-to-csv": "^1.0.0",
     "framer-motion": "^10.16.4",
+    "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "material-react-table": "^1.15.0",
     "moment": "^2.29.4",
@@ -28,6 +30,7 @@
     "react": "latest",
     "react-dom": "latest",
     "react-split-pane-v2": "^1.0.3",
+    "react-type-animation": "^3.2.0",
     "react18-json-view": "^0.2.6",
     "swr": "^2.2.4"
   },

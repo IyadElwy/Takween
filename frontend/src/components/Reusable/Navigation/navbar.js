@@ -1,11 +1,13 @@
 import {
   Navbar, NavbarBrand, NavbarContent, DropdownTrigger, Dropdown,
-  DropdownItem, DropdownMenu, User,
+  DropdownItem, DropdownMenu, User, DropdownSection,
 
 } from "@nextui-org/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import Image from "next/image";
+import Cookies from "js-cookie";
 import styles from "../../../styles/components/Reusable/navbar.module.css";
 import Logo from "../logo";
 
@@ -13,6 +15,8 @@ export default function NavBar({
   drawerState, setDrawerState, breadcrumbs = [], createProjectTrigger,
   showCreateProjectButton = true,
 }) {
+  const router = useRouter();
+
   return (
     <Navbar maxWidth="2xl" isBordered isBlurred>
       <NavbarBrand>
@@ -91,30 +95,45 @@ export default function NavBar({
               <p className="font-bold">Signed in as</p>
               <p className="font-bold">@admin</p>
             </DropdownItem>
-            {showCreateProjectButton && (
-            <DropdownItem
-              key="new_project"
-              onPress={createProjectTrigger}
-              endContent={(
-                <Image
-                  height={18}
-                  alt="Card background"
-                  className="object-cover"
-                  src="/images/plus.svg"
-                  width={18}
-                />
-              )}
-            >
-              New Project
-            </DropdownItem>
-            )}
+            <DropdownSection aria-label="Profile & Actions" showDivider>
 
-            {/* <DropdownItem key="settings">
-              My Settings
-            </DropdownItem>
-            <DropdownItem key="logout" color="danger">
+              {showCreateProjectButton && (
+              <DropdownItem
+                key="new_project"
+                onPress={createProjectTrigger}
+                endContent={(
+                  <Image
+                    height={18}
+                    alt="Card background"
+                    className="object-cover"
+                    src="/images/plus.svg"
+                    width={18}
+                  />
+              )}
+              >
+                New Project
+              </DropdownItem>
+              )}
+              <DropdownItem
+                key="dashboard"
+                onPress={() => {
+                  router.push("/home/projects");
+                }}
+              >
+                Dashboard
+              </DropdownItem>
+
+            </DropdownSection>
+            <DropdownItem
+              key="logout"
+              color="danger"
+              onPress={() => {
+                Cookies.remove("accessToken");
+                router.push("/");
+              }}
+            >
               Log Out
-            </DropdownItem> */}
+            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
 

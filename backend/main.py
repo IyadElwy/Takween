@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.middleware.cors import CORSMiddleware
-from routers import data_sources, jobs, projects, annotations
+from routers import data_sources, jobs, projects, annotations, authentication
 
 app = FastAPI()
 app.add_middleware(
@@ -11,6 +11,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# app.middleware('http')(delete_temp_file)
+
 register_tortoise(
     app,
     db_url='sqlite://db.sqlite3',
@@ -19,6 +21,7 @@ register_tortoise(
     add_exception_handlers=True,
 )
 
+app.include_router(authentication.router)
 app.include_router(projects.router)
 app.include_router(jobs.router)
 app.include_router(data_sources.router)
