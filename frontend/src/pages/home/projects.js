@@ -1,9 +1,11 @@
 import {
   useDisclosure,
 } from "@nextui-org/react";
+import cookieParse from "cookie-parse";
 import NoProjectsComponent from "../../components/Project/noProjectsComponent";
 import ProjectsOverview from "../../components/Project/projectsOverview";
 import CreateNewProjectModal from "../../components/Project/CreateProject/createNewProjectModal";
+import AxiosWrapper from "../../utils/axiosWrapper";
 
 export default function ProjectsHome({ projects }) {
   const {
@@ -27,9 +29,24 @@ export default function ProjectsHome({ projects }) {
   );
 }
 
-export async function getServerSideProps() {
-  const res = await fetch("http://127.0.0.1:8000/projects");
-  const projects = await res.json();
+export async function getServerSideProps(context) {
+  const cookies = context.req.headers.cookie || "";
+  const { accessToken } = cookieParse.parse(cookies);
 
-  return { props: { projects } };
+  try {
+    const projects = (await AxiosWrapper.get("http://127.0.0.1:8000/projects", {
+      accessToken: accessToken || "",
+    })).data;
+    return { props: { projects } };
+  } catch (error) {
+    if (error.response.status === 401) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
+  return null;
 }

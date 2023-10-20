@@ -18,7 +18,6 @@ class Project(Model):
     id = fields.UUIDField(pk=True)
     title = fields.CharField(max_length=20)
     description = fields.CharField(max_length=2000, null=True)
-    author = fields.CharField(max_length=20)
     created_at = fields.DatetimeField(auto_now_add=True)
     created_by = fields.ForeignKeyField(
         'models.User', related_name='created_projects'

@@ -4,10 +4,10 @@ import {
 } from "@nextui-org/react";
 import byteSize from "byte-size";
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import SplitPane from "react-split-pane-v2";
 import JsonView from "react18-json-view";
 import "react18-json-view/src/style.css";
+import AxiosWrapper from "../../../../utils/axiosWrapper";
 
 import LoadingSymbol from "../../../Reusable/loadingSymbol";
 
@@ -22,8 +22,7 @@ export default function AddDataComponent({
   useEffect(() => {
     const fetchDataSources = async () => {
       setIsLoading(true);
-      const resDataSources = await fetch(`http://localhost:8000/projects/${projectId}/file-data-sources`);
-      const dataSources = await resDataSources.json();
+      const dataSources = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/file-data-sources`)).data;
       setSelectedFiles(dataSources.map((ds) => ({
         id: ds.id,
         name: ds.file_name,
@@ -44,7 +43,7 @@ export default function AddDataComponent({
       const formData = new FormData();
       formData.append("files", e.target.files[0]);
 
-      const response = await axios.post(`http://127.0.0.1:8000/projects/${projectId}/file-data-sources`, formData, {
+      const response = await AxiosWrapper.post(`http://127.0.0.1:8000/projects/${projectId}/file-data-sources`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

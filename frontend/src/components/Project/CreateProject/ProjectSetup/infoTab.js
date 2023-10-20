@@ -3,7 +3,7 @@ import {
 } from "@nextui-org/react";
 
 import { useState } from "react";
-import axios from "axios";
+import AxiosWrapper from "../../../../utils/axiosWrapper";
 
 export default function NewProjectInfoComponent({
   onClose,
@@ -58,7 +58,7 @@ export default function NewProjectInfoComponent({
             } else if (project.description && project.description.length >= 2000) {
               setError({ ...error, description: "Description too long, stick to a maximum of 400 characters" });
             } else {
-              const response = await axios.post("http://127.0.0.1:8000/projects", project);
+              const response = await AxiosWrapper.post("http://127.0.0.1:8000/projects", project);
               const projectID = response.data.data.project.id;
               // eslint-disable-next-line no-undef
               window.location = `${window.location.href}/${projectID}`;

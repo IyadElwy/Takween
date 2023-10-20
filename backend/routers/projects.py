@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from fastapi import HTTPException, Request
-from models.models import Project
+from models.models import Project, User
 
 
 router = APIRouter()
 
 
 @router.get("/projects")
-async def get_all_projects():
+async def get_all_projects(request: Request):
     try:
         all_projects = await Project.all()
         return all_projects
@@ -16,12 +16,14 @@ async def get_all_projects():
 
 
 @router.post("/projects")
-async def create_project(data: Request):
+async def create_project(request: Request):
     try:
-        project_data = await data.json()
+        user_id = request.state.user_id
+        user = await User.get(id=user_id)
+        project_data = await request.json()
 
         created_project = await Project.create(
-            author="admin",
+            created_by=user,
             title=project_data.get('title'),
             description=project_data.get('description'))
 

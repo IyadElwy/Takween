@@ -8,6 +8,7 @@ import JsonView from "react18-json-view";
 import GhostButton from "../../../../Reusable/ghostButton";
 import "react18-json-view/src/style.css";
 import LoadingSymbol from "../../../../Reusable/loadingSymbol";
+import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
 export default function TextClassificationSetup({ onClose, projectId }) {
   const [jobData, setJobData] = useState({
@@ -34,7 +35,7 @@ export default function TextClassificationSetup({ onClose, projectId }) {
   useEffect(() => {
     const retrieveDataSources = async () => {
       setIsLoading(true);
-      const dataSourcesRes = await axios.get(`http://localhost:8000/projects/${projectId}/file-data-sources`);
+      const dataSourcesRes = await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/file-data-sources`);
       setDataSources(dataSourcesRes.data);
       setIsLoading(false);
     };
@@ -239,7 +240,7 @@ export default function TextClassificationSetup({ onClose, projectId }) {
                 }
                 setAddedClassesErrorErrorState(false);
                 setIsLoading(true);
-                const createdJob = await axios.post(`http://localhost:8000/projects/${projectId}/jobs`, jobData);
+                const createdJob = await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs`, jobData);
                 const jobId = createdJob.data.id;
                 // eslint-disable-next-line no-undef
                 window.location = `http://localhost:3000/home/projects/${projectId}/jobs/${jobId}`;

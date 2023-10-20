@@ -2,12 +2,12 @@ import {
   Button, ModalHeader, ModalBody, ModalFooter, Input,
 } from "@nextui-org/react";
 import { useState } from "react";
-import axios from "axios";
 import * as EmailValidator from "email-validator";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import MailIcon from "../Icons/Mailcon";
 import LockIcon from "../Icons/LockIcon";
+import AxiosWrapper from "../../utils/axiosWrapper";
 
 export default function SignInComponent({ onClose }) {
   const router = useRouter();
@@ -88,7 +88,7 @@ export default function SignInComponent({ onClose }) {
               setIsLoading(true);
 
               try {
-                const res = await axios.post(
+                const res = await AxiosWrapper.post(
                   "http://127.0.0.1:8000/signin",
                   signInData,
                 );

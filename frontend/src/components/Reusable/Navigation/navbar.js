@@ -8,16 +8,27 @@ import { useRouter } from "next/router";
 
 import Image from "next/image";
 import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 import styles from "../../../styles/components/Reusable/navbar.module.css";
 import Logo from "../logo";
+import AxiosWrapper from "../../../utils/axiosWrapper";
 
 export default function NavBar({
   drawerState, setDrawerState, breadcrumbs = [], createProjectTrigger,
   showCreateProjectButton = true,
 }) {
   const router = useRouter();
+  const [user, setUser] = useState(null);
 
-  return (
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser")).data;
+      setUser(currentUser);
+    };
+    fetchUser();
+  }, []);
+
+  return !user ? <p>Loading...</p> : (
     <Navbar maxWidth="2xl" isBordered isBlurred>
       <NavbarBrand>
         <Image
@@ -86,14 +97,14 @@ export default function NavBar({
                 // src: "avatar",
               }}
               className="transition-transform"
-              description="@admin"
-              name="John Doe"
+              description={user.email}
+              name={`${user.first_name} ${user.last_name}`}
             />
           </DropdownTrigger>
           <DropdownMenu aria-label="User Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-bold">Signed in as</p>
-              <p className="font-bold">@admin</p>
+              <p className="font-bold">{user.email}</p>
             </DropdownItem>
             <DropdownSection aria-label="Profile & Actions" showDivider>
 

@@ -12,11 +12,13 @@ import {
 import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
+import cookieParse from "cookie-parse";
 import Navigation from "../../../../../components/Reusable/Navigation/navBarSideBar";
 import LoadingSymbol from "../../../../../components/Reusable/loadingSymbol";
 import "react18-json-view/src/style.css";
 import closerLookButtonStyles from "../../../../../styles/components/Reusable/navbar.module.css";
 import MainAnnotationScreen from "../../../../../components/Project/AnnotationScreens/mainScreen";
+import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
@@ -39,8 +41,7 @@ export default function JobPage({
     const fetchData = async () => {
       setIsLoading(true);
 
-      const nextAnnotationDataRes = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}`);
-      const nextAnnotationData = await nextAnnotationDataRes.json();
+      const nextAnnotationData = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}`)).data;
       setAnnotationData(nextAnnotationData.data);
       setAnnotatedDataCount(nextAnnotationData.finishedAnnotations);
       setIsLoading(false);
@@ -116,7 +117,7 @@ export default function JobPage({
   const handleExport = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`);
+      const response = await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`);
       if (response.status === 200) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -306,25 +307,43 @@ export async function getServerSideProps(context) {
     jobId,
   } = context.query;
 
-  const resProject = await fetch(`http://localhost:8000/projects/${projectId}`);
-  const project = await resProject.json();
+  const cookies = context.req.headers.cookie || "";
+  const { accessToken } = cookieParse.parse(cookies);
 
-  const resJob = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}`);
-  const job = await resJob.json();
+  try {
+    const project = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}`, {
+      accessToken: accessToken || "",
+    })).data;
 
-  const resFirstAnnotationDataBatch = await fetch(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${0}&itemsPerPage=${10}`);
-  const firstAnnotationDataBatch = await resFirstAnnotationDataBatch.json();
+    const job = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}`, {
+      accessToken: accessToken || "",
+    })).data;
 
-  return {
-    props: {
-      projectId,
-      jobId,
-      project: project.project,
-      job: job.job,
-      firstAnnotationDataBatch: firstAnnotationDataBatch.data,
-      totalRowCount: firstAnnotationDataBatch.totalRowCount,
-      finishedAnnotations: firstAnnotationDataBatch.finishedAnnotations,
-      finishedAnnotationsByUser: firstAnnotationDataBatch.finishedAnnotationsByUser,
-    },
-  };
+    const firstAnnotationDataBatch = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${0}&itemsPerPage=${10}`, {
+      accessToken: accessToken || "",
+    })).data;
+
+    return {
+      props: {
+        projectId,
+        jobId,
+        project: project.project,
+        job: job.job,
+        firstAnnotationDataBatch: firstAnnotationDataBatch.data,
+        totalRowCount: firstAnnotationDataBatch.totalRowCount,
+        finishedAnnotations: firstAnnotationDataBatch.finishedAnnotations,
+        finishedAnnotationsByUser: firstAnnotationDataBatch.finishedAnnotationsByUser,
+      },
+    };
+  } catch (error) {
+    if (error.response.status === 401) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
+  return null;
 }

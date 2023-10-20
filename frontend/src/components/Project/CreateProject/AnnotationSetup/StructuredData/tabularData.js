@@ -5,8 +5,8 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useState } from "react";
-import axios from "axios";
 import GhostButton from "../../../../Reusable/ghostButton";
+import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
 export default function AnnotationFieldSelection({
   project, onClose,
@@ -163,7 +163,7 @@ export default function AnnotationFieldSelection({
 
             formData.append("data", JSON.stringify(finishedProjectObject));
 
-            const response = await axios.post("http://127.0.0.1:8000/projects", formData, {
+            const response = await AxiosWrapper.post("http://127.0.0.1:8000/projects", formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
               },

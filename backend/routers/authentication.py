@@ -6,6 +6,7 @@ import jwt
 from models.models import User
 import datetime
 from tortoise.exceptions import IntegrityError, DoesNotExist
+from models.models import User
 
 load_dotenv()
 salt = os.getenv("SALT")
@@ -59,5 +60,15 @@ async def sign_in(request: Request):
     except DoesNotExist:
         raise HTTPException(status_code=404, detail='user not found')
     except Exception as e:
-        print(e)
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/currentuser")
+async def get_current_user(request: Request):
+    try:
+        user_id = request.state.user_id
+        user = dict(await User.get(id=user_id))
+        del user['password']
+        return user
+    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

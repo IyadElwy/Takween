@@ -9,9 +9,11 @@ import Link from "next/link";
 import Image from "next/image";
 import moment from "moment-timezone";
 import { useState } from "react";
+import cookieParse from "cookie-parse";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
 import AddDataComponent from "../../../components/Project/EditProject/DataSetup/addDataComponent";
 import NewJobComponent from "../../../components/Project/EditProject/AnnotationSetup/newJobComponent";
+import AxiosWrapper from "../../../utils/axiosWrapper";
 
 export default function ProjectDetailPage({ projectId, project, jobs }) {
   const {
@@ -191,11 +193,27 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
 
 export async function getServerSideProps(context) {
   const { projectId } = context.query;
+  const cookies = context.req.headers.cookie || "";
+  const { accessToken } = cookieParse.parse(cookies);
 
-  const resProjectData = await fetch(`http://localhost:8000/projects/${projectId}`);
-  const project = await resProjectData.json();
-  const resJobData = await fetch(`http://localhost:8000/projects/${projectId}/jobs`);
-  const jobs = await resJobData.json();
+  try {
+    const project = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}`, {
+      accessToken: accessToken || "",
+    })).data;
+    const jobs = (await AxiosWrapper(`http://localhost:8000/projects/${projectId}/jobs`, {
+      accessToken: accessToken || "",
+    })).data;
 
-  return { props: { project: project.project, jobs: jobs.jobs, projectId } };
+    return { props: { project: project.project, jobs: jobs.jobs, projectId } };
+  } catch (error) {
+    if (error.response.status === 401) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
+  return null;
 }

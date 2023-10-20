@@ -9,7 +9,7 @@ import { useState } from "react";
 import {
   CheckboxGroup, Checkbox, RadioGroup, Radio,
 } from "@nextui-org/react";
-import axios from "axios";
+import AxiosWrapper from "../../../utils/axiosWrapper";
 
 import GhostButton from "../../Reusable/ghostButton";
 import buttonStyles from "../../../styles/components/Reusable/navbar.module.css";
@@ -35,7 +35,7 @@ export default function MainAnnotationScreen({
   const getNextRow = async () => {
     const nextRowId = Number(currentRow.id) + 1;
     if (data.allRows[nextRowId]) {
-      const itemRes = await axios.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/${data.allRows[nextRowId].original._id}`);
+      const itemRes = await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/${data.allRows[nextRowId].original._id}`);
       const item = itemRes.data;
       setSelectedClasses(getInitialAnnotations(item.annotations));
       setCurrentRow({
@@ -51,7 +51,7 @@ export default function MainAnnotationScreen({
   const getPreviousRow = async () => {
     const nextRowId = Number(currentRow.id) - 1;
     if (data.allRows[nextRowId]) {
-      const itemRes = await axios.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/${data.allRows[nextRowId].original._id}`);
+      const itemRes = await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/${data.allRows[nextRowId].original._id}`);
       const item = itemRes.data;
       setSelectedClasses(getInitialAnnotations(item.annotations));
       setCurrentRow({
@@ -160,7 +160,7 @@ export default function MainAnnotationScreen({
                 }
 
                 const { _id } = currentRow.original;
-                await axios.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+                await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
                   _id,
                   annotations: newAnnotations,
                 }));
