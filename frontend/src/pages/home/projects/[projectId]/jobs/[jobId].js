@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 import _ from "lodash";
@@ -9,6 +10,7 @@ import {
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
   DropdownSection, cn,
   Progress,
+  Avatar, AvatarGroup,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
@@ -83,10 +85,17 @@ export default function JobPage({
       size: 150,
     },
     {
-      accessorFn: (row) => (row.annotations.length === 0 ? "None" : "Annotated"),
       id: "annotation",
       header: "Annotation",
-      size: 150,
+      // size: 150,
+      Cell: ({ cell }) => {
+        const { annotations } = cell.row.original;
+        return (
+          <AvatarGroup max={3}>
+            {annotations.map((ann) => <Avatar name={ann.user.email} />)}
+          </AvatarGroup>
+        );
+      },
     },
     {
       accessorFn: (row) => {
@@ -398,6 +407,7 @@ export default function JobPage({
               {mainBody()}
               <MainAnnotationScreen
                 data={currentDataToAnnotate}
+                user={user}
                 projectId={projectId}
                 jobId={jobId}
                 annotatedDataCount={annotatedDataCount}

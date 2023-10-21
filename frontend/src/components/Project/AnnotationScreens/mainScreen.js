@@ -25,6 +25,7 @@ const getInitialAnnotations = (annotationsArray) => {
 export default function MainAnnotationScreen({
   data,
   projectId,
+  user,
   jobId,
   annotatedDataCount,
   setAnnotatedDataCount,
@@ -149,11 +150,11 @@ export default function MainAnnotationScreen({
                 height: "50px",
               }}
               onPress={async () => {
-                const annotationsWithoutCurrent = [...currentRow.original.annotations].filter((ann) => ann.user !== "admin");
+                const annotationsWithoutCurrent = [...currentRow.original.annotations].filter((ann) => ann.user.id !== user.id);
                 const newAnnotations = [...annotationsWithoutCurrent];
                 if (selectedClasses.length > 0) {
                   newAnnotations.push({
-                    user: "admin",
+                    user,
                     classes: selectedClasses,
                   });
                   setAnnotatedDataCount(annotatedDataCount + 1);
