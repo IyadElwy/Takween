@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-undef */
 import _ from "lodash";
 import { MaterialReactTable } from "material-react-table";
@@ -6,7 +7,7 @@ import Image from "next/image";
 import {
   Modal, ModalContent, ModalBody, ModalFooter, Button, useDisclosure,
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
-  DropdownSection,
+  DropdownSection, cn,
   Progress,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
@@ -19,10 +20,15 @@ import "react18-json-view/src/style.css";
 import closerLookButtonStyles from "../../../../../styles/components/Reusable/navbar.module.css";
 import MainAnnotationScreen from "../../../../../components/Project/AnnotationScreens/mainScreen";
 import AxiosWrapper from "../../../../../utils/axiosWrapper";
+import DeleteDocumentIcon from "../../../../../components/Icons/DeleteDocument";
+import EditDocumentIcon from "../../../../../components/Icons/EditDocumentIcons";
+import AnnotatorEditComponent from "../../../../../components/Project/EditProject/AnnotationSetup/annotatorEditComponent";
+
+const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
-  finishedAnnotations,
+  finishedAnnotations, user,
   // finishedAnnotationsByUser,
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -36,6 +42,17 @@ export default function JobPage({
     pageSize: 10,
   });
   const [currentItemCloserLook, setCurrentItemCloserLook] = useState(null);
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onOpenChange: onOpenChangeModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenModalDelete,
+    onOpen: onOpenModalDelete,
+    onOpenChange: onOpenChangeModalDelete,
+  } = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,9 +134,11 @@ export default function JobPage({
   const handleExport = async () => {
     setIsLoading(true);
     try {
-      const response = await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`);
+      const response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`, {
+        responseType: "blob",
+      }));
       if (response.status === 200) {
-        const blob = await response.blob();
+        const blob = await response.data;
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -158,6 +177,73 @@ export default function JobPage({
                 </Button>
               </ModalFooter>
             </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        style={{
+          height: "500px",
+        }}
+        isOpen={isOpenModal}
+        onOpenChange={onOpenChangeModal}
+        isDismissable={false}
+        size="5xl"
+        scrollBehavior="inside"
+        backdrop="blur"
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <ModalBody>
+              <AnnotatorEditComponent onClose={onClose} projectId={projectId} jobId={jobId} />
+            </ModalBody>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        style={{
+          height: "150px",
+        }}
+        isOpen={isOpenModalDelete}
+        onOpenChange={onOpenChangeModalDelete}
+        isDismissable={false}
+        size="sm"
+        scrollBehavior="inside"
+        backdrop="blur"
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <ModalBody>
+
+              <div className="text-4xl">Are you sure?</div>
+              <p className="text-s text-gray-500 mb-2">This action cannot be undone</p>
+
+              <div className="absolute bottom-0 right-0 mr-5 mb-5">
+                <div className="flex space-x-4">
+                  <Button
+                    color="default"
+                    variant="solid"
+                    onPress={() => {
+                      onClose();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    color="danger"
+                    variant="ghost"
+                    onPress={async () => {
+                      await AxiosWrapper.delete(`http://localhost:8000/projects/${projectId}/jobs/${jobId}`);
+                      window.location = `http://localhost:3000/home/projects/${projectId}`;
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </div>
+              </div>
+
+            </ModalBody>
           )}
         </ModalContent>
       </Modal>
@@ -248,7 +334,35 @@ export default function JobPage({
                     >
                       Export
                     </DropdownItem>
+
+                    {user.id === job.created_by_id && (
+                    <DropdownItem
+                      onClick={onOpenModal}
+                      key="edit"
+                      description="Edit job annotators"
+                      startContent={<EditDocumentIcon className={iconClasses} />}
+                    >
+                      Annotators
+                    </DropdownItem>
+                    )}
+
                   </DropdownSection>
+
+                  {user.id === job.created_by_id && (
+                  <DropdownSection>
+                    <DropdownItem
+                      onClick={onOpenModalDelete}
+                      key="delete"
+                      className="text-danger"
+                      color="danger"
+                      description="Permanently delete job"
+                      startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
+                    >
+                      Delete Job
+                    </DropdownItem>
+                  </DropdownSection>
+                  )}
+
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -323,6 +437,10 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
+    const user = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser", {
+      accessToken: accessToken || "",
+    })).data;
+
     return {
       props: {
         projectId,
@@ -333,6 +451,7 @@ export async function getServerSideProps(context) {
         totalRowCount: firstAnnotationDataBatch.totalRowCount,
         finishedAnnotations: firstAnnotationDataBatch.finishedAnnotations,
         finishedAnnotationsByUser: firstAnnotationDataBatch.finishedAnnotationsByUser,
+        user,
       },
     };
   } catch (error) {

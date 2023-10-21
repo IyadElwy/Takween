@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi import HTTPException, UploadFile, Form
-from models.models import Project, FileDataSource
+from models.models import Project, FileDataSource, User
 import pandas as pd
 import json
 from enums.file_types import parse_to_enum as parse_file_type_enum, FileType
@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/projects/{projectId}/file-data-sources")
-async def get_project_data_sources(projectId):
+async def get_project_data_sources(projectId, request: Request):
     try:
         project = await Project.get(id=projectId)
         file_data_sources = await project.file_data_sources.all()  # type: ignore
@@ -31,13 +31,16 @@ async def get_project_data_sources(projectId):
 
 
 @router.post("/projects/{projectId}/file-data-sources")
-async def add_project_data(projectId, files: list[UploadFile] = Form(...)):
+async def add_project_data(projectId, request: Request, files: list[UploadFile] = Form(...)):
     try:
+        user_id = request.state.user_id
+        user = await User.get(id=user_id)
+
         project = await Project.get(id=projectId)
         created_file_data_sources = []
         for file in files:
             file_type = get_file_type(file.filename)  # type: ignore
-            file_name = f'{file.filename.lower().replace(" ", "-").replace(".", "").replace(file_type, "")}'
+            file_name = f'{file.filename.lower().replace(" ", "-").replace(".", "").replace(file_type, "")}'  # noqa: E501 # type: ignore
             file_location = f"data/{projectId}-{file_name}.{file_type}"
 
             with open(file_location, "wb") as f:
@@ -55,7 +58,8 @@ async def add_project_data(projectId, files: list[UploadFile] = Form(...)):
                                                                        file_type),  # type: ignore
                                                                    location=file_location,
                                                                    size=file.file.tell(),
-                                                                   project=project,)
+                                                                   project=project,
+                                                                   created_by=user)
 
             created_file_data_sources.append(created_file_data_source)
 

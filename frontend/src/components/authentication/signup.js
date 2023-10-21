@@ -4,15 +4,12 @@ import {
 import { useState } from "react";
 import * as EmailValidator from "email-validator";
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
 import MailIcon from "../Icons/Mailcon";
 import LockIcon from "../Icons/LockIcon";
 import ProfileIcon from "../Icons/ProfileIcon";
 import AxiosWrapper from "../../utils/axiosWrapper";
 
 export default function SignUpComponent({ onClose }) {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const [signUpData, setSignUpData] = useState({
@@ -155,7 +152,8 @@ export default function SignUpComponent({ onClose }) {
                 setUserAlreadyExists(false);
                 const accessToken = res.data.access_token;
                 Cookies.set("accessToken", accessToken, { expires: 90 });
-                router.push("/home/projects");
+                // eslint-disable-next-line no-undef
+                window.location = "http://localhost:3000/home/projects/";
               } catch (error) {
                 if (error.response.status === 409) {
                   setIsLoading(false);

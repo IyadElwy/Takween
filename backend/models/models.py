@@ -9,6 +9,8 @@ class User(Model):
     last_name = fields.CharField(max_length=100)
     email = fields.CharField(max_length=100, unique=True)
     password = fields.CharField(max_length=1000)
+    can_create_jobs = fields.BooleanField(default=False)
+    can_add_data = fields.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.email}'
@@ -59,8 +61,11 @@ class TextClassificationJob(Model):
     created_by = fields.ForeignKeyField(
         'models.User', related_name='created_jobs'
     )
+    assigned_annotators = fields.ManyToManyField(
+        'models.User', related_name='assigned_annotators')
     assigned_reviewer = fields.ForeignKeyField(
-        'models.User', related_name='assigned_review_jobs'
+        'models.User', related_name='assigned_review_jobs',
+        null=True
     )
     field_to_annotate = fields.CharField(max_length=200)
     classes_list_as_string = fields.CharField(max_length=1000)

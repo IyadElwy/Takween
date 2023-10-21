@@ -140,7 +140,8 @@ export default function NavBar({
               color="danger"
               onPress={() => {
                 Cookies.remove("accessToken");
-                router.push("/");
+                // eslint-disable-next-line no-undef
+                window.location = "http://localhost:3000/";
               }}
             >
               Log Out

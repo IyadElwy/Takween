@@ -2,7 +2,7 @@ import {
   ScrollShadow,
   Divider,
   Card, CardHeader, CardFooter, CardBody,
-  Avatar, useDisclosure, Modal, ModalBody, ModalContent,
+  Avatar, useDisclosure, Modal, ModalBody, ModalContent, Button,
 
 } from "@nextui-org/react";
 import Link from "next/link";
@@ -14,13 +14,23 @@ import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
 import AddDataComponent from "../../../components/Project/EditProject/DataSetup/addDataComponent";
 import NewJobComponent from "../../../components/Project/EditProject/AnnotationSetup/newJobComponent";
 import AxiosWrapper from "../../../utils/axiosWrapper";
+import ManageUsersComponent from "../../../components/Project/EditProject/UserManagement/manageUsersComponent";
 
-export default function ProjectDetailPage({ projectId, project, jobs }) {
+export default function ProjectDetailPage({
+  projectId, project, jobs, user,
+}) {
   const {
     isOpen,
     onOpen,
     onOpenChange,
   } = useDisclosure();
+
+  const {
+    isOpen: isOpenModalDelete,
+    onOpen: onOpenModalDelete,
+    onOpenChange: onOpenChangeModalDelete,
+  } = useDisclosure();
+
   const [modalComponent, setModalComponent] = useState(null);
 
   const getCurrentModalComponent = (onClose) => {
@@ -30,6 +40,9 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
 
       case "newAnnotationJob":
         return <NewJobComponent projectId={projectId} onClose={onClose} />;
+
+      case "manageUsers":
+        return <ManageUsersComponent projectId={projectId} onClose={onClose} />;
 
       default:
         return null;
@@ -75,7 +88,54 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
             )}
           </ModalContent>
         </Modal>
+        <Modal
+          style={{
+            height: "150px",
+          }}
+          isOpen={isOpenModalDelete}
+          onOpenChange={onOpenChangeModalDelete}
+          isDismissable={false}
+          size="sm"
+          scrollBehavior="inside"
+          backdrop="blur"
+          hideCloseButton
+        >
+          <ModalContent>
+            {(onClose) => (
+              <ModalBody>
 
+                <div className="text-4xl">Are you sure?</div>
+                <p className="text-s text-gray-500 mb-2">This action cannot be undone</p>
+
+                <div className="absolute bottom-0 right-0 mr-5 mb-5">
+                  <div className="flex space-x-4">
+                    <Button
+                      color="default"
+                      variant="solid"
+                      onPress={() => {
+                        onClose();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      color="danger"
+                      variant="ghost"
+                      onPress={async () => {
+                        await AxiosWrapper.delete(`http://localhost:8000/projects/${projectId}`);
+                        // eslint-disable-next-line no-undef
+                        window.location = "http://localhost:3000/home/projects";
+                      }}
+                    >
+                      Confirm
+                    </Button>
+                  </div>
+                </div>
+
+              </ModalBody>
+            )}
+          </ModalContent>
+        </Modal>
         <div className="flex">
           <div className="w-2/6 bg-300 p-4">
             <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>Annotation Jobs</h1>
@@ -126,39 +186,73 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
             <br />
             <Divider />
             <br />
-            <Card
-              className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
-              isPressable
-              onPress={() => {
-                setModalComponent("data");
-                onOpen();
-              }}
-            >
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
 
-              <CardHeader className="flex gap-3">
+              {user.can_add_data && (
+              <Card
+                className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
+                isPressable
+                onPress={() => {
+                  setModalComponent("data");
+                  onOpen();
+                }}
+              >
 
-                <Image
-                  alt="nextui logo"
-                  height={60}
-                  radius="sm"
-                  src="/images/files.svg"
-                  width={70}
-                />
-                <div className="flex flex-col">
-                  <p className="text-md">
-                    Explore your Project&apos;s
-                    {" "}
-                    <strong>Data</strong>
+                <CardHeader className="flex gap-3">
 
-                  </p>
-                </div>
-              </CardHeader>
+                  <Image
+                    alt="nextui logo"
+                    height={60}
+                    radius="sm"
+                    src="/images/files.svg"
+                    width={70}
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-md">
+                      Explore your Project&apos;s
+                      {" "}
+                      <strong>Data</strong>
 
-            </Card>
+                    </p>
+                  </div>
+                </CardHeader>
+
+              </Card>
+              )}
+              {project.created_by_id === user.id && (
+              <Card
+                className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
+                isPressable
+                onPress={onOpenModalDelete}
+              >
+
+                <CardHeader className="flex gap-3">
+
+                  <Image
+                    alt="nextui logo"
+                    height={60}
+                    radius="sm"
+                    src="/images/delete.svg"
+                    width={70}
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-md" style={{ color: "#bf0d0d" }}>
+                      Delete Project
+                      {" "}
+
+                    </p>
+                  </div>
+                </CardHeader>
+
+              </Card>
+              )}
+            </div>
+
             <br />
             <Divider />
             <br />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {user.can_create_jobs && (
               <Card
                 className="py-4"
                 isPressable
@@ -183,6 +277,35 @@ export default function ProjectDetailPage({ projectId, project, jobs }) {
                   </center>
                 </CardBody>
               </Card>
+              )}
+
+              {project.created_by_id === user.id && (
+              <Card
+                className="py-4"
+                isPressable
+                onPress={() => {
+                  setModalComponent("manageUsers");
+                  onOpen();
+                }}
+              >
+                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                  <h4 className="font-bold text-large">Manage All Project Users</h4>
+                </CardHeader>
+                <CardBody className="overflow-visible py-2">
+                  <center>
+                    <Image
+                      height={200}
+                      alt="Card background"
+                      className="object-cover rounded-xl"
+                      src="/images/users.svg"
+                      width={130}
+                    />
+
+                  </center>
+                </CardBody>
+              </Card>
+              ) }
+
             </div>
           </div>
         </div>
@@ -204,7 +327,15 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
-    return { props: { project: project.project, jobs: jobs.jobs, projectId } };
+    const user = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser", {
+      accessToken: accessToken || "",
+    })).data;
+
+    return {
+      props: {
+        project: project.project, jobs: jobs.jobs, projectId, user,
+      },
+    };
   } catch (error) {
     if (error.response.status === 401) {
       return {
