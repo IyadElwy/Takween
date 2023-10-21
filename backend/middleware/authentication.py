@@ -32,4 +32,9 @@ async def authenticate_user(request: Request, call_next):
             response = await call_next(request)
             return response
         else:
-            return JSONResponse(content={"error": "Authentication failed"}, status_code=401)
+            response = JSONResponse(
+                content={"error": "Authentication failed"}, status_code=401)
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers["Access-Control-Allow-Headers"] = "*"
+            response.headers["Access-Control-Allow-Methods"] = "*"
+            return response
