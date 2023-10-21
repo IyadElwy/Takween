@@ -6,6 +6,7 @@ import pymongo
 import os
 from dotenv import load_dotenv
 from tortoise.expressions import Q
+import uuid
 
 load_dotenv()
 
@@ -45,7 +46,7 @@ async def create_job(id, request: Request):
         job_data = await request.json()
         file_data_source = await FileDataSource.get(id=job_data['dataSource']['id'])
         annotation_type = job_data['type']
-        annotation_collection_name = f"{job_data['name']}-{file_data_source.file_name}"
+        annotation_collection_name = f"{job_data['name']}-{uuid.uuid4()}-{file_data_source.file_name}"
         match annotation_type:
             case "textClassification":
                 with open(file_data_source.location, 'r') as original_data:
