@@ -151,7 +151,6 @@ export default function JobPage({
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        console.log(response);
         a.download = "data.ndjson";
         a.click();
       } else {
