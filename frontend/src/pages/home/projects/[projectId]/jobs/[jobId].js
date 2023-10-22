@@ -11,6 +11,7 @@ import {
   DropdownSection, cn,
   Progress,
   Avatar, AvatarGroup,
+  Chip,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
@@ -120,30 +121,49 @@ export default function JobPage({
         // eslint-disable-next-line camelcase
         const { data } = cell.row.original;
         return (
-          <Image
-            className={closerLookButtonStyles.burgerMenu}
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentItemCloserLook(data);
-              onOpen();
-            }}
-            alt="nextui logo"
-            height={25}
-            radius="sm"
-            src="/images/magnifier.svg"
-            width={25}
-          />
+          <div>
+            <Image
+              className={closerLookButtonStyles.burgerMenu}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentItemCloserLook(data);
+                onOpen();
+              }}
+              alt="nextui logo"
+              height={25}
+              radius="sm"
+              src="/images/magnifier.svg"
+              width={25}
+            />
+            {cell.row.original.conflict && (
+            <Image
+              className={`${closerLookButtonStyles.burgerMenu} ml-5`}
+              alt="nextui logo"
+              height={25}
+              radius="sm"
+              src="/images/warning.svg"
+              width={25}
+            />
+            )}
+          </div>
         );
       },
     },
   ];
 
-  const handleExport = async () => {
+  const handleExport = async (merge = false) => {
     setIsLoading(true);
     try {
-      const response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`, {
-        responseType: "blob",
-      }));
+      let response;
+      if (merge) {
+        response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/merge/export`, {
+          responseType: "blob",
+        }));
+      } else {
+        response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`, {
+          responseType: "blob",
+        }));
+      }
       if (response.status === 200) {
         const blob = await response.data;
         const url = window.URL.createObjectURL(blob);
@@ -304,7 +324,7 @@ export default function JobPage({
               />
             </div>
 
-            <div className="w-full">
+            <div className="flex justify-between">
 
               <Dropdown
                 showArrow
@@ -353,6 +373,30 @@ export default function JobPage({
 
                   </DropdownSection>
 
+                  {job.assigned_reviewer_id === user.id && (
+                  <DropdownSection>
+                    <DropdownItem
+                      onClick={() => handleExport(true)}
+                      key="merge"
+                      className="text-warning"
+                      color="warning"
+                      description="Merge Reviewed Annotations"
+                      startContent={(
+                        <Image
+                          className={closerLookButtonStyles.burgerMenu}
+                          alt="nextui logo"
+                          height={25}
+                          radius="sm"
+                          src="/images/merge.svg"
+                          width={25}
+                        />
+                      )}
+                    >
+                      Merge
+                    </DropdownItem>
+                  </DropdownSection>
+                  )}
+
                   {user.id === job.created_by_id && (
                   <DropdownSection>
                     <DropdownItem
@@ -370,8 +414,9 @@ export default function JobPage({
 
                 </DropdownMenu>
               </Dropdown>
-            </div>
+              {job.assigned_reviewer_id === user.id && <Chip className="mt-1 ml-2" color="warning">Reviewer</Chip>}
 
+            </div>
           </div>
 
         )}

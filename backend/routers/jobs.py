@@ -28,8 +28,8 @@ async def get_project_jobs(id, request: Request):
 
         project = await Project.get(id=id)
         jobs = await project.Jobs.filter(Q(assigned_annotators=user) |  # type: ignore
-                                         Q(created_by=user) |
-                                         Q(assigned_reviewer=user))
+                                         Q(created_by=user)
+                                         )
         return {'jobs': set(jobs)}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
