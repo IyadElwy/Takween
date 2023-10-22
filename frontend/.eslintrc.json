@@ -1,4 +1,7 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
   "extends": "airbnb",
   "rules": {
     "react/react-in-jsx-scope": "off",

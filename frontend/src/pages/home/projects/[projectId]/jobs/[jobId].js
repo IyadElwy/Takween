@@ -397,7 +397,6 @@ export default function JobPage({
           {showDetailedSplit ? (
             <Allotment
               minSize={200}
-              // maxSize={}
               defaultSizes={[50, 200]}
             >
               {mainBody()}
@@ -406,6 +405,7 @@ export default function JobPage({
                 user={user}
                 projectId={projectId}
                 jobId={jobId}
+                type={job.type}
                 annotatedDataCount={annotatedDataCount}
                 setAnnotatedDataCount={setAnnotatedDataCount}
               />
