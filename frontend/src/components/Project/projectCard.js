@@ -28,7 +28,7 @@ export default function ProjectCard({ projectData }) {
         <Divider />
         <CardFooter className="flex justify-between">
           <span className="text-xs text-gray-500">
-            {projectData.author}
+            {projectData.user.email}
           </span>
         </CardFooter>
 

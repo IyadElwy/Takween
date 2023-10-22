@@ -37,7 +37,15 @@ export async function getServerSideProps(context) {
     const projects = (await AxiosWrapper.get("http://127.0.0.1:8000/projects", {
       accessToken: accessToken || "",
     })).data;
-    return { props: { projects } };
+
+    const projectsWithUsers = await Promise.all(projects.map(async (project) => {
+      const userCreatedProject = (await AxiosWrapper.get(`http://localhost:8000/users/${project.created_by_id}`, {
+        accessToken: accessToken || "",
+      })).data;
+      return { ...project, user: userCreatedProject };
+    }));
+
+    return { props: { projects: projectsWithUsers } };
   } catch (error) {
     if (error.response.status === 401) {
       return {

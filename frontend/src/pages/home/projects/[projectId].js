@@ -338,8 +338,6 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
-    console.log(jobsWithUsers);
-
     return {
       props: {
         project: project.project, jobs: jobsWithUsers, projectId, user,
