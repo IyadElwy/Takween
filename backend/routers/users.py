@@ -57,5 +57,16 @@ async def update_user_fields(id, request: Request):
 
         return user
     except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/users/{id}")
+async def get_user_by_id(id, request: Request):
+    try:
+        user = dict(await User.get(id=id))
+        del user['password']
+        return user
+
+    except Exception as e:
         print(e)
         raise HTTPException(status_code=400, detail=str(e))

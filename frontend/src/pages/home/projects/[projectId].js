@@ -58,6 +58,7 @@ export default function ProjectDetailPage({
         return "";
     }
   };
+
   return (
     (
       <>
@@ -140,7 +141,6 @@ export default function ProjectDetailPage({
           <div className="w-2/6 bg-300 p-4">
             <h1 style={{ fontSize: "25px", marginBottom: "10px" }}>Annotation Jobs</h1>
             <ScrollShadow className="w-[300px] h-[500px]">
-
               {jobs.map((job) => (
                 <Link href={`${project.id}/jobs/${job.id}`} key={job.id}>
                   <div className="mr-2 ml-2">
@@ -165,7 +165,7 @@ export default function ProjectDetailPage({
                         <Avatar
                           isBordered
                           className="transition-transform"
-                          name="Avatar"
+                          name={job.user.email}
                           size="sm"
                         />
                       </CardFooter>
@@ -327,13 +327,22 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
+    const jobsWithUsers = await Promise.all(jobs.jobs.map(async (job) => {
+      const userCreatedJob = (await AxiosWrapper.get(`http://localhost:8000/users/${job.created_by_id}`, {
+        accessToken: accessToken || "",
+      })).data;
+      return { ...job, user: userCreatedJob };
+    }));
+
     const user = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser", {
       accessToken: accessToken || "",
     })).data;
 
+    console.log(jobsWithUsers);
+
     return {
       props: {
-        project: project.project, jobs: jobs.jobs, projectId, user,
+        project: project.project, jobs: jobsWithUsers, projectId, user,
       },
     };
   } catch (error) {
