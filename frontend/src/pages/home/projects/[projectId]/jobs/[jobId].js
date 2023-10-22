@@ -70,6 +70,7 @@ export default function JobPage({
   }, [
     pagination.pageIndex,
     pagination.pageSize,
+    showDetailedSplit,
   ]);
 
   const handlePaginationChange = (newPagination) => {
@@ -111,16 +112,13 @@ export default function JobPage({
       size: 150,
     },
     {
-      // accessorFn: (row) => `${row.firstName} ${row.lastName}`,
       accessorKey: "none",
       header: "",
       size: 150,
-
       // eslint-disable-next-line react/no-unstable-nested-components
       Cell: ({ cell }) => {
         // eslint-disable-next-line camelcase
         const { data } = cell.row.original;
-
         return (
           <Image
             className={closerLookButtonStyles.burgerMenu}
@@ -284,7 +282,6 @@ export default function JobPage({
               setPagination,
               setShowDetailedSplit,
             };
-            // setShowDetailedSplit(true);
             setShowDetailedSplit(!showDetailedSplit);
             setCurrentDataToAnnotate(rowData);
           },
