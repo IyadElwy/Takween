@@ -18,6 +18,7 @@ export default function AddDataComponent({
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFileKey, setSelectedFileKey] = useState([]);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchDataSources = async () => {
@@ -38,27 +39,35 @@ export default function AddDataComponent({
 
   const fileInputRef = useRef(null);
   const handleFileChange = async (e) => {
-    setIsLoading(true);
-    if (e.target.files.length > 0) {
-      const formData = new FormData();
-      formData.append("files", e.target.files[0]);
+    try {
+      setIsLoading(true);
+      if (e.target.files.length > 0) {
+        const formData = new FormData();
+        formData.append("files", e.target.files[0]);
 
-      const response = await AxiosWrapper.post(`http://127.0.0.1:8000/projects/${projectId}/file-data-sources`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      const createdFile = response.data.created_file_data_sources;
-      const newFile = {
-        id: createdFile.id,
-        name: createdFile.file_name,
-        type: createdFile.file_type,
-        size: createdFile.size,
-        exampleData: createdFile.exampleData,
-      };
+        const response = await AxiosWrapper.post(`http://127.0.0.1:8000/projects/${projectId}/file-data-sources`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        const createdFile = response.data.created_file_data_sources;
+        const newFile = {
+          id: createdFile.id,
+          name: createdFile.file_name,
+          type: createdFile.file_type,
+          size: createdFile.size,
+          exampleData: createdFile.exampleData,
+        };
 
-      const updatedSelectedFiles = [...selectedFiles, newFile];
-      setSelectedFiles(updatedSelectedFiles);
+        const updatedSelectedFiles = [...selectedFiles, newFile];
+        setSelectedFiles(updatedSelectedFiles);
+      }
+    } catch (err) {
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+      }, 5000);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -168,6 +177,12 @@ export default function AddDataComponent({
           </div>
 
         </div>
+        {error && (
+        <p className="text-s text-red-500 mt-3">
+          File type not supported
+        </p>
+        )}
+
         <p className="text-xs text-gray-500 mt-3">
           All data-sources will automatically be converted to
           {" "}

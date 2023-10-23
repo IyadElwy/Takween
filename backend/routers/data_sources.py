@@ -49,9 +49,11 @@ async def add_project_data(projectId, request: Request, files: list[UploadFile] 
                 file_location = convert_csv_to_json_and_save(
                     file_location)
                 file_type = 'json'
-            if file_type == 'ndjson' or file_type == 'jsonl':
+            elif file_type == 'ndjson' or file_type == 'jsonl':
                 file_location = convert_ndjson_to_json_and_save(file_location)
                 file_type = 'json'
+            else:
+                raise Exception("File type not supported")
 
             created_file_data_source = await FileDataSource.create(file_name=file_name,
                                                                    file_type=parse_file_type_enum(

@@ -1,19 +1,20 @@
 import { useState } from "react";
 
 import AnnotationTypeSelection from "./annotationTypeSelection";
-import AnnotationSetupTabular from "./AnnotationTypes/tabular";
 import AnnotationSetupTextClassification from "./AnnotationTypes/textClassification";
+import PartOfSpeechSetup from "./AnnotationTypes/partOfSpeechTagging";
+import NamedEntityRecognitionSetup from "./AnnotationTypes/namedEntityRecognition";
 
 const getSetUpPage = (type, onClose, projectId) => {
   switch (type) {
-    case "tabular":
-      return (
-        <AnnotationSetupTabular onClose={onClose} />
-      );
     case "textClassification":
       return <AnnotationSetupTextClassification onClose={onClose} projectId={projectId} />;
+    case "partOfSpeech":
+      return <PartOfSpeechSetup onClose={onClose} projectId={projectId} />;
+    case "namedEntityRecognition":
+      return <NamedEntityRecognitionSetup onClose={onClose} projectId={projectId} />;
     default:
-      return <h1>No page</h1>;
+      return null;
   }
 };
 

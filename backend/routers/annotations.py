@@ -27,8 +27,8 @@ router = APIRouter()
 async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
     try:
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
-
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
         starting_line = page * itemsPerPage
 
         collection_name = job.annotation_collection_name
@@ -68,6 +68,9 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
         }
 
     except Exception as e:
+        print('========================')
+        print(e)
+        print('====================')
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -75,7 +78,8 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
 async def export_data(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
         data_query = collection.find()
@@ -96,7 +100,9 @@ async def export_data(projectId, jobId):
 async def merge_and_export_data(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
+
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
         data_query = collection.find()
@@ -130,6 +136,7 @@ async def merge_and_export_data(projectId, jobId):
         return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -137,7 +144,8 @@ async def merge_and_export_data(projectId, jobId):
 async def get_single_annotation(projectId, jobId, _id: int):
     try:
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
         data = collection.find_one({'_id': _id})
@@ -154,7 +162,8 @@ async def create_annotation(projectId, jobId, data: Request):
         annotation_data = await data.json()
 
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
 
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]

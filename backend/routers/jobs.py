@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import HTTPException, Request
-from models.models import Project, TextClassificationJob, FileDataSource, User
+from models.models import Project, TextClassificationJob, FileDataSource, User, PartOfSpeechJob, NamedEntityRecognitionJob
 import json
 import pymongo
 import os
@@ -27,11 +27,11 @@ async def get_project_jobs(id, request: Request):
         user = await User.get(id=user_id)
 
         project = await Project.get(id=id)
-        jobs = await project.Jobs.filter(Q(assigned_annotators=user) |  # type: ignore
-                                         Q(created_by=user)
-                                         )
+        jobs = await project.get_jobs(Q(assigned_annotators=user) |  # type: ignore
+                                      Q(created_by=user))
         return {'jobs': set(jobs)}
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -75,6 +75,56 @@ async def create_job(id, request: Request):
                                                                  created_by=user)
                 return created_job
 
+            case "partOfSpeech":
+                with open(file_data_source.location, 'r') as original_data:
+                    json_data = json.load(original_data)
+                    collection = mongodb[annotation_collection_name]
+
+                    for index, record in enumerate(json_data):
+                        annotation_record = {
+                            "_id": index,
+                            "data": record,
+                            "fieldToAnnotate": job_data['fieldToAnnotate'],
+                            "tags": job_data['tags'],
+                            "annotations": [],
+                        }
+                        collection.insert_one(annotation_record)
+
+                created_job = await PartOfSpeechJob.create(title=job_data['name'],
+                                                           project=project,
+                                                           file_data_source=file_data_source,
+                                                           annotation_collection_name=annotation_collection_name,
+                                                           field_to_annotate=job_data['fieldToAnnotate'],
+                                                           tags_list_as_string=str(
+                    job_data['tags']),
+                    created_by=user)
+                return created_job
+
+            case "namedEntityRecognition":
+                with open(file_data_source.location, 'r') as original_data:
+                    json_data = json.load(original_data)
+                    collection = mongodb[annotation_collection_name]
+
+                    for index, record in enumerate(json_data):
+                        annotation_record = {
+                            "_id": index,
+                            "data": record,
+                            "fieldToAnnotate": job_data['fieldToAnnotate'],
+                            "tags": job_data['tags'],
+                            "annotations": [],
+                        }
+                        collection.insert_one(annotation_record)
+
+                created_job = await NamedEntityRecognitionJob.create(title=job_data['name'],
+                                                                     project=project,
+                                                                     file_data_source=file_data_source,
+                                                                     annotation_collection_name=annotation_collection_name,
+                                                                     field_to_annotate=job_data['fieldToAnnotate'],
+                                                                     tags_list_as_string=str(
+                    job_data['tags']),
+                    created_by=user)
+                return created_job
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -83,9 +133,11 @@ async def create_job(id, request: Request):
 async def get_project_job_by_id(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
         return {'job': job}
     except Exception as e:
+        # print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -93,7 +145,8 @@ async def get_project_job_by_id(projectId, jobId):
 async def delete_job(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
-        await project.Jobs.filter(id=jobId).delete()  # type: ignore
+
+        await project.delete_job(id=jobId)
         return {}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -103,7 +156,8 @@ async def delete_job(projectId, jobId):
 async def get_job_users(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
-        job = await project.Jobs.filter(id=jobId).first()  # type: ignore
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
         assigned_reviewer = await job.assigned_reviewer
         users = await project.assigned_users.all()
         assigned_annotators = [user.id for user in await job.assigned_annotators]

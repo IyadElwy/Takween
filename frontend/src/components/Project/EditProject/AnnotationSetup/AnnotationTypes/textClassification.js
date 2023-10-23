@@ -3,7 +3,6 @@ import {
   Button, Select, SelectItem, Input, Chip, Checkbox,
 } from "@nextui-org/react";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import JsonView from "react18-json-view";
 import GhostButton from "../../../../Reusable/ghostButton";
 import "react18-json-view/src/style.css";

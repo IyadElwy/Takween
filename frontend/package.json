@@ -28,6 +28,7 @@
     "moment-timezone": "^0.5.43",
     "next": "latest",
     "papaparse": "^5.4.1",
+    "randomcolor": "^0.6.2",
     "react": "latest",
     "react-dom": "latest",
     "react-split-pane-v2": "^1.0.3",

@@ -4,6 +4,8 @@ import { useState } from "react";
 import AxiosWrapper from "../../../utils/axiosWrapper";
 
 import TextClassificationAnnotationComponent from "./AnnotationTypes/textClassification";
+import PartOfSpeechAnnotationComponent from "./AnnotationTypes/pos";
+import NamedEntityRecognitionComponent from "./AnnotationTypes/ner";
 
 export default function MainAnnotationScreen({
   data,
@@ -60,6 +62,38 @@ export default function MainAnnotationScreen({
     case "text_classification":
       return (
         <TextClassificationAnnotationComponent
+          currentRow={currentRow}
+          selectedAnnotations={selectedAnnotations}
+          setSelectedAnnotations={setSelectedAnnotations}
+          getPreviousRow={getPreviousRow}
+          getNextRow={getNextRow}
+          user={user}
+          annotatedDataCount={annotatedDataCount}
+          setAnnotatedDataCount={setAnnotatedDataCount}
+          projectId={projectId}
+          jobId={jobId}
+        />
+      );
+
+    case "part_of_speech":
+      return (
+        <PartOfSpeechAnnotationComponent
+          currentRow={currentRow}
+          selectedAnnotations={selectedAnnotations}
+          setSelectedAnnotations={setSelectedAnnotations}
+          getPreviousRow={getPreviousRow}
+          getNextRow={getNextRow}
+          user={user}
+          annotatedDataCount={annotatedDataCount}
+          setAnnotatedDataCount={setAnnotatedDataCount}
+          projectId={projectId}
+          jobId={jobId}
+        />
+      );
+
+    case "named_entity_recognition":
+      return (
+        <NamedEntityRecognitionComponent
           currentRow={currentRow}
           selectedAnnotations={selectedAnnotations}
           setSelectedAnnotations={setSelectedAnnotations}

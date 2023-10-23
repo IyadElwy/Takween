@@ -53,6 +53,10 @@ export default function ProjectDetailPage({
     switch (annotationType) {
       case "text_classification":
         return "/images/classification.svg";
+      case "part_of_speech":
+        return "/images/pos.svg";
+      case "named_entity_recognition":
+        return "/images/ner.svg";
 
       default:
         return "";

@@ -6,11 +6,6 @@ import {
 import { useState } from "react";
 
 const annotationTypes = {
-  structuredData: [{
-    name: "tabular",
-    displayName: "Tabular Data",
-    img: "structured_data.svg",
-  }],
   nlp: [
     {
       name: "textClassification",
@@ -18,12 +13,12 @@ const annotationTypes = {
       img: "classification.svg",
     },
     {
-      name: "ner",
+      name: "namedEntityRecognition",
       displayName: "Named Entity Recognition",
       img: "ner.svg",
     },
     {
-      name: "pos",
+      name: "partOfSpeech",
       displayName: "Part Of Speech Tagging",
       img: "pos.svg",
     },
@@ -54,28 +49,10 @@ export default function AnnotationTypeSelection({
                     width="30px"
                     height="30px"
                     alt="tabular"
-                    src="/images/structured_data.svg"
-                  />
-)
-}
-              key="structuredData"
-              isSe
-            >
-              Structured Data
-
-            </ListboxItem>
-            <ListboxItem
-              startContent={
-                (
-                  <Image
-                    width="30px"
-                    height="30px"
-                    alt="tabular"
                     src="/images/pos.svg"
                   />
 )
 }
-
               key="nlp"
               isSe
             >

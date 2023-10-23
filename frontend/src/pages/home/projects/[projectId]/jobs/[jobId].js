@@ -343,7 +343,7 @@ export default function JobPage({
                 <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
                   <DropdownSection title="Actions">
                     <DropdownItem
-                      onClick={handleExport}
+                      onClick={() => handleExport(false)}
                       key="export"
                       description="Export Annotated Data"
                       startContent={(

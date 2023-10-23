@@ -35,7 +35,9 @@ async def update_user_fields(id, request: Request):
 
         if isAnnotator is not None:
             project = await Project.get(id=body['projectId'])
-            job = await project.Jobs.filter(id=body['jobId']).first()  # noqa: E501 # type: ignore
+            # type: ignore
+            job = await project.get_jobs(id=body['jobId'])
+            job = job[0]
             if isAnnotator:
                 await job.assigned_annotators.add(user)
             else:
@@ -45,7 +47,9 @@ async def update_user_fields(id, request: Request):
 
         if isReviewer is not None:
             project = await Project.get(id=body['projectId'])
-            job = await project.Jobs.filter(id=body['jobId']).first()  # noqa: E501 # type: ignore
+            # type: ignore
+            job = await project.get_jobs(id=body['jobId'])
+            job = job[0]
             if isReviewer:
                 job.assigned_reviewer = user  # type: ignore
             else:
