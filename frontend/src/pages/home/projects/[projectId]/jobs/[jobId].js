@@ -91,10 +91,10 @@ export default function JobPage({
       header: "Annotation",
       // size: 150,
       Cell: ({ cell }) => {
-        const { annotations } = cell.row.original;
+        const { annotations, _id } = cell.row.original;
         return (
-          <AvatarGroup max={3}>
-            {annotations.map((ann) => <Avatar name={ann.user.email} />)}
+          <AvatarGroup key={_id} max={3}>
+            {annotations.map((ann) => <Avatar key={ann.user.id} name={ann.user.email} />)}
           </AvatarGroup>
         );
       },
