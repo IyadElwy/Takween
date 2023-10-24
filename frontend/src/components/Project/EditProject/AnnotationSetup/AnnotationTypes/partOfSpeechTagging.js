@@ -9,13 +9,13 @@ import "react18-json-view/src/style.css";
 import LoadingSymbol from "../../../../Reusable/loadingSymbol";
 import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
-export default function PartOfSpeechSetup({ onClose, projectId }) {
+export default function PartOfSpeechSetup({ onClose, projectId, language }) {
   const [jobData, setJobData] = useState({
     type: "partOfSpeech",
     name: null,
     dataSource: null,
     fieldToAnnotate: null,
-    tags: [
+    tags: language === "English" ? [
       "Coordinating conjunction (CC)",
       "Cardinal number (CD)",
       "Determiner (DT)",
@@ -27,13 +27,33 @@ export default function PartOfSpeechSetup({ onClose, projectId }) {
       "Adverb (RB)",
       "to (TO)",
       "Interjection (UH)",
-    ],
+    ]
+      : [
+        "اسم (Noun)",
+        "اسم علم (Proper Noun)",
+        "فعل (Verb)",
+        "الماضي (Past Tense)",
+        "المضارع (Present Tense)",
+        "الأمر (Imperative)",
+        "اسم فاعل (Participle)",
+        "ضمير (Pronoun)",
+        "ضمير شخصي (Personal Pronoun)",
+        "ضمير اشارة (Demonstrative Pronoun)",
+        "صفة (Adjective)",
+        "ظرف (Adverb)",
+        "حرف جر (Preposition)",
+        "عطف (Conjunction)",
+        "عبارة استعجالية (Interjection)",
+        "عدد (Numeral)",
+        "حرف عام (Particle)",
+      ]
+    ,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [dataSources, setDataSources] = useState([]);
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currTagInput, setCurrTagInput] = useState("");
-  const [tags, setTags] = useState([
+  const [tags, setTags] = useState(language === "English" ? [
     "Coordinating conjunction (CC)",
     "Cardinal number (CD)",
     "Determiner (DT)",
@@ -45,7 +65,26 @@ export default function PartOfSpeechSetup({ onClose, projectId }) {
     "Adverb (RB)",
     "to (TO)",
     "Interjection (UH)",
-  ]);
+  ]
+    : [
+      "اسم (Noun)",
+      "اسم علم (Proper Noun)",
+      "فعل (Verb)",
+      "الماضي (Past Tense)",
+      "المضارع (Present Tense)",
+      "الأمر (Imperative)",
+      "اسم فاعل (Participle)",
+      "ضمير (Pronoun)",
+      "ضمير شخصي (Personal Pronoun)",
+      "ضمير اشارة (Demonstrative Pronoun)",
+      "صفة (Adjective)",
+      "ظرف (Adverb)",
+      "حرف جر (Preposition)",
+      "عطف (Conjunction)",
+      "عبارة استعجالية (Interjection)",
+      "عدد (Numeral)",
+      "حرف عام (Particle)",
+    ]);
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);

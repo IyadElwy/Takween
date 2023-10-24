@@ -5,7 +5,10 @@ import pandas as pd
 import json
 from enums.file_types import parse_to_enum as parse_file_type_enum, FileType
 from utils.files import get_file_type
-from utils.data import get_json_sample_from_file, convert_csv_to_json_and_save, convert_ndjson_to_json_and_save
+from utils.data import (get_json_sample_from_file,
+                        convert_csv_to_json_and_save,
+                        convert_ndjson_to_json_and_save,
+                        convert_tsv_to_json_and_save)
 
 
 router = APIRouter()
@@ -47,6 +50,9 @@ async def add_project_data(projectId, request: Request, files: list[UploadFile] 
                 f.write(file.file.read())
             if file_type == 'csv':
                 file_location = convert_csv_to_json_and_save(
+                    file_location)
+            if file_type == 'tsv':
+                file_location = convert_tsv_to_json_and_save(
                     file_location)
                 file_type = 'json'
             elif file_type == 'ndjson' or file_type == 'jsonl':

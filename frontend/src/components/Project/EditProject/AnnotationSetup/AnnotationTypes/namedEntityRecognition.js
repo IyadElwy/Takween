@@ -9,13 +9,13 @@ import "react18-json-view/src/style.css";
 import LoadingSymbol from "../../../../Reusable/loadingSymbol";
 import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
-export default function NamedEntityRecognitionSetup({ onClose, projectId }) {
+export default function NamedEntityRecognitionSetup({ onClose, projectId, language }) {
   const [jobData, setJobData] = useState({
     type: "namedEntityRecognition",
     name: null,
     dataSource: null,
     fieldToAnnotate: null,
-    tags: [
+    tags: language === "English" ? [
       "PERSON",
       "ORGANIZATION",
       "LOCATION",
@@ -33,13 +33,30 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId }) {
       "NORP (Nationalities or Religious/Political Groups)",
       "GPE (Geopolitical Entity)",
       "FACILITY",
+    ] : ["موقع جغرافي (Location)",
+      "شخص (Person)",
+      "منظمة (Organization)",
+      "تاريخ (Date)",
+      "وقت (Time)",
+      "عملة (Currency)",
+      "كمية (Quantity)",
+      "نسبة (Percentage)",
+      "رقم هاتف (Phone Number)",
+      "بريد إلكتروني (Email Address)",
+      "عنوان (Address)",
+      "مؤشر (Indicator)",
+      "حقوق (Rights)",
+      "توجيه (Direction)",
+      "حدث (Event)",
+      "منتج (Product)",
+      "غير مصنف (Unlabeled)",
     ],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [dataSources, setDataSources] = useState([]);
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currTagInput, setCurrTagInput] = useState("");
-  const [tags, setTags] = useState([
+  const [tags, setTags] = useState(language === "English" ? [
     "PERSON",
     "ORGANIZATION",
     "LOCATION",
@@ -57,6 +74,23 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId }) {
     "NORP (Nationalities or Religious/Political Groups)",
     "GPE (Geopolitical Entity)",
     "FACILITY",
+  ] : ["موقع جغرافي (Location)",
+    "شخص (Person)",
+    "منظمة (Organization)",
+    "تاريخ (Date)",
+    "وقت (Time)",
+    "عملة (Currency)",
+    "كمية (Quantity)",
+    "نسبة (Percentage)",
+    "رقم هاتف (Phone Number)",
+    "بريد إلكتروني (Email Address)",
+    "عنوان (Address)",
+    "مؤشر (Indicator)",
+    "حقوق (Rights)",
+    "توجيه (Direction)",
+    "حدث (Event)",
+    "منتج (Product)",
+    "غير مصنف (Unlabeled)",
   ]);
 
   // error states

@@ -31,6 +31,13 @@ def convert_csv_to_json_and_save(file_location: str):
     return new_file_location
 
 
+def convert_tsv_to_json_and_save(file_location: str):
+    new_file_location = file_location.replace('.tsv', '.json')
+    df = pd.read_csv(file_location, sep='\t')
+    df.to_json(new_file_location, 'records')
+    return new_file_location
+
+
 def convert_ndjson_to_json_and_save(file_location: str):
     new_file_location = file_location.replace('.csv', '.json')
 

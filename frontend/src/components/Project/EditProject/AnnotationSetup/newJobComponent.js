@@ -6,16 +6,35 @@ import PartOfSpeechSetup from "./AnnotationTypes/partOfSpeechTagging";
 import NamedEntityRecognitionSetup from "./AnnotationTypes/namedEntityRecognition";
 
 const getSetUpPage = (type, onClose, projectId) => {
-  switch (type) {
-    case "textClassification":
-      return <AnnotationSetupTextClassification onClose={onClose} projectId={projectId} />;
-    case "partOfSpeech":
-      return <PartOfSpeechSetup onClose={onClose} projectId={projectId} />;
-    case "namedEntityRecognition":
-      return <NamedEntityRecognitionSetup onClose={onClose} projectId={projectId} />;
-    default:
-      return null;
+  if (type.startsWith("textClassification")) {
+    return (
+      <AnnotationSetupTextClassification
+        onClose={onClose}
+        projectId={projectId}
+        language={type.split("textClassification")[1]}
+      />
+    );
   }
+  if (type.startsWith("partOfSpeech")) {
+    return (
+      <PartOfSpeechSetup
+        onClose={onClose}
+        projectId={projectId}
+        language={type.split("partOfSpeech")[1]}
+      />
+    );
+  }
+  if (type.startsWith("namedEntityRecognition")) {
+    return (
+      <NamedEntityRecognitionSetup
+        onClose={onClose}
+        projectId={projectId}
+        language={type.split("namedEntityRecognition")[1]}
+      />
+    );
+  }
+
+  return null;
 };
 
 export default function NewJobComponent({
