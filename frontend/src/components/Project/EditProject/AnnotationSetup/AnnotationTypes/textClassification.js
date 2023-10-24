@@ -9,7 +9,10 @@ import "react18-json-view/src/style.css";
 import LoadingSymbol from "../../../../Reusable/loadingSymbol";
 import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
-export default function TextClassificationSetup({ onClose, projectId, language }) {
+export default function TextClassificationSetup({
+  onClose, projectId,
+  // language,
+}) {
   const [jobData, setJobData] = useState({
     type: "textClassification",
     name: null,

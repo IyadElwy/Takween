@@ -94,7 +94,7 @@ export default function TextClassificationAnnotationComponent({
           </div>
         </div>
         <div className="relative h-full">
-          <div className="overflow-y-auto">
+          <div className="overflow-y-auto" style={{ height: "150px" }}>
             <div className="mr-3 ml-3 mt-3">
 
               {currentRow.original.allowMultiClassification
