@@ -12,6 +12,7 @@ import {
   Progress,
   Avatar, AvatarGroup,
   Chip,
+  Switch,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
@@ -40,6 +41,7 @@ export default function JobPage({
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
   const [currentDataToAnnotate, setCurrentDataToAnnotate] = useState(null);
   const [showDetailedSplit, setShowDetailedSplit] = useState(false);
+  const [onlyShowUnanotatedData, setOnlyShowUnanotatedData] = useState(true);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -61,7 +63,7 @@ export default function JobPage({
     const fetchData = async () => {
       setIsLoading(true);
 
-      const nextAnnotationData = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}`)).data;
+      const nextAnnotationData = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}&onlyShowUnanotatedData=${onlyShowUnanotatedData}`)).data;
       setAnnotationData(nextAnnotationData.data);
       setAnnotatedDataCount(nextAnnotationData.finishedAnnotations);
       setIsLoading(false);
@@ -72,6 +74,7 @@ export default function JobPage({
     pagination.pageIndex,
     pagination.pageSize,
     showDetailedSplit,
+    onlyShowUnanotatedData,
   ]);
 
   const handlePaginationChange = (newPagination) => {
@@ -135,7 +138,7 @@ export default function JobPage({
               src="/images/magnifier.svg"
               width={25}
             />
-            {cell.row.original.conflict && (
+            {cell.row.original.conflict && job.assigned_reviewer_id === user.id && (
             <Image
               className={`${closerLookButtonStyles.burgerMenu} ml-5`}
               alt="nextui logo"
@@ -414,6 +417,17 @@ export default function JobPage({
 
                 </DropdownMenu>
               </Dropdown>
+
+              <Switch
+                onChange={(e) => { e.preventDefault(); }}
+                isSelected={onlyShowUnanotatedData}
+                onValueChange={(value) => {
+                  setOnlyShowUnanotatedData(value);
+                }}
+
+              >
+                Only show Un-annotated Data
+              </Switch>
               {job.assigned_reviewer_id === user.id && <Chip className="mt-1 ml-2" color="warning">Reviewer</Chip>}
 
             </div>
@@ -485,7 +499,7 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
-    const firstAnnotationDataBatch = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${0}&itemsPerPage=${10}`, {
+    const firstAnnotationDataBatch = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${0}&itemsPerPage=${10}&onlyShowUnanotatedData=${true}`, {
       accessToken: accessToken || "",
     })).data;
 

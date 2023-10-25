@@ -24,7 +24,7 @@ router = APIRouter()
 
 
 @router.get("/projects/{projectId}/jobs/{jobId}/annotations")
-async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
+async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, onlyShowUnanotatedData: bool):
     try:
         project = await Project.get(id=projectId)
         job = await project.get_jobs(id=jobId)  # type: ignore
@@ -33,7 +33,14 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int,):
 
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
-        data = collection.find().sort([('_id', pymongo.ASCENDING)]).skip(
+        custom_filter = {
+            "$or": [
+                {"annotations": {"$exists": True, "$eq": []}},
+                {"annotations": {"$exists": False}}
+            ]
+        } if onlyShowUnanotatedData else {}
+
+        data = collection.find(custom_filter).sort([('_id', pymongo.ASCENDING)]).skip(
             starting_line).limit(itemsPerPage)
 
         # number of finished annotations
