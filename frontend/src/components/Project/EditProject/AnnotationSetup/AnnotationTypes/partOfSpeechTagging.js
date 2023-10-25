@@ -15,45 +15,14 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
     name: null,
     dataSource: null,
     fieldToAnnotate: null,
-    tags: language === "English" ? [
-      "Coordinating conjunction (CC)",
-      "Cardinal number (CD)",
-      "Determiner (DT)",
-      "Preposition or subordinating conjunction (IN)",
-      "Adjective (JJ)",
-      "Noun, singular or mass (NN)",
-      "Personal pronoun (PRP)",
-      "Verb, base form (VB)",
-      "Adverb (RB)",
-      "to (TO)",
-      "Interjection (UH)",
-    ]
-      : [
-        "اسم (Noun)",
-        "اسم علم (Proper Noun)",
-        "فعل (Verb)",
-        "الماضي (Past Tense)",
-        "المضارع (Present Tense)",
-        "الأمر (Imperative)",
-        "اسم فاعل (Participle)",
-        "ضمير (Pronoun)",
-        "ضمير شخصي (Personal Pronoun)",
-        "ضمير اشارة (Demonstrative Pronoun)",
-        "صفة (Adjective)",
-        "ظرف (Adverb)",
-        "حرف جر (Preposition)",
-        "عطف (Conjunction)",
-        "عبارة استعجالية (Interjection)",
-        "عدد (Numeral)",
-        "حرف عام (Particle)",
-      ]
-    ,
+    tags: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [dataSources, setDataSources] = useState([]);
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currTagInput, setCurrTagInput] = useState("");
-  const [tags, setTags] = useState(language === "English" ? [
+  const [tags, setTags] = useState([]);
+  const suggestionTags = [
     "Coordinating conjunction (CC)",
     "Cardinal number (CD)",
     "Determiner (DT)",
@@ -65,26 +34,7 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
     "Adverb (RB)",
     "to (TO)",
     "Interjection (UH)",
-  ]
-    : [
-      "اسم (Noun)",
-      "اسم علم (Proper Noun)",
-      "فعل (Verb)",
-      "الماضي (Past Tense)",
-      "المضارع (Present Tense)",
-      "الأمر (Imperative)",
-      "اسم فاعل (Participle)",
-      "ضمير (Pronoun)",
-      "ضمير شخصي (Personal Pronoun)",
-      "ضمير اشارة (Demonstrative Pronoun)",
-      "صفة (Adjective)",
-      "ظرف (Adverb)",
-      "حرف جر (Preposition)",
-      "عطف (Conjunction)",
-      "عبارة استعجالية (Interjection)",
-      "عدد (Numeral)",
-      "حرف عام (Particle)",
-    ]);
+  ];
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -194,6 +144,24 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
 
           <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Add Tags</h1>
           <div className="flex flex-col">
+            <h1 style={{ fontSize: "20px", marginBottom: "15px" }}>Suggestions</h1>
+            <div className="flex flex-wrap gap-2 mt-3">
+
+              {suggestionTags.map((tagChip) => (
+                <Chip
+                  style={{ cursor: "pointer" }}
+                  key={tagChip}
+                  onClick={() => {
+                    setTags([...tags, tagChip]);
+                    setJobData({ ...jobData, tags: [...tags, tagChip] });
+                  }}
+                  variant="flat"
+                >
+                  {tagChip}
+                </Chip>
+              ))}
+            </div>
+
             <div className="bg-300 p-4">
               <Input
                 type="text"

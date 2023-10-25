@@ -15,48 +15,14 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
     name: null,
     dataSource: null,
     fieldToAnnotate: null,
-    tags: language === "English" ? [
-      "PERSON",
-      "ORGANIZATION",
-      "LOCATION",
-      "DATE",
-      "TIME",
-      "MONEY",
-      "PERCENT",
-      "MEASUREMENTS",
-      "ORDINAL",
-      "CARDINAL",
-      "EVENT",
-      "ARTIFACT",
-      "LAW",
-      "LANGUAGE",
-      "NORP (Nationalities or Religious/Political Groups)",
-      "GPE (Geopolitical Entity)",
-      "FACILITY",
-    ] : ["موقع جغرافي (Location)",
-      "شخص (Person)",
-      "منظمة (Organization)",
-      "تاريخ (Date)",
-      "وقت (Time)",
-      "عملة (Currency)",
-      "كمية (Quantity)",
-      "نسبة (Percentage)",
-      "رقم هاتف (Phone Number)",
-      "بريد إلكتروني (Email Address)",
-      "عنوان (Address)",
-      "مؤشر (Indicator)",
-      "حقوق (Rights)",
-      "توجيه (Direction)",
-      "حدث (Event)",
-      "منتج (Product)",
-      "غير مصنف (Unlabeled)",
-    ],
+    tags: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [dataSources, setDataSources] = useState([]);
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currTagInput, setCurrTagInput] = useState("");
-  const [tags, setTags] = useState(language === "English" ? [
+  const [tags, setTags] = useState([]);
+  const suggestionTags = [
     "PERSON",
     "ORGANIZATION",
     "LOCATION",
@@ -74,24 +40,7 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
     "NORP (Nationalities or Religious/Political Groups)",
     "GPE (Geopolitical Entity)",
     "FACILITY",
-  ] : ["موقع جغرافي (Location)",
-    "شخص (Person)",
-    "منظمة (Organization)",
-    "تاريخ (Date)",
-    "وقت (Time)",
-    "عملة (Currency)",
-    "كمية (Quantity)",
-    "نسبة (Percentage)",
-    "رقم هاتف (Phone Number)",
-    "بريد إلكتروني (Email Address)",
-    "عنوان (Address)",
-    "مؤشر (Indicator)",
-    "حقوق (Rights)",
-    "توجيه (Direction)",
-    "حدث (Event)",
-    "منتج (Product)",
-    "غير مصنف (Unlabeled)",
-  ]);
+  ];
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -200,6 +149,28 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
         <div>
 
           <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Add Tags</h1>
+          <div className="flex flex-col">
+
+            <h1 style={{ fontSize: "20px", marginBottom: "15px" }}>Suggestions</h1>
+            <div className="flex flex-wrap gap-2 mt-3">
+
+              {suggestionTags.map((tagChip) => (
+                <Chip
+                  style={{ cursor: "pointer" }}
+                  key={tagChip}
+                  onClick={() => {
+                    setTags([...tags, tagChip]);
+                    setJobData({ ...jobData, tags: [...tags, tagChip] });
+                  }}
+                  variant="flat"
+                >
+                  {tagChip}
+                </Chip>
+              ))}
+            </div>
+
+          </div>
+
           <div className="flex flex-col">
             <div className="bg-300 p-4">
               <Input
