@@ -31,6 +31,7 @@ export default function NamedEntityRecognitionComponent({
   setAnnotatedDataCount,
   projectId,
   jobId,
+  job,
 }) {
   const allUserAnnotations = currentRow.original.annotations;
   const [selectedUserId, setSelectedUserId] = useState(new Set([user.id]));
@@ -129,7 +130,7 @@ export default function NamedEntityRecognitionComponent({
               <SelectItem key={user.id} value={user.id}>
                 {user.email}
               </SelectItem>
-              {allUserAnnotations.filter((currUserAnnotation) => currUserAnnotation.user.id !== user.id).map((currUserAnnotation) => (
+              {job.assigned_reviewer_id === user.id && allUserAnnotations.filter((currUserAnnotation) => currUserAnnotation.user.id !== user.id).map((currUserAnnotation) => (
                 <SelectItem key={currUserAnnotation.user.id} value={currUserAnnotation.user.id}>
                   {currUserAnnotation.user.email}
                 </SelectItem>

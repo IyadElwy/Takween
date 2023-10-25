@@ -453,6 +453,7 @@ export default function JobPage({
                 type={job.type}
                 annotatedDataCount={annotatedDataCount}
                 setAnnotatedDataCount={setAnnotatedDataCount}
+                job={job}
               />
             </Allotment>
           ) : mainBody()}
