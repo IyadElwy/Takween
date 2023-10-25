@@ -42,7 +42,13 @@ export default function ProjectDetailPage({
         return <NewJobComponent projectId={projectId} onClose={onClose} />;
 
       case "manageUsers":
-        return <ManageUsersComponent projectId={projectId} onClose={onClose} />;
+        return (
+          <ManageUsersComponent
+            projectId={projectId}
+            onClose={onClose}
+            projectCreatedById={project.created_by_id}
+          />
+        );
 
       default:
         return null;

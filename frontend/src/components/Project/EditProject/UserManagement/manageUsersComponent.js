@@ -28,7 +28,7 @@ const columns = [
   { name: "CREATE JOBS", uid: "createJobs" },
 ];
 
-export default function ManageUsersComponent({ onClose, projectId }) {
+export default function ManageUsersComponent({ onClose, projectId, projectCreatedById }) {
   const [isLoading, setIsLoading] = useState(false);
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -98,6 +98,7 @@ export default function ManageUsersComponent({ onClose, projectId }) {
           <Switch
             onChange={(e) => { e.preventDefault(); }}
             isSelected={user.isMember}
+            isDisabled={user.id === projectCreatedById}
             onValueChange={async (value) => {
               (await AxiosWrapper.patch(`http://127.0.0.1:8000/users/${user.id}`, {
                 projectId,
@@ -114,6 +115,7 @@ export default function ManageUsersComponent({ onClose, projectId }) {
           <Switch
             onChange={(e) => { e.preventDefault(); }}
             isSelected={user.addData}
+            isDisabled={user.id === projectCreatedById}
             onValueChange={async (value) => {
               if (user.isMember) {
                 (await AxiosWrapper.patch(`http://127.0.0.1:8000/users/${user.id}`, { addData: value }));
@@ -128,6 +130,7 @@ export default function ManageUsersComponent({ onClose, projectId }) {
         return (
           <Switch
             onChange={(e) => { e.preventDefault(); }}
+            isDisabled={user.id === projectCreatedById}
             isSelected={user.createJobs}
             onValueChange={async (value) => {
               if (user.isMember) {
