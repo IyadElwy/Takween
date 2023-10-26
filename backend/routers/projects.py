@@ -14,7 +14,14 @@ async def get_all_projects(request: Request):
 
         projects = await Project.filter(assigned_users=user)
 
-        return projects
+        final_projects = []
+        for project in projects:
+            curr_proj = dict(project)
+            assigned_users = await projects[0].assigned_users.all()
+            final_projects.append(
+                {**curr_proj, "assigned_users": assigned_users})
+
+        return final_projects
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.middleware.cors import CORSMiddleware
-from routers import data_sources, jobs, projects, annotations, authentication, users
+from routers import data_sources, jobs, projects, annotations, authentication, users, data_collection
 from middleware.authentication import authenticate_user
 
 app = FastAPI()
@@ -25,6 +25,7 @@ register_tortoise(
 app.include_router(authentication.router)
 app.include_router(users.router)
 app.include_router(projects.router)
+app.include_router(data_collection.router)
 app.include_router(jobs.router)
 app.include_router(data_sources.router)
 app.include_router(annotations.router)

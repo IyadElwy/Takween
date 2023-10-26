@@ -1,7 +1,13 @@
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
+import {
+  ListItemButton, ListItemText, List,
+} from "@mui/material";
+import Link from "next/link";
 import Logo from "../logo";
+import DataCollectionIcon from "../../Icons/dataCollectionIcon";
+import ProjectsIcon from "../../Icons/projectIcon";
 
 export default function SideBar({ drawerState, setDrawerState }) {
   return (
@@ -30,11 +36,26 @@ export default function SideBar({ drawerState, setDrawerState }) {
             />
             <p className="font-bold text-inherit">Multi Modal Lab</p>
           </div>
-
           <Divider />
-
         </Box>
+        <List>
+          <List>
+            <Link href="/home/projects">
+              <ListItemButton key="projects" disablePadding>
+                <ProjectsIcon />
+                <ListItemText primary="Projects" className="ml-3" />
+              </ListItemButton>
+            </Link>
+            <Link href="/home/data-collection">
+              <ListItemButton key="dataCollection" disablePadding>
+                <DataCollectionIcon />
+                <ListItemText primary="Data Collection" className="ml-3" />
+              </ListItemButton>
+            </Link>
+          </List>
+        </List>
       </Drawer>
+
     </div>
   );
 }
