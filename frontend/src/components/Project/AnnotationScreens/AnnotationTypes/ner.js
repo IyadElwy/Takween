@@ -13,7 +13,7 @@ import {
 
   Select, SelectItem,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import randomColor from "randomcolor";
 import AxiosWrapper from "../../../../utils/axiosWrapper";
 
@@ -38,10 +38,86 @@ export default function NamedEntityRecognitionComponent({
 
   // const [highlightedText, setHighlightedText] = useState(selectedAnnotations?.tags || []);
   const [tags] = useState(currentRow.original.tags.map((currTag) => ({ tagName: currTag, color: randomColor({ luminosity: "light" }) })));
-
-  console.log(tags);
-
   const [currentTag, setCurrentTag] = useState(tags[0]);
+
+  // useEffect(() => {
+  //   const highlightedArray = selectedAnnotations.tags;
+  //   if (!highlightedArray) return;
+
+  //   const divWithText = document.getElementById("theText");
+  //   const textToHighlight = divWithText.innerText.replace(/[.,;:!?()\[\]{}"'`<>/\\|~#&$%^*@+=]/g, "");
+
+  //   const v = textToHighlight.split(" ").filter(Boolean).map((word) => {
+  //     const theWord = word.replace(/[.,;:!?()\[\]{}"'`<>/\\|~#&$%^*@+=]/g, "");
+
+  //     for (let index = 0; index < highlightedArray.length; index += 1) {
+  //       const wordToHighlight = highlightedArray[index].text;
+
+  //       if (wordToHighlight.includes(theWord)) {
+  //         const highlightedText = document.createElement("span");
+  //         const tagInfo = tags.find((currT) => currT.tagName === highlightedArray[index].tag);
+  //         highlightedText.style.backgroundColor = tagInfo.color;
+  //         highlightedText.textContent = `${theWord} `;
+  //         return highlightedText;
+  //       }
+  //     }
+  //     return document.createTextNode(`${word} `);
+  //   });
+
+  //   divWithText.innerText = "";
+  //   v.forEach((htmlContent, index) => {
+  //     divWithText.appendChild(htmlContent);
+  //   });
+
+  //   // const elementsToAdd = highlightedArray.map((highlight) => {
+  //   //   const { text, tag } = highlight;
+  //   //   const startIndex = divWithText.innerHTML.indexOf(text);
+  //   //   const endIndex = startIndex + text.length;
+  //   //   // const startIndex = textToHighlight.indexOf(text);
+  //   //   // const endIndex = startIndex + text.length;
+
+  //   //   if (startIndex >= 0) {
+  //   //     const beforeElement = document.createTextNode(divWithText.innerHTML.substring(0, startIndex));
+  //   //     const afterElement = document.createTextNode(divWithText.innerHTML.substring(endIndex));
+  //   //     // console.log(afterElement);
+  //   //     // const beforeText = document.createTextNode(textToHighlight.substring(0, startIndex));
+  //   //     // const afterText = document.createTextNode(textToHighlight.substring(endIndex));
+
+  //   //     const highlightedText = document.createElement("span");
+  //   //     const tagInfo = tags.find((currT) => currT.tagName === tag);
+  //   //     highlightedText.style.backgroundColor = tagInfo.color;
+  //   //     highlightedText.textContent = text;
+  //   //   }
+  //   // });
+
+  //   // highlightedArray.forEach((highlight) => {
+  //   //   const { text, tag } = highlight;
+  //   //   const startIndex = divWithText.innerHTML.indexOf(text);
+  //   //   const endIndex = startIndex + text.length;
+  //   //   // const startIndex = textToHighlight.indexOf(text);
+  //   //   // const endIndex = startIndex + text.length;
+
+  //   //   if (startIndex >= 0) {
+  //   //     const beforeElement = document.createTextNode(divWithText.innerHTML.substring(0, startIndex));
+  //   //     const afterElement = document.createTextNode(divWithText.innerHTML.substring(endIndex));
+  //   //     // console.log(afterElement);
+  //   //     // const beforeText = document.createTextNode(textToHighlight.substring(0, startIndex));
+  //   //     // const afterText = document.createTextNode(textToHighlight.substring(endIndex));
+
+  //   //     const highlightedText = document.createElement("span");
+  //   //     const tagInfo = tags.find((currT) => currT.tagName === tag);
+  //   //     highlightedText.style.backgroundColor = tagInfo.color;
+  //   //     highlightedText.textContent = text;
+
+  //   //     divWithText.innerHTML = "";
+  //   //     divWithText.appendChild(beforeElement);
+  //   //     // divWithText.appendChild(beforeText);
+  //   //     divWithText.appendChild(highlightedText);
+  //   //     divWithText.appendChild(afterElement);
+  //   //     // divWithText.appendChild(afterText);
+  //   //   }
+  //   // });
+  // }, [getNextRow, getPreviousRow]);
 
   const handleTextHighlight = () => {
     try {
@@ -52,6 +128,7 @@ export default function NamedEntityRecognitionComponent({
 
       if (range && range.startContainer === range.endContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
         const clonedRange = range.cloneRange();
+        // console.log(clonedRange);
         if (clonedRange.toString() === "") return;
 
         const highlightData = {
