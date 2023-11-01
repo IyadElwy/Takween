@@ -72,5 +72,4 @@ async def get_user_by_id(id, request: Request):
         return user
 
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))

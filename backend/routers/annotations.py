@@ -75,9 +75,6 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
         }
 
     except Exception as e:
-        print('========================')
-        print(e)
-        print('====================')
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -143,7 +140,6 @@ async def merge_and_export_data(projectId, jobId):
         return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
 
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

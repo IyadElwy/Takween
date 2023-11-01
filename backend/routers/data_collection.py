@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi import HTTPException
 from data_extractors.youtube_api import extract_data_from_youtube_api
+from data_extractors.wikipedia import extract_data_from_wikipedia
 import uuid
 from utils.data import convert_ndjson_to_json_and_save
 from enums.file_types import parse_to_enum as parse_file_type_enum
@@ -28,13 +29,27 @@ async def collect_data(request: Request):
                 file_location = convert_ndjson_to_json_and_save(file_path)
                 created_file_data_source = await FileDataSource.create(file_name=f'youtube-{data_name}',
                                                                        file_type=parse_file_type_enum(
-                                                                           'json'),  # type: ignore
+                                                                           'json'),
                                                                        location=file_location,
                                                                        size=os.path.getsize(
                                                                            file_location),
                                                                        project=project,
                                                                        created_by=user)
                 return created_file_data_source
+
+            case 'wikipedia':
+                file_path = f'data/wikipedia-{data_name}-{uuid.uuid4()}.ndjson'
+                extract_data_from_wikipedia(job_data, file_path)
+                file_location = convert_ndjson_to_json_and_save(file_path)
+                created_file_data_source = await FileDataSource.create(file_name=f'wikipedia-{data_name}',
+                                                                       file_type=parse_file_type_enum(
+                                                                           'json'),
+                                                                       location=file_location,
+                                                                       size=os.path.getsize(
+                                                                           file_location),
+                                                                       project=project,
+                                                                       created_by=user)
+                return created_file_data_source
+
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))

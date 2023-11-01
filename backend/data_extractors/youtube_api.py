@@ -1,6 +1,7 @@
 import requests
 import json
 from time import sleep
+import copy
 
 base_url = "https://youtube.googleapis.com/youtube/v3/search?part=snippet"
 comments_base_url = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies"
@@ -30,7 +31,6 @@ def extract_data_from_youtube_api(parameters, file_path):
                 'title': video['snippet']['title'],
                 'publishedAt': video['snippet']['publishedAt'],
                 'description': video['snippet']['description'],
-                'channelTitle': video.get('channelTitle'),
                 "comments": []}
             comment_count = 0
             video_id = video['id']['videoId']
@@ -58,7 +58,20 @@ def extract_data_from_youtube_api(parameters, file_path):
                 comment_count += 1
 
             with open(file_path, '+a') as file:
-                file.write(json.dumps(curr_video_info) + '\n')
+                curr_video_info_copy = copy.deepcopy(curr_video_info)
+                del curr_video_info_copy['comments']
+                final_comments = list()
+                for comment_sec in curr_video_info['comments']:
+                    for comment in comment_sec:
+                        final_comments.append(comment)
+
+                unique_dict_set = set(tuple(sorted(d.items()))
+                                      for d in final_comments)
+                unique_dicts = [dict(t) for t in unique_dict_set]
+
+                for comment in unique_dicts:
+                    file.write(json.dumps(
+                        {"comment": comment, **curr_video_info_copy}) + '\n')
 
         nextPageTokenVideos = videos.get('nextPageToken')
         if nextPageTokenVideos and _page_index == 0:

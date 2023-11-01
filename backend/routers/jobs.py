@@ -31,7 +31,6 @@ async def get_project_jobs(id, request: Request):
                                       Q(created_by=user))
         return {'jobs': set(jobs)}
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -137,7 +136,6 @@ async def get_project_job_by_id(projectId, jobId):
         job = job[0]
         return {'job': job}
     except Exception as e:
-        # print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
