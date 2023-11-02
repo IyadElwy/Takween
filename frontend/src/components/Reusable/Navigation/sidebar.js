@@ -8,6 +8,7 @@ import Link from "next/link";
 import Logo from "../logo";
 import DataCollectionIcon from "../../Icons/dataCollectionIcon";
 import ProjectsIcon from "../../Icons/projectIcon";
+import DataProcessing from "../../Icons/processingIcon";
 
 export default function SideBar({ drawerState, setDrawerState }) {
   return (
@@ -50,6 +51,12 @@ export default function SideBar({ drawerState, setDrawerState }) {
               <ListItemButton key="dataCollection" disablePadding>
                 <DataCollectionIcon />
                 <ListItemText primary="Data Collection" className="ml-3" />
+              </ListItemButton>
+            </Link>
+            <Link href="/home/data-processing">
+              <ListItemButton key="dataProcessing" disablePadding>
+                <DataProcessing />
+                <ListItemText primary="Data Processing" className="ml-3" />
               </ListItemButton>
             </Link>
           </List>

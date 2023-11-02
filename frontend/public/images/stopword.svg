@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">
+    <text x="0" y="0" font-family="Arial" font-size="100" fill="black">
+        <tspan x="400" dy="1.5em">و</tspan>
+        <tspan x="250" dy="1.5em">في</tspan>
+        <tspan x="100" dy="1.5em">من</tspan>
+        <tspan x="10" dy="1.5em"></tspan>
+    </text>
+</svg>
