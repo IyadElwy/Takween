@@ -58,6 +58,8 @@ async def add_project_data(projectId, request: Request, files: list[UploadFile] 
             elif file_type == 'ndjson' or file_type == 'jsonl':
                 file_location = convert_ndjson_to_json_and_save(file_location)
                 file_type = 'json'
+            elif file_type == 'json':
+                pass
             else:
                 raise Exception("File type not supported")
 
