@@ -6,6 +6,7 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import cookieParse from "cookie-parse";
+import humanizeString from "humanize-string";
 import Navigation from "../../components/Reusable/Navigation/navBarSideBar";
 import LoadingSymbol from "../../components/Reusable/loadingSymbol";
 import AxiosWrapper from "../../utils/axiosWrapper";
@@ -33,7 +34,10 @@ export default function DataProcessing({ projects, user }) {
     if (status === "Done") {
       return (
         <div className="flex items-center justify-center h-screen">
-          <p className="text-4xl text-center">Data Processing Successful!</p>
+          <p className="text-4xl text-center">
+            {humanizeString(modalComponent)}
+            Processing Successful!
+          </p>
         </div>
       );
     }
