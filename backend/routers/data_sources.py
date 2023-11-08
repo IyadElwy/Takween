@@ -9,7 +9,7 @@ from utils.data import (get_json_sample_from_file,
                         convert_csv_to_json_and_save,
                         convert_ndjson_to_json_and_save,
                         convert_tsv_to_json_and_save)
-
+from fastapi.responses import FileResponse
 
 router = APIRouter()
 
@@ -29,6 +29,16 @@ async def get_project_data_sources(projectId, request: Request):
 
         return file_data_sources_list
 
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/projects/{projectId}/file-data-sources/{data_source_id}")
+async def download_project(projectId, data_source_id):
+    try:
+        data_source = await FileDataSource.filter(id=data_source_id).first()
+        print(data_source.location)
+        return FileResponse(data_source.location, headers={"Content-Disposition": f"attachment; filename=data.json"})
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

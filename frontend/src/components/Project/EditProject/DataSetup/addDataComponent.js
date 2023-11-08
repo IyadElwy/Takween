@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable camelcase */
 /* eslint-disable max-len */
 import {
   Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
@@ -7,9 +9,10 @@ import { useState, useRef, useEffect } from "react";
 import SplitPane from "react-split-pane-v2";
 import JsonView from "react18-json-view";
 import "react18-json-view/src/style.css";
+import Image from "next/image";
 import AxiosWrapper from "../../../../utils/axiosWrapper";
-
 import LoadingSymbol from "../../../Reusable/loadingSymbol";
+import closerLookButtonStyles from "../../../../styles/components/Reusable/navbar.module.css";
 
 export default function AddDataComponent({
   onClose,
@@ -72,6 +75,28 @@ export default function AddDataComponent({
     }
   };
 
+  const handleDownload = async (dsId) => {
+    setIsLoading(true);
+    try {
+      const response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/file-data-sources/${dsId}`, {
+        responseType: "blob",
+      }));
+
+      if (response.status === 200) {
+        const blob = await response.data;
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "data.json";
+        a.click();
+      }
+    } catch (theError) {
+      console.error("Export failed:", theError);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const getCurrentFile = () => selectedFiles.find((file) => file.id === selectedFileKey.currentKey);
 
   const getDataSampleView = () => {
@@ -80,6 +105,13 @@ export default function AddDataComponent({
       <JsonView src={currentFile.exampleData} />
     );
   };
+
+  function truncate_with_ellipsis(s, maxLength) {
+    if (s.length > maxLength) {
+      return `${s.substring(0, maxLength)}...`;
+    }
+    return s;
+  }
 
   return (
     isLoading ? <LoadingSymbol height={200} width={200} /> : (
@@ -107,6 +139,7 @@ export default function AddDataComponent({
                 <TableColumn>File Name</TableColumn>
                 <TableColumn>Type</TableColumn>
                 <TableColumn>Size</TableColumn>
+                <TableColumn>Download</TableColumn>
               </TableHeader>
               <TableBody emptyContent="No rows to display.">
                 {selectedFiles.map((file) => {
@@ -115,12 +148,32 @@ export default function AddDataComponent({
                   } = file;
                   return (
                     <TableRow key={id}>
-                      <TableCell>{name}</TableCell>
+                      <TableCell>
+                        {truncate_with_ellipsis(name, 20)}
+                        {" "}
+                      </TableCell>
                       <TableCell>{type}</TableCell>
                       <TableCell>
                         {byteSize(size).value}
                         {" "}
                         {byteSize(size).unit}
+                      </TableCell>
+                      <TableCell>
+                        <center>
+                          {" "}
+                          <Image
+                            className={closerLookButtonStyles.burgerMenu}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownload(id);
+                            }}
+                            alt="nextui logo"
+                            height={25}
+                            radius="sm"
+                            src="/images/download.svg"
+                            width={25}
+                          />
+                        </center>
                       </TableCell>
                     </TableRow>
                   );
