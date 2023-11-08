@@ -154,16 +154,16 @@ export default function JobPage({
     },
   ];
 
-  const handleExport = async (merge = false) => {
+  const handleExport = async (type, merge = false) => {
     setIsLoading(true);
     try {
       let response;
       if (merge) {
-        response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/merge/export`, {
+        response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/merge/export?type=${type}`, {
           responseType: "blob",
         }));
       } else {
-        response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export`, {
+        response = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations/export?type=${type}`, {
           responseType: "blob",
         }));
       }
@@ -172,7 +172,7 @@ export default function JobPage({
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "data.ndjson";
+        a.download = `data.${type}`;
         a.click();
       } else {
         console.error("Export failed.");
@@ -346,7 +346,7 @@ export default function JobPage({
                 <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
                   <DropdownSection title="Actions">
                     <DropdownItem
-                      onClick={() => handleExport(false)}
+                      onClick={() => handleExport("ndjson", false)}
                       key="export"
                       description="Export Annotated Data"
                       startContent={(
@@ -355,12 +355,29 @@ export default function JobPage({
                           alt="nextui logo"
                           height={25}
                           radius="sm"
-                          src="/images/export.svg"
+                          src="/images/json.svg"
                           width={25}
                         />
                   )}
                     >
-                      Export
+                      Export as NdJson
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() => handleExport("csv", false)}
+                      key="export"
+                      description="Export Annotated Data"
+                      startContent={(
+                        <Image
+                          className={closerLookButtonStyles.burgerMenu}
+                          alt="nextui logo"
+                          height={25}
+                          radius="sm"
+                          src="/images/csv.svg"
+                          width={25}
+                        />
+                  )}
+                    >
+                      Export as CSV
                     </DropdownItem>
 
                     {user.id === job.created_by_id && (
@@ -379,7 +396,7 @@ export default function JobPage({
                   {job.assigned_reviewer_id === user.id && (
                   <DropdownSection>
                     <DropdownItem
-                      onClick={() => handleExport(true)}
+                      onClick={() => handleExport("ndjson", true)}
                       key="merge"
                       className="text-warning"
                       color="warning"

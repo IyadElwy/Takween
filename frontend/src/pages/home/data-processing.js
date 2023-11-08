@@ -7,6 +7,7 @@ import {
 import Image from "next/image";
 import cookieParse from "cookie-parse";
 import humanizeString from "humanize-string";
+import Link from "next/link";
 import Navigation from "../../components/Reusable/Navigation/navBarSideBar";
 import LoadingSymbol from "../../components/Reusable/loadingSymbol";
 import AxiosWrapper from "../../utils/axiosWrapper";
@@ -33,12 +34,20 @@ export default function DataProcessing({ projects, user }) {
   const getCurrentModalComponent = (onClose) => {
     if (status === "Done") {
       return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center justify-center h-screen">
           <p className="text-4xl text-center">
             {humanizeString(modalComponent)}
-            Processing Successful!
+            {" "}
+            Successful!
           </p>
+          <br />
+          <Link href="#d">
+            <p className="text-2xl text-center" style={{ color: "blue", textDecoration: "underline" }}>
+              See Data
+            </p>
+          </Link>
         </div>
+
       );
     }
 

@@ -79,7 +79,7 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
 
 
 @router.get("/projects/{projectId}/jobs/{jobId}/annotations/export")
-async def export_data(projectId, jobId):
+async def export_data(projectId, jobId, type):
     try:
         project = await Project.get(id=projectId)
         job = await project.get_jobs(id=jobId)  # type: ignore
@@ -89,10 +89,19 @@ async def export_data(projectId, jobId):
         data_query = collection.find()
 
         random_id = uuid.uuid4()
-        temp_file_path = f'annotations/temp/{collection_name}-{random_id}-data.ndjson'
-        with open(temp_file_path, 'a+') as temp:
+        temp_file_path = f'annotations/temp/{collection_name}-{random_id}-data.{type}'
+
+        if type == 'ndjson':
+            with open(temp_file_path, 'a+') as temp:
+                for item in data_query:
+                    temp.write(json.dumps(dict(item)) + '\n')
+        else:
+            data = []
             for item in data_query:
-                temp.write(json.dumps(dict(item)) + '\n')
+                data.append(dict(item))
+
+            df = pd.DataFrame(data)
+            df.to_csv(temp_file_path, index=False)
 
         return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
 
