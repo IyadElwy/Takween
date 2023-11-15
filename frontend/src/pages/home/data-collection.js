@@ -10,6 +10,8 @@ import LoadingSymbol from "../../components/Reusable/loadingSymbol";
 import AxiosWrapper from "../../utils/axiosWrapper";
 import YoutubeDataCollection from "../../components/DataCollection/youtube";
 import WikipediaDataCollection from "../../components/DataCollection/wikipedia";
+import Ocr from "../../components/DataCollection/ocr";
+import Speech from "../../components/DataCollection/speech";
 
 export default function DataCollectionPage({ projects, user }) {
   const {
@@ -49,6 +51,30 @@ export default function DataCollectionPage({ projects, user }) {
       case "wikipedia":
         return (
           <WikipediaDataCollection
+            onClose={onClose}
+            projects={projects}
+            user={user}
+            setIsLoading={setIsLoading}
+            setStatus={setStatus}
+            status={status}
+          />
+        );
+
+      case "ocr":
+        return (
+          <Ocr
+            onClose={onClose}
+            projects={projects}
+            user={user}
+            setIsLoading={setIsLoading}
+            setStatus={setStatus}
+            status={status}
+          />
+        );
+
+      case "speech":
+        return (
+          <Speech
             onClose={onClose}
             projects={projects}
             user={user}
@@ -134,6 +160,50 @@ export default function DataCollectionPage({ projects, user }) {
               height={220}
               style={{ padding: "20px" }}
               src="/images/wikipedia.png"
+              width={220}
+            />
+          </Card>
+        </div>
+
+        <div key="ocr" className="p-4">
+          <Card
+            isFooterBlurred
+            radius="lg"
+            isPressable
+            className="border-none"
+            onPress={() => {
+              setModalComponent("ocr");
+              onOpen();
+            }}
+          >
+            <Image
+              alt="ocr"
+              className="object-cover"
+              height={220}
+              style={{ padding: "20px" }}
+              src="/images/ocr.svg"
+              width={220}
+            />
+          </Card>
+        </div>
+
+        <div key="speech" className="p-4">
+          <Card
+            isFooterBlurred
+            radius="lg"
+            isPressable
+            className="border-none"
+            onPress={() => {
+              setModalComponent("speech");
+              onOpen();
+            }}
+          >
+            <Image
+              alt="speech"
+              className="object-cover"
+              height={220}
+              style={{ padding: "20px" }}
+              src="/images/speech.svg"
               width={220}
             />
           </Card>

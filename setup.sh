@@ -13,3 +13,5 @@ cd ..
 
 cd frontend || exit
 npm install
+
+sudo apt-get install tesseract-ocr
