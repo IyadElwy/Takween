@@ -9,6 +9,7 @@ import json
 import uuid
 import copy
 from deepdiff import DeepDiff
+from datetime import datetime
 
 
 load_dotenv()
@@ -182,7 +183,9 @@ async def create_annotation(projectId, jobId, data: Request):
 
         update_query = {
             '$set': {
-                'annotations': annotation_data['annotations']
+                'annotations': annotation_data['annotations'],
+                'createdAt': datetime.utcnow()
+
             }
         }
 
@@ -192,6 +195,71 @@ async def create_annotation(projectId, jobId, data: Request):
             return_document=pymongo.ReturnDocument.AFTER)
 
         return result
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/projects/{projectId}/jobs/{jobId}/visualization")
+async def get_visualization_data(projectId, jobId):
+    try:
+        project = await Project.get(id=projectId)
+        job = await project.get_jobs(id=jobId)  # type: ignore
+        job = job[0]
+        collection_name = job.annotation_collection_name
+        collection = mongodb[collection_name]
+
+        pipeline = [
+            {"$unwind": "$annotations"},
+            {"$group": {"_id": "$annotations.user.email", "count": {"$sum": 1}}},
+            {"$project": {"_id": 0, "user_email": "$_id", "count": 1}}
+        ]
+        result = list(collection.aggregate(pipeline))
+
+        finished_annotations = collection.count_documents(
+            {"annotations": {"$exists": True, "$not": {"$size": 0}}}
+        )
+        totalRowCount = collection.count_documents({})
+
+        date_pipeline = [
+            {
+                "$match": {
+                    "createdAt": {"$exists": True}
+                }
+            },
+            {
+                "$project": {
+                    "year": {"$year": "$createdAt"},
+                    "month": {"$month": "$createdAt"},
+                    "day": {"$dayOfMonth": "$createdAt"}
+                }
+            },
+            {
+                "$group": {
+                    "_id": {"year": "$year", "month": "$month", "day": "$day"},
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "year": "$_id.year",
+                    "month": "$_id.month",
+                    "day": "$_id.day",
+                    "count": 1
+                }
+            },
+            {"$sort": {"year": 1, "month": 1, "day": 1}}
+        ]
+
+        date_result = list(collection.aggregate(date_pipeline))
+
+        return {
+            'total': totalRowCount,
+            'total_finished': finished_annotations,
+            'by_user': result,
+            'by_date': date_result,
+        }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

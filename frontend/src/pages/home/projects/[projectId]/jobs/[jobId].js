@@ -18,6 +18,10 @@ import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import cookieParse from "cookie-parse";
+import {
+  BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell,
+} from "recharts";
+
 import Navigation from "../../../../../components/Reusable/Navigation/navBarSideBar";
 import LoadingSymbol from "../../../../../components/Reusable/loadingSymbol";
 import "react18-json-view/src/style.css";
@@ -36,12 +40,19 @@ export default function JobPage({
   // finishedAnnotationsByUser,
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isOpenVisualization,
+    onOpen: onOpenVisualization,
+    onOpenChange: onOpenChangeVisualization,
+  } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
   const [annotatedDataCount, setAnnotatedDataCount] = useState(finishedAnnotations);
+  const [visualizationData, setVisualizationData] = useState(null);
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
   const [currentDataToAnnotate, setCurrentDataToAnnotate] = useState(null);
   const [showDetailedSplit, setShowDetailedSplit] = useState(false);
   const [onlyShowUnanotatedData, setOnlyShowUnanotatedData] = useState(true);
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -184,6 +195,67 @@ export default function JobPage({
     }
   };
 
+  function MyChart({ data }) {
+    const colors = ["#8884d8", "#82ca9d", "#ffc658", "#d62728", "#9467bd"]; // Add more colors as needed
+    const dataWithDateString = data.by_date.map((entry) => ({ ...entry, dateString: `${entry.day}-${entry.month}-${entry.year}` }));
+    const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+
+    return (
+      <div>
+        {/* Total Finished vs Total */}
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={[data]}>
+            <Bar dataKey="total" fill="#8884d8" />
+            <Bar dataKey="total_finished" fill="#82ca9d" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+          </BarChart>
+        </ResponsiveContainer>
+
+        {/* Finished by User */}
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              dataKey="count"
+              isAnimationActive={false}
+              data={data.by_user}
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              fill="#8884d8"
+              label
+            />
+            {data.by_user.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={getRandomColor()} />
+            ))}
+            <Tooltip />
+            <Legend
+              layout="vertical"
+              align="right"
+              verticalAlign="middle"
+              payload={data.by_user.map((entry) => ({ value: entry.user_email, type: "circle", color: "#8884d8" }))}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+
+        {/* Distribution of Count over Time */}
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={dataWithDateString}>
+            <Bar dataKey="count" fill="#8884d8" />
+            <XAxis dataKey="dateString" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+          </BarChart>
+        </ResponsiveContainer>
+        <br />
+        <br />
+      </div>
+    );
+  }
+
   const mainBody = () => (
     <>
       <Modal
@@ -209,6 +281,66 @@ export default function JobPage({
           )}
         </ModalContent>
       </Modal>
+      {visualizationData && (
+      <Modal
+        size="5xl"
+        style={{
+          height: "500px",
+        }}
+        isOpen={isOpenVisualization}
+        onOpenChange={onOpenChangeVisualization}
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <div className="m-4" style={{ maxHeight: "400px", maxWidth: "1000px", overflow: "auto" }}>
+                  {/* <div className="flex flex-col ml-3 mr-5 mb-3"> */}
+                  <Progress
+                    aria-label="Downloading..."
+                    size="md"
+                    value={annotatedDataCount}
+                    maxValue={totalRowCount}
+                    minValue={0}
+                    color="success"
+                  />
+                  <br />
+                  <MyChart data={visualizationData} />
+                  <br />
+
+                  {/* {
+    "total": 5,
+    "total_finished": 3,
+    "by_user": [
+        {
+            "count": 3,
+            "user_email": "iyadelwy@gmail.com"
+        }
+    ],
+    "by_date": [
+        {
+            "count": 3,
+            "year": 2023,
+            "month": 11,
+            "day": 15
+        }
+    ]
+} */}
+                  {/* </div> */}
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <br />
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      )}
       <Modal
         style={{
           height: "500px",
@@ -345,6 +477,30 @@ export default function JobPage({
                 </DropdownTrigger>
                 <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
                   <DropdownSection title="Actions">
+
+                    <DropdownItem
+                      onClick={async () => {
+                        setIsLoading(true);
+                        const vizData = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/visualization`)).data;
+                        setVisualizationData(vizData);
+                        setIsLoading(false);
+                        onOpenVisualization();
+                      }}
+                      key="visualize"
+                      description="Visualize Annotation Info"
+                      startContent={(
+                        <Image
+                          className={closerLookButtonStyles.burgerMenu}
+                          alt="nextui logo"
+                          height={25}
+                          radius="sm"
+                          src="/images/visualize.svg"
+                          width={25}
+                        />
+                  )}
+                    >
+                      Visualize
+                    </DropdownItem>
                     <DropdownItem
                       onClick={() => handleExport("ndjson", false)}
                       key="export"

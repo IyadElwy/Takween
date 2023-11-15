@@ -36,6 +36,7 @@
     "react-split-pane-v2": "^1.0.3",
     "react-type-animation": "^3.2.0",
     "react18-json-view": "^0.2.6",
+    "recharts": "^2.9.3",
     "swr": "^2.2.4"
   },
   "devDependencies": {
