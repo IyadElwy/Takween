@@ -31,6 +31,7 @@
     "papaparse": "^5.4.1",
     "randomcolor": "^0.6.2",
     "react": "latest",
+    "react-charts": "^3.0.0-beta.57",
     "react-dom": "latest",
     "react-split-pane-v2": "^1.0.3",
     "react-type-animation": "^3.2.0",

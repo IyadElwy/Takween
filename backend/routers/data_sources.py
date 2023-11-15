@@ -61,7 +61,7 @@ async def add_project_data(projectId, request: Request, files: list[UploadFile] 
             if file_type == 'csv':
                 file_location = convert_csv_to_json_and_save(
                     file_location)
-            if file_type == 'tsv':
+            elif file_type == 'tsv':
                 file_location = convert_tsv_to_json_and_save(
                     file_location)
                 file_type = 'json'
