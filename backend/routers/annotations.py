@@ -37,11 +37,17 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
         custom_filter = {
             "$or": [
                 {"annotations": {"$exists": True, "$eq": []}},
-                {"annotations": {"$exists": False}}
-            ]
-        } if onlyShowUnanotatedData else {}
+                {"annotations": {"$exists": False}},
 
-        data = collection.find(custom_filter).sort([('_id', pymongo.ASCENDING)]).skip(
+
+            ],
+            "wasReviewed": {"$exists": False}
+        } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+
+        data = collection.find(custom_filter).sort([
+            ('annotations', pymongo.DESCENDING),
+            ('_id', pymongo.ASCENDING),
+        ]).skip(
             starting_line).limit(itemsPerPage)
 
         # number of finished annotations
@@ -95,7 +101,7 @@ async def export_data(projectId, jobId, type):
         if type == 'ndjson':
             with open(temp_file_path, 'a+') as temp:
                 for item in data_query:
-                    temp.write(json.dumps(dict(item)) + '\n')
+                    temp.write(json.dumps(dict(item), default=str) + '\n')
         else:
             data = []
             for item in data_query:
@@ -145,7 +151,7 @@ async def merge_and_export_data(projectId, jobId):
                                 "user": curr_user, **curr_ann}
                             break
 
-                temp.write(json.dumps(item) + '\n')
+                temp.write(json.dumps(item, default=str) + '\n')
 
         return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
 
@@ -181,13 +187,19 @@ async def create_annotation(projectId, jobId, data: Request):
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
 
-        update_query = {
-            '$set': {
-                'annotations': annotation_data['annotations'],
-                'createdAt': datetime.utcnow()
-
+        if annotation_data.get('wasReviewed'):
+            update_query = {
+                '$set': {
+                    'wasReviewed': True
+                }
             }
-        }
+        else:
+            update_query = {
+                '$set': {
+                    'annotations': annotation_data['annotations'],
+                    'createdAt': datetime.utcnow(),
+                }
+            }
 
         result = collection.find_one_and_update(
             {'_id': annotation_data['_id']},
@@ -197,6 +209,7 @@ async def create_annotation(projectId, jobId, data: Request):
         return result
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

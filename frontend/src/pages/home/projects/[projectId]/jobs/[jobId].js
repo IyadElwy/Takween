@@ -12,6 +12,7 @@ import {
   Progress,
   Avatar, AvatarGroup,
   Chip,
+  ButtonGroup,
   Switch,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
@@ -108,7 +109,17 @@ export default function JobPage({
         const { annotations, _id } = cell.row.original;
         return (
           <AvatarGroup key={_id} max={3}>
-            {annotations.map((ann) => <Avatar key={ann.user.id} name={ann.user.email} />)}
+            {annotations.map((ann) => (
+              <Avatar
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentItemCloserLook({ ...ann, user: ann.user.email });
+                  onOpen();
+                }}
+                key={ann.user.id}
+                name={ann.user.email}
+              />
+            ))}
           </AvatarGroup>
         );
       },
@@ -125,6 +136,44 @@ export default function JobPage({
       id: "data",
       header: "Data",
       size: 150,
+    },
+    {
+      // eslint-disable-next-line no-underscore-dangle
+      accessorKey: "none",
+      header: "Review",
+      size: 150,
+      Cell: ({ cell }) => {
+        // eslint-disable-next-line camelcase
+        const { _id, data } = cell.row.original;
+        return cell.row.original.annotations.length > 0 && (
+          <ButtonGroup>
+            <Button
+              color="success"
+              onPress={async () => {
+                await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+                  _id,
+                  wasReviewed: true,
+                }));
+                setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
+              }}
+            >
+              Approve
+            </Button>
+            <Button
+              color="danger"
+              onPress={async () => {
+                await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+                  _id,
+                  annotations: [],
+                }));
+                setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
+              }}
+            >
+              Reject
+            </Button>
+          </ButtonGroup>
+        );
+      },
     },
     {
       accessorKey: "none",
@@ -163,7 +212,12 @@ export default function JobPage({
         );
       },
     },
-  ];
+  ].filter((col) => {
+    if (col.header !== "Review" || (col.header === "Review" && job.assigned_reviewer_id === user.id)) {
+      return true;
+    }
+    return false;
+  });
 
   const handleExport = async (type, merge = false) => {
     setIsLoading(true);
@@ -196,7 +250,6 @@ export default function JobPage({
   };
 
   function MyChart({ data }) {
-    const colors = ["#8884d8", "#82ca9d", "#ffc658", "#d62728", "#9467bd"]; // Add more colors as needed
     const dataWithDateString = data.by_date.map((entry) => ({ ...entry, dateString: `${entry.day}-${entry.month}-${entry.year}` }));
     const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
@@ -308,26 +361,6 @@ export default function JobPage({
                   <br />
                   <MyChart data={visualizationData} />
                   <br />
-
-                  {/* {
-    "total": 5,
-    "total_finished": 3,
-    "by_user": [
-        {
-            "count": 3,
-            "user_email": "iyadelwy@gmail.com"
-        }
-    ],
-    "by_date": [
-        {
-            "count": 3,
-            "year": 2023,
-            "month": 11,
-            "day": 15
-        }
-    ]
-} */}
-                  {/* </div> */}
                 </div>
               </ModalBody>
               <ModalFooter>
