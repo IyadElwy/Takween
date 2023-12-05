@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
@@ -52,7 +54,8 @@ export default function JobPage({
   const [annotationData, setAnnotationData] = useState(firstAnnotationDataBatch);
   const [currentDataToAnnotate, setCurrentDataToAnnotate] = useState(null);
   const [showDetailedSplit, setShowDetailedSplit] = useState(false);
-  const [onlyShowUnanotatedData, setOnlyShowUnanotatedData] = useState(true);
+  const [onlyShowUnanotatedData, setOnlyShowUnanotatedData] = useState(false);
+  const [onlyShowUnreviewedData, setOnlyShowUnreviewedData] = useState(false);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -63,6 +66,13 @@ export default function JobPage({
     isOpen: isOpenModal,
     onOpen: onOpenModal,
     onOpenChange: onOpenChangeModal,
+  } = useDisclosure();
+
+  const [currentItemCloserLookUserAnnot, setCurrentItemCloserLookUserAnnot] = useState([]);
+  const {
+    isOpen: isOpenModalUserAnnot,
+    onOpen: onOpenModalUserAnnot,
+    onOpenChange: onOpenChangeModalUserAnnot,
   } = useDisclosure();
 
   const {
@@ -76,7 +86,12 @@ export default function JobPage({
       setIsLoading(true);
 
       const nextAnnotationData = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}&onlyShowUnanotatedData=${onlyShowUnanotatedData}`)).data;
-      setAnnotationData(nextAnnotationData.data);
+      console.log(nextAnnotationData);
+      if (onlyShowUnreviewedData) {
+        setAnnotationData(nextAnnotationData.data.filter(((d) => !d?.wasReviewed)));
+      } else {
+        setAnnotationData(nextAnnotationData.data);
+      }
       setAnnotatedDataCount(nextAnnotationData.finishedAnnotations);
       setIsLoading(false);
     };
@@ -87,6 +102,7 @@ export default function JobPage({
     pagination.pageSize,
     showDetailedSplit,
     onlyShowUnanotatedData,
+    onlyShowUnreviewedData,
   ]);
 
   const handlePaginationChange = (newPagination) => {
@@ -113,8 +129,8 @@ export default function JobPage({
               <Avatar
                 onClick={(e) => {
                   e.stopPropagation();
-                  setCurrentItemCloserLook({ ...ann, user: ann.user.email });
-                  onOpen();
+                  setCurrentItemCloserLookUserAnnot([_id, { ...ann, user: ann.user.email }, ann]);
+                  onOpenModalUserAnnot();
                 }}
                 key={ann.user.id}
                 name={ann.user.email}
@@ -145,7 +161,19 @@ export default function JobPage({
       Cell: ({ cell }) => {
         // eslint-disable-next-line camelcase
         const { _id, data } = cell.row.original;
+        if (cell.row.original?.wasReviewed) {
+          return (
+            <Button
+              color="success"
+              disabled
+              disableAnimation
+            >
+              Approved
+            </Button>
+          );
+        }
         return cell.row.original.annotations.length > 0 && (
+
           <ButtonGroup>
             <Button
               color="success"
@@ -154,7 +182,16 @@ export default function JobPage({
                   _id,
                   wasReviewed: true,
                 }));
-                setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
+                if (onlyShowUnreviewedData) {
+                  setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
+                } else {
+                  setAnnotationData(annotationData.map((currD) => {
+                    if (currD._id === _id) {
+                      return { ...currD, wasReviewed: true };
+                    }
+                    return currD;
+                  }));
+                }
               }}
             >
               Approve
@@ -172,6 +209,7 @@ export default function JobPage({
               Reject
             </Button>
           </ButtonGroup>
+
         );
       },
     },
@@ -334,6 +372,57 @@ export default function JobPage({
           )}
         </ModalContent>
       </Modal>
+      <Modal
+        size="3xl"
+        isOpen={isOpenModalUserAnnot}
+        onOpenChange={onOpenChangeModalUserAnnot}
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <div className="m-4" style={{ maxHeight: "400px", maxWidth: "1000px", overflow: "auto" }}>
+                  <JsonView src={currentItemCloserLookUserAnnot[1]} />
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="success"
+                  variant="flat"
+                  onPress={async () => {
+                    const _id = currentItemCloserLookUserAnnot[0];
+                    await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+                      _id,
+                      annotations: [currentItemCloserLookUserAnnot[2]],
+                    }));
+                    await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+                      _id,
+                      wasReviewed: true,
+                    }));
+                    if (onlyShowUnreviewedData) {
+                      setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
+                    } else {
+                      setAnnotationData(annotationData.map((currD) => {
+                        if (currD._id === _id) {
+                          return { ...currD, wasReviewed: true };
+                        }
+                        return currD;
+                      }));
+                    }
+                    onClose();
+                  }}
+                >
+                  Approve
+                </Button>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
       {visualizationData && (
       <Modal
         size="5xl"
@@ -475,6 +564,8 @@ export default function JobPage({
           },
           sx: {
             cursor: "pointer",
+            backgroundColor: row.original.annotations.length > 0 ? "#e1e9f5" : "white",
+
           },
         })}
       // add custom action buttons to top-left of top toolbar
@@ -634,6 +725,18 @@ export default function JobPage({
               >
                 Only show Un-annotated Data
               </Switch>
+              {job.assigned_reviewer_id === user.id && (
+              <Switch
+                onChange={(e) => { e.preventDefault(); }}
+                isSelected={onlyShowUnreviewedData}
+                onValueChange={(value) => {
+                  setOnlyShowUnreviewedData(value);
+                }}
+              >
+                Only show Un-Reviewed Data
+              </Switch>
+              )}
+
               {job.assigned_reviewer_id === user.id && <Chip className="mt-1 ml-2" color="warning">Reviewer</Chip>}
 
             </div>

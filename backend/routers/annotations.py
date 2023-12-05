@@ -41,8 +41,9 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
 
 
             ],
-            "wasReviewed": {"$exists": False}
-        } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+            # "wasReviewed": {"$exists": False}
+            # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+        } if onlyShowUnanotatedData else {}
 
         data = collection.find(custom_filter).sort([
             ('annotations', pymongo.DESCENDING),
@@ -200,6 +201,7 @@ async def create_annotation(projectId, jobId, data: Request):
                     'createdAt': datetime.utcnow(),
                 }
             }
+            print(update_query)
 
         result = collection.find_one_and_update(
             {'_id': annotation_data['_id']},
