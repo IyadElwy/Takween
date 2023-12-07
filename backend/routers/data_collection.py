@@ -27,7 +27,7 @@ async def collect_data(request: Request):
                 extract_data_from_youtube_api(
                     job_data, file_path)
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'youtube-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -41,7 +41,7 @@ async def collect_data(request: Request):
                 file_path = f'data/wikipedia-{data_name}-{uuid.uuid4()}.ndjson'
                 extract_data_from_wikipedia(job_data, file_path)
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'wikipedia-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
