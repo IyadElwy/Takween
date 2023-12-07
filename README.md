@@ -2,6 +2,78 @@
 
 Welcome to the Multi-Modal Lab project! This README provides step-by-step instructions for setting up, starting, and shutting down the project.
 
+# Manual Installation
+
+## 📥 Clone the Repository
+
+Clone the GitHub repository to your local machine using the following command:
+
+```bash
+git clone https://github.com/IyadElwy/Multi-Modal-Lab
+```
+
+Add `.env` file according to the `.env.example` file
+
+## 🔧 Initial Setup
+
+Create Python Virtual Environment and install dependencies
+
+```bash
+cd Multi-Modal-Lab/backend
+```
+
+```bash
+python3 -m venv multimodallabenv
+```
+
+```bash
+pip3 install -r requirements.txt
+```
+
+Install Frontend dependencies
+
+```bash
+cd Multi-Modal-Lab/frontend
+```
+
+```bash
+npm i
+```
+
+## ▶️ Start the Project
+
+Start MongoDB using Docker-Compose file
+
+```bash
+cd Multi-Modal-Lab
+```
+
+```bash
+docker-compose -f mongo-docker-compose.yaml up
+```
+
+Start Data-Engine and Web-Server
+
+```bash
+cd Multi-Modal-Lab/backend
+```
+
+```bash
+uvicorn main:app --reload
+```
+
+Start Frontend UI
+
+```bash
+cd Multi-Modal-Lab/frontend
+```
+
+```bash
+npm run dev
+```
+
+Go to `http://localhost:3000/`
+
 # Linux
 
 ## 📥 Clone the Repository
