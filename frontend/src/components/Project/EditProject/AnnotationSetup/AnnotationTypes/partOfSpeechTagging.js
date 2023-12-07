@@ -22,8 +22,7 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currTagInput, setCurrTagInput] = useState("");
   const [tags, setTags] = useState([]);
-  const suggestionTags = [
-    "Coordinating conjunction (CC)",
+  const [suggestionTags, setSuggestionTags] = useState(["Coordinating conjunction (CC)",
     "Cardinal number (CD)",
     "Determiner (DT)",
     "Preposition or subordinating conjunction (IN)",
@@ -34,7 +33,7 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
     "Adverb (RB)",
     "to (TO)",
     "Interjection (UH)",
-  ];
+  ]);
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -154,6 +153,7 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
                   onClick={() => {
                     setTags([...tags, tagChip]);
                     setJobData({ ...jobData, tags: [...tags, tagChip] });
+                    setSuggestionTags(suggestionTags.filter((t) => t !== tagChip));
                   }}
                   variant="flat"
                 >
@@ -190,6 +190,7 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
                     onClose={() => {
                       setTags(tags.filter((currTag) => currTag !== tagChip));
                       setJobData({ ...jobData, tags: tags.filter((currTag) => currTag !== tagChip) });
+                      setSuggestionTags([...suggestionTags, tagChip]);
                     }}
                     variant="flat"
                   >

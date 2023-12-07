@@ -22,7 +22,7 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
   const [selectedDSKey, setSelectedDSKey] = useState([]);
   const [currTagInput, setCurrTagInput] = useState("");
   const [tags, setTags] = useState([]);
-  const suggestionTags = [
+  const [suggestionTags, setSuggestionTags] = useState([
     "PERSON",
     "ORGANIZATION",
     "LOCATION",
@@ -40,7 +40,7 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
     "NORP (Nationalities or Religious/Political Groups)",
     "GPE (Geopolitical Entity)",
     "FACILITY",
-  ];
+  ]);
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -161,6 +161,7 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
                   onClick={() => {
                     setTags([...tags, tagChip]);
                     setJobData({ ...jobData, tags: [...tags, tagChip] });
+                    setSuggestionTags(suggestionTags.filter((t) => t !== tagChip));
                   }}
                   variant="flat"
                 >
@@ -200,6 +201,7 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
                     onClose={() => {
                       setTags(tags.filter((currTag) => currTag !== tagChip));
                       setJobData({ ...jobData, tags: tags.filter((currTag) => currTag !== tagChip) });
+                      setSuggestionTags([...suggestionTags, tagChip]);
                     }}
                     variant="flat"
                   >
