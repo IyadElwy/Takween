@@ -57,7 +57,7 @@ async def process_data(request: Request):
                 diacriticsRemoval.process_diacritics_removal(
                     job_data, file_path, original_datasource_path.location, field_to_process)  # type: ignore
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -72,7 +72,7 @@ async def process_data(request: Request):
                 duplicateRemoval.process_duplicate_removal(
                     job_data, file_path, original_datasource_path.location, field_to_process)  # type: ignore
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -86,7 +86,7 @@ async def process_data(request: Request):
                 flattening.process_flattening(
                     job_data, file_path, original_datasource_path.location)
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -105,7 +105,7 @@ async def process_data(request: Request):
                 merging.process_merging(
                     job_data, file_path, original_datasource_paths, field_to_process)
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -120,7 +120,7 @@ async def process_data(request: Request):
                 punctuationRemoval.process_punctuation_removal(
                     job_data, file_path, original_datasource_path.location, field_to_process)  # type: ignore
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -135,7 +135,7 @@ async def process_data(request: Request):
                 stopWordRemoval.process_stop_word_removal(
                     job_data, file_path, original_datasource_path.location, field_to_process)  # type: ignore
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -150,7 +150,7 @@ async def process_data(request: Request):
                 textAnonymization.process_text_anonymization(
                     job_data, file_path, original_datasource_path.location, field_to_process)  # type: ignore
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
@@ -165,7 +165,7 @@ async def process_data(request: Request):
                 tokenizing.process_tokenizing(
                     job_data, file_path, original_datasource_path.location, field_to_process)  # type: ignore
                 file_location = convert_ndjson_to_json_and_save(file_path)
-                created_file_data_source = await FileDataSource.create(file_name=f'{processing_type}-{data_name}',
+                created_file_data_source = await FileDataSource.create(file_name=f'{data_name}',
                                                                        file_type=parse_file_type_enum(
                                                                            'json'),
                                                                        location=file_location,
