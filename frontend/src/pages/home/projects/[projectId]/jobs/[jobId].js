@@ -16,6 +16,7 @@ import {
   Chip,
   ButtonGroup,
   Switch,
+  Tooltip as StatsTooltip,
 } from "@nextui-org/react";
 import JsonView from "react18-json-view";
 import { Allotment } from "allotment";
@@ -39,7 +40,7 @@ const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0"
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
-  finishedAnnotations, user,
+  finishedAnnotations, user, stats,
   // finishedAnnotationsByUser,
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -56,6 +57,7 @@ export default function JobPage({
   const [showDetailedSplit, setShowDetailedSplit] = useState(false);
   const [onlyShowUnanotatedData, setOnlyShowUnanotatedData] = useState(false);
   const [onlyShowUnreviewedData, setOnlyShowUnreviewedData] = useState(false);
+  const [statistics, setStatistics] = useState(stats);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -86,7 +88,7 @@ export default function JobPage({
       setIsLoading(true);
 
       const nextAnnotationData = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations?page=${pagination.pageIndex}&itemsPerPage=${pagination.pageSize}&onlyShowUnanotatedData=${onlyShowUnanotatedData}`)).data;
-      console.log(nextAnnotationData);
+      setStatistics(nextAnnotationData.stats);
       if (onlyShowUnreviewedData) {
         setAnnotationData(nextAnnotationData.data.filter(((d) => !d?.wasReviewed)));
       } else {
@@ -287,6 +289,44 @@ export default function JobPage({
     }
   };
 
+  const getStats = () => {
+    if (statistics.type === "text_classification") {
+      return (
+        <>
+          <StatsTooltip
+            color="danger"
+            className="capitalize"
+            content={<div className="text-big font-bold">Inter-Annotator Agreement (IAA) assesses the level of agreement among different annotators when multiple individuals independently annotate the same set of data</div>}
+            size="lg"
+            showArrow
+          >
+            <Button variant="flat" color="danger" className="capitalize" disableAnimation disableRipple>
+              {`Intra Conflict Percentage ${statistics.conflict_percentage}`}
+            </Button>
+          </StatsTooltip>
+          <br />
+          <br />
+          <div className="flex flex-wrap gap-4">
+            {statistics.result.map(({ _id, count }) => <Chip color="warning">{`${_id || "Not Annotated"}: ${count}`}</Chip>)}
+          </div>
+        </>
+      );
+    }
+    return (
+      <StatsTooltip
+        color="danger"
+        className="capitalize"
+        content={<div className="text-big font-bold">Inter-Annotator Agreement (IAA) assesses the level of agreement among different annotators when multiple individuals independently annotate the same set of data</div>}
+        size="lg"
+        showArrow
+      >
+        <Button variant="flat" color="danger" className="capitalize" disableAnimation disableRipple>
+          {`Intra Conflict Percentage ${statistics.conflict_percentage}`}
+        </Button>
+      </StatsTooltip>
+    );
+  };
+
   function MyChart({ data }) {
     const dataWithDateString = data.by_date.map((entry) => ({ ...entry, dateString: `${entry.day}-${entry.month}-${entry.year}` }));
     const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -319,6 +359,7 @@ export default function JobPage({
               label
             />
             {data.by_user.map((entry, index) => (
+              // eslint-disable-next-line react/no-array-index-key
               <Cell key={`cell-${index}`} fill={getRandomColor()} />
             ))}
             <Tooltip />
@@ -452,15 +493,30 @@ export default function JobPage({
                     color="success"
                   />
                   <br />
+                  {getStats()}
+
+                  <br />
+                  <br />
                   <MyChart data={visualizationData} />
                   <br />
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <br />
+                <div className="absolute bottom-0 right-0 mr-5 mb-5">
+                  <div className="flex space-x-4">
+                    <Button
+                      color="danger"
+                      variant="light"
+                      onPress={() => {
+                        onClose();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+
+                  </div>
+                </div>
+                {/* <br /> */}
               </ModalFooter>
             </>
           )}
@@ -482,7 +538,12 @@ export default function JobPage({
         <ModalContent>
           {(onClose) => (
             <ModalBody>
-              <AnnotatorEditComponent onClose={onClose} projectId={projectId} jobId={jobId} />
+              <AnnotatorEditComponent
+                created_by_id={project.created_by_id}
+                onClose={onClose}
+                projectId={projectId}
+                jobId={jobId}
+              />
             </ModalBody>
           )}
         </ModalContent>
@@ -766,7 +827,7 @@ export default function JobPage({
       {isLoading ? <LoadingSymbol height={200} width={200} /> : (
         <div style={{ width: "100%", height: "100vh" }}>
 
-          {showDetailedSplit ? (
+          {/* {showDetailedSplit ? (
             <Allotment
               minSize={200}
               defaultSizes={[50, 200]}
@@ -783,6 +844,19 @@ export default function JobPage({
                 job={job}
               />
             </Allotment>
+          ) : mainBody()} */}
+          {showDetailedSplit ? (
+            <MainAnnotationScreen
+              data={currentDataToAnnotate}
+              user={user}
+              projectId={projectId}
+              jobId={jobId}
+              type={job.type}
+              annotatedDataCount={annotatedDataCount}
+              setAnnotatedDataCount={setAnnotatedDataCount}
+              job={job}
+              setShowDetailedSplit={setShowDetailedSplit}
+            />
           ) : mainBody()}
 
         </div>
@@ -816,6 +890,8 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
+    const { stats } = firstAnnotationDataBatch;
+
     const user = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser", {
       accessToken: accessToken || "",
     })).data;
@@ -823,6 +899,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         projectId,
+        stats,
         jobId,
         project: project.project,
         job: job.job,

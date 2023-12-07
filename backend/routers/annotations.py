@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 import json
 import uuid
 import copy
-from deepdiff import DeepDiff
 from datetime import datetime
 
 
@@ -75,11 +74,59 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
         if page == 0:
             totalRowCount = collection.count_documents({})
 
+        all_annotated_data = collection.find(
+            {"annotations": {"$exists": True, "$not": {"$size": 0}}})
+        count_of_conflicts = 0
+        all_annotated_data = list(all_annotated_data)
+        for item in all_annotated_data:
+            fake_item = copy.deepcopy(item)
+            annotations = fake_item['annotations']
+            for annotation in annotations:
+                del annotation['user']
+
+            are_equal = all(
+                d == annotations[0] for d in annotations)
+
+            item['conflict'] = not are_equal
+
+            if item['conflict']:
+                count_of_conflicts += 1
+
+        stats = {'type': job.type,
+                 'conflict_percentage': f'{( (count_of_conflicts / len(all_annotated_data)) * 100):.2f}'
+                 }
+        if job.type == 'text_classification':
+            pipeline = [
+                {
+                    "$unwind": {
+                        "path": "$annotations",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$annotations.classes",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$annotations.classes",
+                        "count": {"$sum": 1}
+                    }
+                }
+            ]
+
+            result = list(collection.aggregate(pipeline))
+            stats = {**stats,
+                     'result': result,
+                     }
         return {
             "data": list(data),
             "totalRowCount": totalRowCount,
             "finishedAnnotations": finished_annotations,
-            "finishedAnnotationsByUser": finished_annotations_by_user
+            "finishedAnnotationsByUser": finished_annotations_by_user,
+            "stats": stats
         }
 
     except Exception as e:
@@ -147,6 +194,7 @@ async def merge_and_export_data(projectId, jobId):
                     fake_item = copy.deepcopy(item)
                     for curr_ann in fake_item['annotations']:
                         curr_user = curr_ann['user']
+                        # type: ignore
                         if curr_user['id'] == str(job.assigned_reviewer_id):
                             item['annotations'] = {
                                 "user": curr_user, **curr_ann}
@@ -201,7 +249,6 @@ async def create_annotation(projectId, jobId, data: Request):
                     'createdAt': datetime.utcnow(),
                 }
             }
-            print(update_query)
 
         result = collection.find_one_and_update(
             {'_id': annotation_data['_id']},
@@ -211,7 +258,6 @@ async def create_annotation(projectId, jobId, data: Request):
         return result
 
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

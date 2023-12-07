@@ -10,7 +10,7 @@ import "react18-json-view/src/style.css";
 import Image from "next/image";
 import {
   RadioGroup, Radio,
-
+  Button, Tooltip,
   Select, SelectItem,
 } from "@nextui-org/react";
 import { useState } from "react";
@@ -19,6 +19,7 @@ import AxiosWrapper from "../../../../utils/axiosWrapper";
 
 import GhostButton from "../../../Reusable/ghostButton";
 import buttonStyles from "../../../../styles/components/Reusable/navbar.module.css";
+import TableIcon from "../../../Icons/tableIcon";
 
 export default function PartOfSpeechAnnotationComponent({
   currentRow,
@@ -32,6 +33,7 @@ export default function PartOfSpeechAnnotationComponent({
   projectId,
   jobId,
   job,
+  setShowDetailedSplit,
 }) {
   const allUserAnnotations = currentRow.original.annotations;
   const [selectedUserId, setSelectedUserId] = useState(new Set([user.id]));
@@ -105,35 +107,63 @@ export default function PartOfSpeechAnnotationComponent({
       >
         <div>
           <div className="p-2">
-            <Select
-              fullWidth
-              disallowEmptySelection
-              label="Annotated by"
-              variant="underlined"
-              selectedKeys={selectedUserId}
-              defaultSelectedKeys={selectedUserId}
-              onSelectionChange={(e) => {
-                const userId = e.currentKey;
-                const currUserAnnotation = allUserAnnotations.find((currAnn) => currAnn.user.id === userId);
-
-                if (currUserAnnotation) {
-                  setSelectedAnnotations(currUserAnnotation);
-                } else {
-                  setSelectedAnnotations({ user });
-                }
-                setSelectedUserId(e);
-              }}
+            <div style={{
+              display: "flex", gap: "16px",
+            }}
             >
 
-              <SelectItem key={user.id} value={user.id}>
-                {user.email}
-              </SelectItem>
-              {job.assigned_reviewer_id === user.id && allUserAnnotations.filter((currUserAnnotation) => currUserAnnotation.user.id !== user.id).map((currUserAnnotation) => (
-                <SelectItem key={currUserAnnotation.user.id} value={currUserAnnotation.user.id}>
-                  {currUserAnnotation.user.email}
+              <div className="flex gap-2">
+                <Button
+                  color="warning"
+                  onPress={() => {
+                    setShowDetailedSplit(false);
+                  }}
+                  startContent={<TableIcon />}
+                >
+                  View Table
+                </Button>
+                <Tooltip color="warning" content="Shows the current Id of the record" delay={1000}>
+                  <Button color="warning" variant="flat">
+                    {`Id ${currentRow.original._id}`}
+                  </Button>
+                </Tooltip>
+                <Tooltip color="warning" closeDelay={2000} content="Shows the conflict status">
+                  <Button color="warning" variant="flat">
+                    {currentRow.original?.conflict ? "Existing Conflict" : "No Conflict"}
+                  </Button>
+                </Tooltip>
+              </div>
+
+              <Select
+                fullWidth
+                disallowEmptySelection
+                label="Annotated by"
+                variant="underlined"
+                selectedKeys={selectedUserId}
+                defaultSelectedKeys={selectedUserId}
+                onSelectionChange={(e) => {
+                  const userId = e.currentKey;
+                  const currUserAnnotation = allUserAnnotations.find((currAnn) => currAnn.user.id === userId);
+
+                  if (currUserAnnotation) {
+                    setSelectedAnnotations(currUserAnnotation);
+                  } else {
+                    setSelectedAnnotations({ user });
+                  }
+                  setSelectedUserId(e);
+                }}
+              >
+
+                <SelectItem key={user.id} value={user.id}>
+                  {user.email}
                 </SelectItem>
-              ))}
-            </Select>
+                {job.assigned_reviewer_id === user.id && allUserAnnotations.filter((currUserAnnotation) => currUserAnnotation.user.id !== user.id).map((currUserAnnotation) => (
+                  <SelectItem key={currUserAnnotation.user.id} value={currUserAnnotation.user.id}>
+                    {currUserAnnotation.user.email}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
           </div>
           <div
             style={{

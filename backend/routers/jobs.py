@@ -72,6 +72,7 @@ async def create_job(id, request: Request):
                                                                  allow_multi_classification=job_data[
                                                                      'allowMultiClassification'],
                                                                  created_by=user)
+                await created_job.assigned_annotators.add(user)
                 return created_job
 
             case "partOfSpeech":
@@ -97,6 +98,7 @@ async def create_job(id, request: Request):
                                                            tags_list_as_string=str(
                     job_data['tags']),
                     created_by=user)
+                await created_job.assigned_annotators.add(user)
                 return created_job
 
             case "namedEntityRecognition":
@@ -122,6 +124,7 @@ async def create_job(id, request: Request):
                                                                      tags_list_as_string=str(
                     job_data['tags']),
                     created_by=user)
+                await created_job.assigned_annotators.add(user)
                 return created_job
 
     except Exception as e:

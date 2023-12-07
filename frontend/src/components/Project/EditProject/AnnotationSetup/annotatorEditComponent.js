@@ -27,7 +27,9 @@ const columns = [
   { name: "Reviewer", uid: "isReviewer" },
 ];
 
-export default function AnnotatorEditComponent({ onClose, projectId, jobId }) {
+export default function AnnotatorEditComponent({
+  created_by_id, onClose, projectId, jobId,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -94,6 +96,7 @@ export default function AnnotatorEditComponent({ onClose, projectId, jobId }) {
       case "isAnnotator":
         return (
           <Switch
+            isDisabled={created_by_id === user.id}
             onChange={(e) => { e.preventDefault(); }}
             isSelected={user.isAnnotator}
             onValueChange={async (value) => {

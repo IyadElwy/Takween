@@ -16,6 +16,7 @@ export default function MainAnnotationScreen({
   annotatedDataCount,
   setAnnotatedDataCount,
   job,
+  setShowDetailedSplit,
 }) {
   const getInitialAnnotations = (annotationsArray) => {
     if (annotationsArray.length === 0) return { user };
@@ -74,6 +75,7 @@ export default function MainAnnotationScreen({
           projectId={projectId}
           jobId={jobId}
           job={job}
+          setShowDetailedSplit={setShowDetailedSplit}
         />
       );
 
@@ -91,6 +93,7 @@ export default function MainAnnotationScreen({
           projectId={projectId}
           jobId={jobId}
           job={job}
+          setShowDetailedSplit={setShowDetailedSplit}
         />
       );
 
@@ -108,6 +111,7 @@ export default function MainAnnotationScreen({
           projectId={projectId}
           jobId={jobId}
           job={job}
+          setShowDetailedSplit={setShowDetailedSplit}
         />
       );
     default:
