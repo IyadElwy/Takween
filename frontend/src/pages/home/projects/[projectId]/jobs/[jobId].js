@@ -387,34 +387,38 @@ export default function JobPage({
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button
-                  color="success"
-                  variant="flat"
-                  onPress={async () => {
-                    const _id = currentItemCloserLookUserAnnot[0];
-                    await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
-                      _id,
-                      annotations: [currentItemCloserLookUserAnnot[2]],
-                    }));
-                    await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
-                      _id,
-                      wasReviewed: true,
-                    }));
-                    if (onlyShowUnreviewedData) {
-                      setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
-                    } else {
-                      setAnnotationData(annotationData.map((currD) => {
-                        if (currD._id === _id) {
-                          return { ...currD, wasReviewed: true };
-                        }
-                        return currD;
-                      }));
-                    }
-                    onClose();
-                  }}
-                >
-                  Approve
-                </Button>
+                {
+  job.assigned_reviewer_id === user.id && (
+  <Button
+    color="success"
+    variant="flat"
+    onPress={async () => {
+      const _id = currentItemCloserLookUserAnnot[0];
+      await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+        _id,
+        annotations: [currentItemCloserLookUserAnnot[2]],
+      }));
+      await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs/${jobId}/annotations`, JSON.stringify({
+        _id,
+        wasReviewed: true,
+      }));
+      if (onlyShowUnreviewedData) {
+        setAnnotationData(annotationData.filter((currD) => currD._id !== _id));
+      } else {
+        setAnnotationData(annotationData.map((currD) => {
+          if (currD._id === _id) {
+            return { ...currD, wasReviewed: true };
+          }
+          return currD;
+        }));
+      }
+      onClose();
+    }}
+  >
+    Approve
+  </Button>
+  )
+}
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
