@@ -92,9 +92,14 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
             if item['conflict']:
                 count_of_conflicts += 1
 
-        stats = {'type': job.type,
-                 'conflict_percentage': f'{( (count_of_conflicts / len(all_annotated_data)) * 100):.2f}'
-                 }
+        if len(all_annotated_data) > 0:
+            stats = {'type': job.type,
+                     'conflict_percentage': f'{( (count_of_conflicts / len(all_annotated_data)) * 100):.2f}'
+                     }
+        else:
+            stats = {'type': job.type,
+                     }
+
         if job.type == 'text_classification':
             pipeline = [
                 {
