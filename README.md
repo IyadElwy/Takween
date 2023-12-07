@@ -2,6 +2,8 @@
 
 Welcome to the Multi-Modal Lab project! This README provides step-by-step instructions for setting up, starting, and shutting down the project.
 
+# Linux
+
 ## 📥 Clone the Repository
 
 Clone the GitHub repository to your local machine using the following command:
@@ -51,3 +53,20 @@ Run the shutdown script:
 ```
 
 Enjoy using the Multi-Modal Lab! 🎉
+
+# Windows
+
+In development
+
+# Mac
+
+In development
+
+# 📋 TODO
+
+| Title                                                                                                                                                                                                                                                                                                                                                                          | Difficulty | Category |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :------- |
+| Fix installation scripts for linux                                                                                                                                                                                                                                                                                                                                             | Easy       | Config   |
+| Add installation scripts for mac                                                                                                                                                                                                                                                                                                                                               | Moderate   | Config   |
+| Add installation scripts for windows                                                                                                                                                                                                                                                                                                                                           | Moderate   | Config   |
+| For annotation types like POS & NER, fix annotation view such that the highlighting remains after we return to the same record. To reproduce create a POS or NER annotation Job, highlight some text to annotate it, move to the next record, then return to the same record you just annotated. Notice that the annotations are there on the side but the highlighting is not | Moderate   | Frontend |
