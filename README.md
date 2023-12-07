@@ -12,6 +12,8 @@ Clone the GitHub repository to your local machine using the following command:
 git clone https://github.com/IyadElwy/Multi-Modal-Lab
 ```
 
+Add `.env` file according to the `.env.example` file
+
 Change your working directory to the project's root:
 
 ```bash
