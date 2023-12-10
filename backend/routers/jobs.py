@@ -60,9 +60,7 @@ async def create_job(id, request: Request):
                             "allowMultiClassification": job_data['allowMultiClassification'],
                             "annotations": [],
                         }
-                        print(annotation_record)
                         collection.insert_one(annotation_record)
-                        break
 
                 created_job = await TextClassificationJob.create(title=job_data['name'],
                                                                  project=project,
