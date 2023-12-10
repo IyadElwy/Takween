@@ -24,6 +24,7 @@ import "allotment/dist/style.css";
 import cookieParse from "cookie-parse";
 import {
   BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell,
+
 } from "recharts";
 
 import Navigation from "../../../../../components/Reusable/Navigation/navBarSideBar";
@@ -40,7 +41,7 @@ const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0"
 
 export default function JobPage({
   project, job, firstAnnotationDataBatch, projectId, jobId, totalRowCount,
-  finishedAnnotations, user, stats,
+  finishedAnnotations, user, stats, entropyf,
   // finishedAnnotationsByUser,
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -58,6 +59,7 @@ export default function JobPage({
   const [onlyShowUnanotatedData, setOnlyShowUnanotatedData] = useState(false);
   const [onlyShowUnreviewedData, setOnlyShowUnreviewedData] = useState(false);
   const [statistics, setStatistics] = useState(stats);
+  const [theEntropy, setTheEntropy] = useState(entropyf);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -95,6 +97,12 @@ export default function JobPage({
         setAnnotationData(nextAnnotationData.data);
       }
       setAnnotatedDataCount(nextAnnotationData.finishedAnnotations);
+
+      if (job.active_learning) {
+        const { entropy } = nextAnnotationData;
+        setTheEntropy(entropy);
+      }
+
       setIsLoading(false);
     };
 
@@ -725,7 +733,7 @@ export default function JobPage({
                       Export as CSV
                     </DropdownItem>
 
-                    {user.id === job.created_by_id && (
+                    {user.id === job.created_by_id && !job?.active_learning && (
                     <DropdownItem
                       onClick={onOpenModal}
                       key="edit"
@@ -780,16 +788,18 @@ export default function JobPage({
                 </DropdownMenu>
               </Dropdown>
 
+              {!job?.active_learning && (
               <Switch
                 onChange={(e) => { e.preventDefault(); }}
                 isSelected={onlyShowUnanotatedData}
                 onValueChange={(value) => {
                   setOnlyShowUnanotatedData(value);
                 }}
-
               >
                 Only show Un-annotated Data
               </Switch>
+              )}
+
               {job.assigned_reviewer_id === user.id && (
               <Switch
                 onChange={(e) => { e.preventDefault(); }}
@@ -803,6 +813,7 @@ export default function JobPage({
               )}
 
               {job.assigned_reviewer_id === user.id && <Chip className="mt-1 ml-2" color="warning">Reviewer</Chip>}
+              {job.active_learning && <Chip className="mt-1 ml-2" color="primary">{`Active Learning With Entropy: ${theEntropy}`}</Chip>}
 
             </div>
           </div>
@@ -890,6 +901,8 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
+    const { entropy } = firstAnnotationDataBatch;
+
     const { stats } = firstAnnotationDataBatch;
 
     const user = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser", {
@@ -901,6 +914,7 @@ export async function getServerSideProps(context) {
         projectId,
         stats,
         jobId,
+        entropyf: entropy,
         project: project.project,
         job: job.job,
         firstAnnotationDataBatch: firstAnnotationDataBatch.data,

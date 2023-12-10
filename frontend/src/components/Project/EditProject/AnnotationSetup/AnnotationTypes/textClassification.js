@@ -27,6 +27,7 @@ export default function TextClassificationSetup({
   const [currClassInput, setCurrClassInput] = useState("");
   const [classes, setClasses] = useState([]);
   const [allowMultiClassification, setAllowMultiClassification] = useState(false);
+  const [activeLearning, setActiveLearning] = useState(false);
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -58,6 +59,21 @@ export default function TextClassificationSetup({
     isLoading ? <LoadingSymbol height={200} width={200} /> : (
       <>
         <div>
+          <br />
+          <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Active Learning</h1>
+
+          <Checkbox
+            isSelected={activeLearning}
+            onValueChange={(value) => {
+              setJobData({ ...jobData, active_learning: value });
+              setActiveLearning(value);
+            }}
+          >
+            Enable Active Learning For this Job
+
+          </Checkbox>
+          <br />
+          <br />
           <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Enter Job Name</h1>
           <Input
             type="text"
@@ -180,7 +196,9 @@ export default function TextClassificationSetup({
                     {classChip}
                   </Chip>
                 ))}
+
               </div>
+
               <div className="bg-300 p-4">
                 <div className="flex justify-end">
                   <GhostButton
@@ -208,6 +226,7 @@ export default function TextClassificationSetup({
           </div>
 
         </div>
+
         <br />
         <div className="absolute bottom-0 right-0 mr-5 mb-5">
           <div className="flex space-x-4 ">

@@ -60,7 +60,9 @@ async def create_job(id, request: Request):
                             "allowMultiClassification": job_data['allowMultiClassification'],
                             "annotations": [],
                         }
+                        print(annotation_record)
                         collection.insert_one(annotation_record)
+                        break
 
                 created_job = await TextClassificationJob.create(title=job_data['name'],
                                                                  project=project,
@@ -71,6 +73,8 @@ async def create_job(id, request: Request):
                                                                      job_data['classes']),
                                                                  allow_multi_classification=job_data[
                                                                      'allowMultiClassification'],
+                                                                 active_learning=True if job_data.get(
+                                                                     'active_learning') else False,
                                                                  created_by=user)
                 await created_job.assigned_annotators.add(user)
                 return created_job
@@ -95,7 +99,10 @@ async def create_job(id, request: Request):
                                                            file_data_source=file_data_source,
                                                            annotation_collection_name=annotation_collection_name,
                                                            field_to_annotate=job_data['fieldToAnnotate'],
-                                                           tags_list_as_string=str(
+                                                           active_learning=True if job_data.get(
+                    'active_learning') else False,
+
+                    tags_list_as_string=str(
                     job_data['tags']),
                     created_by=user)
                 await created_job.assigned_annotators.add(user)
@@ -121,6 +128,8 @@ async def create_job(id, request: Request):
                                                                      file_data_source=file_data_source,
                                                                      annotation_collection_name=annotation_collection_name,
                                                                      field_to_annotate=job_data['fieldToAnnotate'],
+                                                                     active_learning=True if job_data.get(
+                                                                     'active_learning') else False,
                                                                      tags_list_as_string=str(
                     job_data['tags']),
                     created_by=user)

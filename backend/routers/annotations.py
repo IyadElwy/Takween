@@ -1,3 +1,4 @@
+from active_learning.model import calculate_entropy_for_batch
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 from models.models import Project
@@ -9,6 +10,8 @@ import json
 import uuid
 import copy
 from datetime import datetime
+from active_learning.model import train_on_item, FeedForwardSentimentClassifier
+import torch
 
 
 load_dotenv()
@@ -33,22 +36,63 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
 
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
-        custom_filter = {
-            "$or": [
-                {"annotations": {"$exists": True, "$eq": []}},
-                {"annotations": {"$exists": False}},
+        if job.active_learning:
+            finished_annotation_counts = collection.count_documents(
+                {"annotations": {"$exists": True, "$eq": []}}
+            )
+            data_with_losses = []
+            for i in range(0, finished_annotation_counts, itemsPerPage):
+                data_t = collection.find({"annotations": {"$exists": True, "$eq": []}},
+                                         ).sort([
+                                             ('_id', pymongo.ASCENDING),
 
+                                         ]).skip(
+                    i).limit(itemsPerPage)
+                model = FeedForwardSentimentClassifier(
+                    len_unique_tokens=1000,
+                    embedding_dim=6,
+                    max_tokens=50,
+                    hidden_layer_1_n=256,
+                    out_n=3)
+                model.load_state_dict(torch.load(
+                    '/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt'))
 
-            ],
-            # "wasReviewed": {"$exists": False}
-            # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
-        } if onlyShowUnanotatedData else {}
+                data_with_losses.append(
+                    (i + itemsPerPage,  calculate_entropy_for_batch(list(data_t), model)))
+                # function to pass in this data as a batch and get the loss
+                if i > (100 * itemsPerPage):
+                    break
+            maximum_entropy = max(data_with_losses, key=lambda x: x[1])
+            custom_filter = {
+                "$or": [
+                    {"annotations": {"$exists": True, "$eq": []}},
+                    {"annotations": {"$exists": False}},
+                ],
+                # "wasReviewed": {"$exists": False}
+                # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+            } if onlyShowUnanotatedData else {}
 
-        data = collection.find(custom_filter).sort([
-            ('annotations', pymongo.DESCENDING),
-            ('_id', pymongo.ASCENDING),
-        ]).skip(
-            starting_line).limit(itemsPerPage)
+            data = collection.find(custom_filter).sort([
+                ('annotations', pymongo.DESCENDING),
+                ('_id', pymongo.ASCENDING),
+            ]).skip(
+                maximum_entropy[0]).limit(itemsPerPage)
+
+        else:
+            custom_filter = {
+                "$or": [
+                    {"annotations": {"$exists": True, "$eq": []}},
+                    {"annotations": {"$exists": False}},
+                ],
+                # "wasReviewed": {"$exists": False}
+                # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+            } if onlyShowUnanotatedData else {}
+
+            data = collection.find(custom_filter).sort([
+                ('annotations', pymongo.DESCENDING),
+                ('_id', pymongo.ASCENDING),
+            ]).skip(
+                starting_line).limit(itemsPerPage)
 
         # number of finished annotations
         finished_annotations = collection.count_documents(
@@ -127,6 +171,7 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
                      'result': result,
                      }
         return {
+            "entropy": f'{maximum_entropy[1]:.3f}' if job.active_learning else None,
             "data": list(data),
             "totalRowCount": totalRowCount,
             "finishedAnnotations": finished_annotations,
@@ -260,9 +305,22 @@ async def create_annotation(projectId, jobId, data: Request):
             update_query,
             return_document=pymongo.ReturnDocument.AFTER)
 
+        if job.active_learning:
+
+            model = FeedForwardSentimentClassifier(
+                len_unique_tokens=1000,
+                embedding_dim=6,
+                max_tokens=50,
+                hidden_layer_1_n=256,
+                out_n=3)
+            model.load_state_dict(torch.load(
+                '/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt'))
+            train_on_item(result, model)
+
         return result
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

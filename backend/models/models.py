@@ -88,6 +88,7 @@ class TextClassificationJob(Model):
     field_to_annotate = fields.CharField(max_length=200)
     classes_list_as_string = fields.CharField(max_length=1000)
     allow_multi_classification = fields.BooleanField(default=False)
+    active_learning = fields.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"Text Classification: {self.title}"
@@ -116,6 +117,7 @@ class PartOfSpeechJob(Model):
     )
     field_to_annotate = fields.CharField(max_length=200)
     tags_list_as_string = fields.CharField(max_length=1000)
+    active_learning = fields.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"Part Of Speech: {self.title}"
@@ -144,6 +146,7 @@ class NamedEntityRecognitionJob(Model):
     )
     field_to_annotate = fields.CharField(max_length=200)
     tags_list_as_string = fields.CharField(max_length=1000)
+    active_learning = fields.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"Named Entity Recognition: {self.title}"
