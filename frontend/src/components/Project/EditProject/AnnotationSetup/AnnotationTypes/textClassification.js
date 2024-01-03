@@ -27,7 +27,7 @@ export default function TextClassificationSetup({
   const [currClassInput, setCurrClassInput] = useState("");
   const [classes, setClasses] = useState([]);
   const [allowMultiClassification, setAllowMultiClassification] = useState(false);
-  const [activeLearning, setActiveLearning] = useState(false);
+  // const [activeLearning, setActiveLearning] = useState(false);
 
   // error states
   const [jobNameError, setJobNameErrorState] = useState(false);
@@ -62,7 +62,7 @@ export default function TextClassificationSetup({
           <br />
           <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Active Learning</h1>
 
-          <Checkbox
+          {/* <Checkbox
             isSelected={activeLearning}
             onValueChange={(value) => {
               setJobData({ ...jobData, active_learning: value });
@@ -73,7 +73,7 @@ export default function TextClassificationSetup({
 
           </Checkbox>
           <br />
-          <br />
+          <br /> */}
           <h1 style={{ fontSize: "25px", marginBottom: "15px" }}>Enter Job Name</h1>
           <Input
             type="text"
