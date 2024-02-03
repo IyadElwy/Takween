@@ -21,7 +21,7 @@ class User(Model):
 
 class Project(Model):
     id = fields.UUIDField(pk=True)
-    title = fields.CharField(max_length=20)
+    title = fields.CharField(max_length=100)
     description = fields.CharField(max_length=2000, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     created_by = fields.ForeignKeyField(
