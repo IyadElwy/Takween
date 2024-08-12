@@ -9,9 +9,6 @@ from models.user import User
 from errors import UniqueFieldException, UserNotFoundException, IncorrectLoginInfoException
 from validators import validate_user_signup_info, validate_user_login_info
 
-salt = os.getenv("SALT")
-jwt_secret = os.getenv("JWT_SECRET")
-
 
 router = APIRouter()
 
@@ -24,7 +21,7 @@ async def sign_up(request: Request):
             'lastName'], body['email'], body['password']
         validate_user_signup_info(first_name, last_name, email, password)
         hashed_password = bcrypt.hashpw(
-            password.encode(), salt.encode()).decode('utf-8')
+            password.encode(), request.state.config.jwt_salt.encode()).decode('utf-8')
         user = User.create(
             request.state.config.db_conn,
             first_name=first_name,
@@ -36,7 +33,8 @@ async def sign_up(request: Request):
             'user_id': str(user.id),
             'exp': datetime.datetime.now() + datetime.timedelta(days=90)
         }
-        token = jwt.encode(payload, jwt_secret, algorithm='HS256')
+        token = jwt.encode(
+            payload, request.state.config.jwt_secret, algorithm='HS256')
         return {'access_token': token}
     except UniqueFieldException as e:
         raise HTTPException(
@@ -57,7 +55,8 @@ async def sign_in(request: Request):
                 'user_id': str(user.id),
                 'exp': datetime.datetime.now() + datetime.timedelta(days=90)
             }
-            token = jwt.encode(payload, jwt_secret, algorithm='HS256')
+            token = jwt.encode(
+                payload, request.state.config.jwt_secret, algorithm='HS256')
             return {'access_token': token}
         else:
             raise IncorrectLoginInfoException()

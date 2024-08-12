@@ -11,6 +11,8 @@ load_dotenv()
 class Config:
     def __init__(self) -> None:
         self.db_conn = None
+        self.jwt_salt = None
+        self.jwt_secret = None
 
 
 config = Config()
@@ -19,6 +21,8 @@ engine = create_engine(
     "sqlite+pysqlite:///../../database.sqlite", echo=True)
 conn = engine.connect()
 config.db_conn = conn
+config.jwt_salt = os.getenv("SALT")
+config.jwt_secret = os.getenv("JWT_SECRET")
 
 
 app = FastAPI()
