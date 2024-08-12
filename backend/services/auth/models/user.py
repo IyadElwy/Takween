@@ -29,8 +29,7 @@ class User:
             user = cursor.fetchone()
             db_conn.commit()
             cursor.close()
-            id, first_name, last_name, email, hashed_password, is_admin = user
-            return User(id, first_name, last_name, email, hashed_password, is_admin)
+            return User(*user)
         except UniqueViolation:
             db_conn.rollback()
             raise UniqueFieldException('email')
@@ -44,9 +43,8 @@ class User:
             user = cursor.fetchone()
             if not user:
                 raise NoDataFound()
-            id, first_name, last_name, email, hashed_password, is_admin = user
             cursor.close()
-            return User(id, first_name, last_name, email, hashed_password, is_admin)
+            return User(*user)
         except NoDataFound:
             raise UserNotFoundException()
 
@@ -59,8 +57,7 @@ class User:
             user = cursor.fetchone()
             if not user:
                 raise NoDataFound()
-            id, first_name, last_name, email, hashed_password, is_admin = user
             cursor.close()
-            return User(id, first_name, last_name, email, hashed_password, is_admin)
+            return User(*user)
         except NoDataFound:
             raise UserNotFoundException()
