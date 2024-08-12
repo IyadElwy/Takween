@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("""ALTER TABLE Users
-                        ADD is_admin BOOLEAN NOT NULL""")
+                        ADD COLUMN is_admin BOOLEAN NOT NULL""")
     admin_password = "admin"
     load_dotenv()
     salt = os.getenv("SALT")
@@ -30,7 +30,7 @@ def upgrade() -> None:
     op.execute(f"""INSERT INTO Users 
                         (first_name, last_name, email, hashed_password, is_admin) 
                         VALUES
-                        ('ADMIN', 'ADMIN', 'admin@takween.com', '{hashed_admin_password}', 1)""")
+                        ('ADMIN', 'ADMIN', 'admin@takween.com', '{hashed_admin_password}', true)""")
 
 
 def downgrade() -> None:

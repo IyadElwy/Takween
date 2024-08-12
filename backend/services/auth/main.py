@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI, Request
 from router import router
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 from dotenv import load_dotenv
 
 
@@ -17,8 +18,17 @@ class Config:
 
 config = Config()
 
+
+DB_URL = URL.create(
+    drivername='postgresql+psycopg2',
+    host=os.getenv('PGHOST'),
+    port=os.getenv('PGPORT'),
+    username=os.getenv('POSTGRES_USER'),
+    password=os.getenv('POSTGRES_PASSWORD'),
+    database=os.getenv('POSTGRES_DB'))
+
 engine = create_engine(
-    "sqlite+pysqlite:///../../database.sqlite", echo=True)
+    DB_URL.render_as_string(hide_password=False), echo=True)
 conn = engine.connect()
 config.db_conn = conn
 config.jwt_salt = os.getenv("SALT")
