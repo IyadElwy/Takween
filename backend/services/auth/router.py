@@ -26,10 +26,10 @@ router = APIRouter()
 
 
 @router.post("/signup")
-async def sign_up(request: Request, signUpBody: SignUpBody):
+async def sign_up(request: Request, sign_up_body: SignUpBody):
     try:
-        first_name, last_name, email, password = signUpBody.first_name, \
-            signUpBody.last_name, signUpBody.email, signUpBody.password
+        first_name, last_name, email, password = sign_up_body.first_name, \
+            sign_up_body.last_name, sign_up_body.email, sign_up_body.password
         validate_user_signup_info(first_name, last_name, email, password)
         hashed_password = bcrypt.hashpw(
             password.encode(), request.state.config.jwt_salt.encode()).decode('utf-8')
@@ -53,9 +53,9 @@ async def sign_up(request: Request, signUpBody: SignUpBody):
 
 
 @router.post("/signin")
-async def sign_in(request: Request, signInBody: SignInBody):
+async def sign_in(request: Request, sign_in_body: SignInBody):
     try:
-        email, password = signInBody.email, signInBody.password
+        email, password = sign_in_body.email, sign_in_body.password
         validate_user_login_info(email, password)
         user = User.get_by_email(request.state.config.db_conn, email=validate_email(
             email, check_deliverability=False).normalized)
