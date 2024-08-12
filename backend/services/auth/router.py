@@ -6,7 +6,9 @@ from email_validator import validate_email
 from pydantic import BaseModel
 
 from models.user import User
-from errors import UniqueFieldException, UserNotFoundException, IncorrectLoginInfoException
+from errors import (UniqueFieldException, UserNotFoundException,
+                    IncorrectLoginInfo, UserWithEmailAlreadyExists,
+                    ValidationException, ValidationError)
 from validators import validate_user_signup_info, validate_user_login_info
 
 
@@ -47,9 +49,10 @@ async def sign_up(request: Request, sign_up_body: SignUpBody):
         token = jwt.encode(
             payload, request.state.config.jwt_secret, algorithm='HS256')
         return {'access_token': token}
-    except UniqueFieldException as e:
-        raise HTTPException(
-            status_code=409, detail='user with this email already exists')
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+    except UniqueFieldException:
+        raise UserWithEmailAlreadyExists()
 
 
 @router.post("/signin")
@@ -69,6 +72,8 @@ async def sign_in(request: Request, sign_in_body: SignInBody):
                 payload, request.state.config.jwt_secret, algorithm='HS256')
             return {'access_token': token}
         else:
-            raise IncorrectLoginInfoException()
+            raise IncorrectLoginInfo()
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
     except UserNotFoundException:
-        raise IncorrectLoginInfoException()
+        raise IncorrectLoginInfo()

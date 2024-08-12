@@ -12,11 +12,22 @@ class UserNotFoundException(Exception):
         super().__init__(message)
 
 
-class IncorrectLoginInfoException(HTTPException):
+class ValidationException(Exception):
+    def __init__(self, validation_error) -> None:
+        self.validation_error = validation_error
+        super().__init__(validation_error)
+
+
+class UserWithEmailAlreadyExists(HTTPException):
+    def __init__(self) -> None:
+        super().__init__(409, 'user with this email already exists')
+
+
+class IncorrectLoginInfo(HTTPException):
     def __init__(self) -> None:
         super().__init__(401, "Wrong log-in info")
 
 
 class ValidationError(HTTPException):
-    def __init__(self, validation_error) -> None:
-        super().__init__(403, validation_error)
+    def __init__(self, message) -> None:
+        super().__init__(403, message)
