@@ -8,7 +8,6 @@ Create Date: 2024-08-11 17:46:07.788336
 from typing import Sequence, Union
 
 from alembic import op
-from sqlalchemy import text
 import bcrypt
 import os
 from dotenv import load_dotenv
@@ -21,8 +20,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute(text("""ALTER TABLE Users
-                        ADD is_admin BOOLEAN NOT NULL"""))
+    op.execute("""ALTER TABLE Users
+                        ADD is_admin BOOLEAN NOT NULL""")
     admin_password = "admin"
     load_dotenv()
     salt = os.getenv("SALT")
