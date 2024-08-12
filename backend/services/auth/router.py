@@ -3,21 +3,33 @@ import bcrypt
 import jwt
 import datetime
 from email_validator import validate_email
+from pydantic import BaseModel
 
 from models.user import User
 from errors import UniqueFieldException, UserNotFoundException, IncorrectLoginInfoException
 from validators import validate_user_signup_info, validate_user_login_info
 
 
+class SignUpBody(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    password: str
+
+
+class SignInBody(BaseModel):
+    email: str
+    password: str
+
+
 router = APIRouter()
 
 
 @router.post("/signup")
-async def sign_up(request: Request):
+async def sign_up(request: Request, signUpBody: SignUpBody):
     try:
-        body = await request.json()
-        first_name, last_name, email, password = body['firstName'], body[
-            'lastName'], body['email'], body['password']
+        first_name, last_name, email, password = signUpBody.first_name, \
+            signUpBody.last_name, signUpBody.email, signUpBody.password
         validate_user_signup_info(first_name, last_name, email, password)
         hashed_password = bcrypt.hashpw(
             password.encode(), request.state.config.jwt_salt.encode()).decode('utf-8')
@@ -41,10 +53,9 @@ async def sign_up(request: Request):
 
 
 @router.post("/signin")
-async def sign_in(request: Request):
+async def sign_in(request: Request, signInBody: SignInBody):
     try:
-        body = await request.json()
-        email, password = body['email'], body['password']
+        email, password = signInBody.email, signInBody.password
         validate_user_login_info(email, password)
         user = User.get_by_email(request.state.config.db_conn, email=validate_email(
             email, check_deliverability=False).normalized)
