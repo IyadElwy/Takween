@@ -1,9 +1,8 @@
 import os
 from fastapi import FastAPI, Request
 from router import router
-from sqlalchemy import create_engine
-from sqlalchemy.engine import URL
 from dotenv import load_dotenv
+import psycopg2
 
 
 load_dotenv()
@@ -18,18 +17,11 @@ class Config:
 
 config = Config()
 
-
-DB_URL = URL.create(
-    drivername='postgresql+psycopg2',
-    host=os.getenv('PGHOST'),
-    port=os.getenv('PGPORT'),
-    username=os.getenv('POSTGRES_USER'),
-    password=os.getenv('POSTGRES_PASSWORD'),
-    database=os.getenv('POSTGRES_DB'))
-
-engine = create_engine(
-    DB_URL.render_as_string(hide_password=False), echo=True)
-conn = engine.connect()
+conn = psycopg2.connect(dbname=os.getenv('POSTGRES_DB'),
+                        user=os.getenv('POSTGRES_USER'),
+                        password=os.getenv('POSTGRES_PASSWORD'),
+                        host=os.getenv('PGHOST'),
+                        port=os.getenv('PGPORT'))
 config.db_conn = conn
 config.jwt_salt = os.getenv("SALT")
 config.jwt_secret = os.getenv("JWT_SECRET")

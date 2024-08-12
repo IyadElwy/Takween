@@ -1,7 +1,7 @@
 from __future__ import annotations
-from sqlalchemy import Connection, text
-from sqlalchemy.exc import IntegrityError, NoResultFound
 
+from psycopg2.extensions import connection
+from psycopg2.errors import UniqueViolation, NoDataFound
 from errors import UniqueFieldException, UserNotFoundException
 
 
@@ -15,47 +15,52 @@ class User:
         self.is_admin = is_admin
 
     @classmethod
-    def create(cls, db_conn: Connection, first_name: str, last_name: str, email: str, hashed_password: str, is_admin: bool = False):
-        stmt = text("""INSERT INTO Users
+    def create(cls, db_conn: connection, first_name: str, last_name: str, email: str, hashed_password: str, is_admin: bool = False):
+        stmt = """INSERT INTO Users
                         (first_name, last_name, email, hashed_password, is_admin) 
                         VALUES
-                        (:FIRST_NAME, :LAST_NAME, :EMAIL, :HASHED_PASSWORD, :IS_ADMIN)""")
+                        (%s, %s, %s, %s, %s) 
+                        RETURNING 
+                        id, first_name, last_name, email, hashed_password, is_admin"""
         try:
-            db_conn.execute(stmt, {
-                'FIRST_NAME': first_name,
-                'LAST_NAME': last_name,
-                'EMAIL': email,
-                'HASHED_PASSWORD': hashed_password,
-                'IS_ADMIN': is_admin})
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, (first_name, last_name,
+                                  email, hashed_password, is_admin))
+            user = cursor.fetchone()
             db_conn.commit()
-            user = cls.get_by_email(db_conn, email)
-            return user
-        except IntegrityError:
+            cursor.close()
+            id, first_name, last_name, email, hashed_password, is_admin = user
+            return User(id, first_name, last_name, email, hashed_password, is_admin)
+        except UniqueViolation:
             db_conn.rollback()
             raise UniqueFieldException('email')
 
     @classmethod
-    def get_by_email(cls, db_conn: Connection, email: str) -> User:
-        stmt = text("""SELECT * FROM Users
-                        WHERE email=:email""")
+    def get_by_email(cls, db_conn: connection, email: str) -> User:
+        stmt = """SELECT * FROM Users WHERE email=%s"""
         try:
-            result = db_conn.execute(stmt, {"email": email}).first()
-            if not result:
-                raise NoResultFound()
-            id, first_name, last_name, email, hashed_password, is_admin = result
+            cursor = db_conn.cursor()
+            cursor.execute(stmt,  (email,))
+            user = cursor.fetchone()
+            if not user:
+                raise NoDataFound()
+            id, first_name, last_name, email, hashed_password, is_admin = user
+            cursor.close()
             return User(id, first_name, last_name, email, hashed_password, is_admin)
-        except NoResultFound:
+        except NoDataFound:
             raise UserNotFoundException()
 
     @classmethod
-    def get_by_id(cls, db_conn: Connection, id: int) -> User:
-        stmt = text("""SELECT * FROM Users
-                        WHERE id=:id""")
+    def get_by_id(cls, db_conn: connection, id: int) -> User:
+        stmt = """SELECT * FROM Users WHERE id=%s"""
         try:
-            result = db_conn.execute(stmt, {"id": id}).first()
-            if not result:
-                raise NoResultFound()
-            id, first_name, last_name, email, hashed_password, is_admin = result
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, (id,))
+            user = cursor.fetchone()
+            if not user:
+                raise NoDataFound()
+            id, first_name, last_name, email, hashed_password, is_admin = user
+            cursor.close()
             return User(id, first_name, last_name, email, hashed_password, is_admin)
-        except NoResultFound:
+        except NoDataFound:
             raise UserNotFoundException()

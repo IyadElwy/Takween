@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Request
-import os
 import bcrypt
 import jwt
 import datetime
