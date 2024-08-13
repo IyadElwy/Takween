@@ -1,14 +1,17 @@
 """create users table
 
 Revision ID: 506022dd518d
-Revises: 
+Revises:
 Create Date: 2024-08-11 17:23:46.610442
 
 """
+
+import os
 from typing import Sequence, Union
 
+import bcrypt
 from alembic import op
-
+from dotenv import load_dotenv
 
 # revision identifiers, used by Alembic.
 revision: str = '506022dd518d'
@@ -23,9 +26,20 @@ def upgrade() -> None:
                 first_name TEXT NOT NULL,
                 last_name TEXT NOT NULL,
                 email TEXT NOT NULL UNIQUE,
-                hashed_password TEXT NOT NULL
+                hashed_password TEXT NOT NULL,
+                is_admin BOOLEAN NOT NULL
                     )""")
+    admin_password = 'admin'
+    load_dotenv()
+    salt = os.getenv('SALT')
+    hashed_admin_password = bcrypt.hashpw(
+        admin_password.encode(), salt.encode()
+    ).decode('utf-8')
+    op.execute(f"""INSERT INTO Users 
+                        (first_name, last_name, email, hashed_password, is_admin) 
+                        VALUES
+                        ('ADMIN', 'ADMIN', 'admin@takween.com', '{hashed_admin_password}', true)""")
 
 
 def downgrade() -> None:
-    op.execute("DROP TABLE Users")
+    op.execute('DROP TABLE Users')

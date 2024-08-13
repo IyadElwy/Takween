@@ -36,14 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-multimodallabenv
-/backend/data/*
-!/backend/data/.gitkeep
-/backend/annotations/*
-!/backend/annotations/.gitkeep
-/backend/annotations/temp/*
-!/backend/annotations/temp/.gitkeep
-!/backend/annotations/temp/
+.ruff_cache
+
+/backend/data
 
 db.sqlite
 
