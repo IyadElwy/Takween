@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from psycopg2.extensions import connection
-from psycopg2.errors import UniqueViolation, NoDataFound
 from errors import UniqueFieldException, UserNotFoundException
+from psycopg2.errors import NoDataFound, UniqueViolation
+from psycopg2.extensions import connection
 
 
 class User:
@@ -33,7 +33,7 @@ class User:
         is_admin: bool = False,
     ):
         stmt = """INSERT INTO Users
-                        (first_name, last_name, email, hashed_password, is_admin) 
+                        (first_name, last_name, email, hashed_password, is_admin)
                         VALUES
                         (%s, %s, %s, %s, %s) 
                         RETURNING 
