@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+
+from psycopg2.errors import ForeignKeyViolation, NoDataFound
 from psycopg2.extensions import connection
-from psycopg2.errors import NoDataFound, ForeignKeyViolation
 
 
 class Project:
@@ -72,9 +73,13 @@ class Project:
     ) -> list[Project]:
         stmt = """SELECT * FROM Projects"""
         params = []
-        filters = {filter: value for filter, value in filters.items() if value}
+        filters = {
+            filter: value
+            for filter, value in filters.items()
+            if value is not None
+        }
         for i, (filter, value) in enumerate(filters.items()):
-            if value:
+            if value is not None:
                 if 0 < i < len(filters):
                     stmt += ' AND'
                 if i == 0:
