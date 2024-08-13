@@ -1,0 +1,73 @@
+from errors import (
+    InvalidFilterException,
+    InvalidSearchError,
+    UserNotFoundError,
+    UserNotFoundException,
+    ValidationError,
+    ValidationException,
+)
+from fastapi import APIRouter, Request
+from validators import validate_user_filter_request, validate_user_id
+
+from models.user import User
+
+router = APIRouter()
+
+
+@router.get('/search')
+async def get_all_users(
+    request: Request,
+    id: int | None = None,
+    first_name: str | None = None,
+    last_name: str | None = None,
+    email: str | None = None,
+    is_admin: bool | None = None,
+    order_by: str | None = 'id',
+    sort_order: str | None = 'asc',
+):
+    try:
+        validate_user_filter_request(
+            order_by,
+            sort_order,
+            id=id,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            is_admin=is_admin,
+        )
+        users = User.get_all(
+            request.state.config.db_conn,
+            order_by=order_by,
+            sort_order=sort_order,
+            id=id,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            is_admin=is_admin,
+        )
+        return users
+    except InvalidFilterException as e:
+        raise InvalidSearchError(e.message)
+
+
+@router.get('/{user_id}')
+async def get_user(request: Request, user_id: int):
+    try:
+        validate_user_id(user_id)
+        user = User.get_by_id(request.state.config.db_conn, user_id)
+        return user
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+    except UserNotFoundException:
+        raise UserNotFoundError()
+
+
+@router.delete('/{user_id}')
+async def delete_user(request: Request, user_id: int):
+    try:
+        validate_user_id(user_id)
+        User.delete(request.state.config.db_conn, user_id)
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+    except UserNotFoundException:
+        raise UserNotFoundError()
