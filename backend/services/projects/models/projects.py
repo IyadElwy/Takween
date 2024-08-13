@@ -111,4 +111,5 @@ class Project:
             db_conn.commit()
             cursor.close()
         except NoDataFound:
+            db_conn.rollback()
             raise NoDataFound()
