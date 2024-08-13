@@ -1,22 +1,23 @@
-from fastapi import APIRouter, Request
-from pydantic import BaseModel
-from psycopg2.errors import NoDataFound, ForeignKeyViolation
 from datetime import datetime
 
-from models.projects import Project
 from errors import (
-    ProjectNotFoundError,
-    ValidationException,
-    ValidationError,
-    UserNotFoundError,
     InvalidFilterException,
     InvalidSearchError,
+    ProjectNotFoundError,
+    UserNotFoundError,
+    ValidationError,
+    ValidationException,
 )
+from fastapi import APIRouter, Request
+from psycopg2.errors import ForeignKeyViolation, NoDataFound
+from pydantic import BaseModel
 from validators import (
     validate_create_project_body,
-    validate_project_id,
     validate_project_filter_request,
+    validate_project_id,
 )
+
+from models.projects import Project
 
 
 class CreateProjectBody(BaseModel):
@@ -44,7 +45,7 @@ async def create_project(request: Request, project_body: CreateProjectBody):
         raise UserNotFoundError()
 
 
-@router.get('/filter')
+@router.get('/search')
 async def get_all_projects(
     request: Request,
     user_id_of_owner: int | None = None,
