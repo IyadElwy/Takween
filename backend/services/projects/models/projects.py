@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from psycopg2.extensions import connection
-from psycopg2.errors import NoDataFound
+from psycopg2.errors import NoDataFound, ForeignKeyViolation
 
 
 class Project:
@@ -30,6 +30,9 @@ class Project:
             db_conn.commit()
             cursor.close()
             return Project(*project)
+        except ForeignKeyViolation:
+            db_conn.rollback()
+            raise ForeignKeyViolation()
         except Exception as e:
             db_conn.rollback()
             raise e
@@ -49,25 +52,26 @@ class Project:
             raise NoDataFound()
 
     @classmethod
-    def get_all(cls, db_conn: connection, order_by: str = 'creation_date',
-                sort_order: str = 'asc', **filters: dict[str, str | int]) -> list[Project]:
+    def get_all(cls, db_conn: connection, order_by: str,
+                sort_order: str, **filters: dict[str, str | int | datetime]) -> list[Project]:
         stmt = """SELECT * FROM Projects"""
         params = []
+        filters = {filter: value for filter, value in filters.items() if value}
         for i, (filter, value) in enumerate(filters.items()):
             if value:
+                if 0 < i < len(filters):
+                    stmt += ' AND'
                 if i == 0:
                     stmt += " WHERE"
                 stmt += f' {filter}=%s'
-                if i < len(filters)-1:
-                    stmt += ' AND'
                 params.append(value)
+
         stmt += f' ORDER BY {order_by}'
         if sort_order == 'asc':
-            stmt += ' asc'
-        elif order_by == 'desc':
-            stmt += ' desc'
+            stmt += ' ASC'
+        elif sort_order == 'desc':
+            stmt += ' DESC'
         cursor = db_conn.cursor()
-
         cursor.execute(stmt, params)
         res = cursor.fetchall()
         cursor.close()
