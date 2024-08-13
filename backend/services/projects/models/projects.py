@@ -6,7 +6,14 @@ from psycopg2.errors import NoDataFound, ForeignKeyViolation
 
 
 class Project:
-    def __init__(self, id: int, title: str, user_id_of_owner: int, description: str, creation_date: datetime) -> None:
+    def __init__(
+        self,
+        id: int,
+        title: str,
+        user_id_of_owner: int,
+        description: str,
+        creation_date: datetime,
+    ) -> None:
         self.id = id
         self.title = title
         self.user_id_of_owner = user_id_of_owner
@@ -14,8 +21,13 @@ class Project:
         self.creation_date = creation_date
 
     @classmethod
-    def create(cls, db_conn: connection, title: str, user_id_of_owner: int,
-               description: str) -> Project:
+    def create(
+        cls,
+        db_conn: connection,
+        title: str,
+        user_id_of_owner: int,
+        description: str,
+    ) -> Project:
         stmt = """INSERT INTO Projects
                         (title, user_id_of_owner, description)
                         VALUES
@@ -24,8 +36,7 @@ class Project:
                         id, title, user_id_of_owner, description, creation_date"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (title, user_id_of_owner,
-                           description))
+            cursor.execute(stmt, (title, user_id_of_owner, description))
             project = cursor.fetchone()
             db_conn.commit()
             cursor.close()
@@ -52,8 +63,13 @@ class Project:
             raise NoDataFound()
 
     @classmethod
-    def get_all(cls, db_conn: connection, order_by: str,
-                sort_order: str, **filters: dict[str, str | int | datetime]) -> list[Project]:
+    def get_all(
+        cls,
+        db_conn: connection,
+        order_by: str,
+        sort_order: str,
+        **filters: dict[str, str | int | datetime],
+    ) -> list[Project]:
         stmt = """SELECT * FROM Projects"""
         params = []
         filters = {filter: value for filter, value in filters.items() if value}
@@ -62,7 +78,7 @@ class Project:
                 if 0 < i < len(filters):
                     stmt += ' AND'
                 if i == 0:
-                    stmt += " WHERE"
+                    stmt += ' WHERE'
                 stmt += f' {filter}=%s'
                 params.append(value)
 

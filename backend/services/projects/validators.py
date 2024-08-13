@@ -22,18 +22,22 @@ def validate_create_project_body(title: str, user_id_of_owner: int) -> None:
         raise ValidationException('user id of owner must be valid')
 
 
-def validate_project_filter_request(order_by: str, sort_order: str,
-                                    **filters: dict[str, str | int | datetime]) -> None:
+def validate_project_filter_request(
+    order_by: str, sort_order: str, **filters: dict[str, str | int | datetime]
+) -> None:
     permitted_filters = ['user_id_of_owner', 'creation_date']
     for filter in filters:
         if filter not in permitted_filters:
             raise InvalidFilterException(
-                f'Field "{filter}" is not a valid query parameter')
+                f'Field "{filter}" is not a valid query parameter'
+            )
 
     permitted_order_filters = ['creation_date', 'user_id_of_owner', 'title']
     if order_by not in permitted_order_filters:
         raise InvalidFilterException(
-            f'Field "{order_by}" cannot be used to order by')
+            f'Field "{order_by}" cannot be used to order by'
+        )
     if sort_order not in ['asc', 'desc']:
         raise InvalidFilterException(
-            'Sort ordering is either by asc or desc order')
+            'Sort ordering is either by asc or desc order'
+        )

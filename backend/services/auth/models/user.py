@@ -6,7 +6,15 @@ from errors import UniqueFieldException, UserNotFoundException
 
 
 class User:
-    def __init__(self, id: int, first_name: str, last_name: str, email: str, hashed_password: str, is_admin: bool) -> None:
+    def __init__(
+        self,
+        id: int,
+        first_name: str,
+        last_name: str,
+        email: str,
+        hashed_password: str,
+        is_admin: bool,
+    ) -> None:
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -15,7 +23,15 @@ class User:
         self.is_admin = is_admin
 
     @classmethod
-    def create(cls, db_conn: connection, first_name: str, last_name: str, email: str, hashed_password: str, is_admin: bool = False):
+    def create(
+        cls,
+        db_conn: connection,
+        first_name: str,
+        last_name: str,
+        email: str,
+        hashed_password: str,
+        is_admin: bool = False,
+    ):
         stmt = """INSERT INTO Users
                         (first_name, last_name, email, hashed_password, is_admin) 
                         VALUES
@@ -24,8 +40,9 @@ class User:
                         id, first_name, last_name, email, hashed_password, is_admin"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (first_name, last_name,
-                                  email, hashed_password, is_admin))
+            cursor.execute(
+                stmt, (first_name, last_name, email, hashed_password, is_admin)
+            )
             user = cursor.fetchone()
             db_conn.commit()
             cursor.close()
@@ -39,7 +56,7 @@ class User:
         stmt = """SELECT * FROM Users WHERE email=%s"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt,  (email,))
+            cursor.execute(stmt, (email,))
             user = cursor.fetchone()
             if not user:
                 raise NoDataFound()

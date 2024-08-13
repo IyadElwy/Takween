@@ -17,7 +17,7 @@ class InvalidFilterException(Exception):
 
 class ProjectNotFoundError(HTTPException):
     def __init__(self) -> None:
-        super().__init__(404, "Project not found")
+        super().__init__(404, 'Project not found')
 
 
 class ValidationError(HTTPException):
@@ -27,10 +27,9 @@ class ValidationError(HTTPException):
 
 class UserNotFoundError(HTTPException):
     def __init__(self) -> None:
-        super().__init__(404, "User not found")
+        super().__init__(404, 'User not found')
 
 
 class InvalidSearchError(HTTPException):
     def __init__(self, message) -> None:
-        super().__init__(
-            400, message)
+        super().__init__(400, message)
