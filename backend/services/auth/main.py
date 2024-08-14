@@ -1,9 +1,10 @@
 import os
-from fastapi import FastAPI, Request
-from router import router
-from dotenv import load_dotenv
-import psycopg2
 
+import psycopg2
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from router import router
 
 load_dotenv()
 
@@ -26,10 +27,23 @@ conn = psycopg2.connect(
 )
 config.db_conn = conn
 config.jwt_salt = os.getenv('SALT')
-config.jwt_secret = os.getenv('JWT_SECRET')
+jwt_secret = os.getenv('JWT_SECRET')
+config.jwt_secret = jwt_secret
 
 
 app = FastAPI()
+
+origins = [
+    'http://localhost:3000',
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 
 @app.middleware('http')

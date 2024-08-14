@@ -3,6 +3,7 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from router import router
 
 load_dotenv()
@@ -26,6 +27,18 @@ config.db_conn = conn
 
 
 app = FastAPI()
+
+origins = [
+    'http://localhost:3000',
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 
 @app.middleware('http')
