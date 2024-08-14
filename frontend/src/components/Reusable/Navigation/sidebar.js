@@ -36,7 +36,7 @@ export default function SideBar({ drawerState, setDrawerState }) {
                 marginLeft: "10px",
               }}
             />
-            <p className="font-bold text-inherit">Multi Modal Lab</p>
+            <p className="font-bold text-inherit">Takween</p>
           </div>
           <Divider />
         </Box>
