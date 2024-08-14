@@ -29,4 +29,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("""DROP TABLE Projects""")
+    op.execute('DROP TABLE Projects')
