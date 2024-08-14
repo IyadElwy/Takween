@@ -13,8 +13,8 @@ export default function SignUpComponent({ onClose }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [signUpData, setSignUpData] = useState({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
     repeatPassword: "",
@@ -41,7 +41,7 @@ export default function SignUpComponent({ onClose }) {
           <Input
             value={signUpData.firstName}
             onValueChange={(value) => {
-              setSignUpData({ ...signUpData, firstName: value });
+              setSignUpData({ ...signUpData, first_name: value });
             }}
             autoFocus
             endContent={
@@ -57,7 +57,7 @@ export default function SignUpComponent({ onClose }) {
           <Input
             value={signUpData.lastName}
             onValueChange={(value) => {
-              setSignUpData({ ...signUpData, lastName: value });
+              setSignUpData({ ...signUpData, last_name: value });
             }}
             endContent={
               <ProfileIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
@@ -128,12 +128,12 @@ export default function SignUpComponent({ onClose }) {
           </Button>
           <Button
             isDisabled={isLoading}
-            color="default"
+            color="primary"
             // eslint-disable-next-line consistent-return
             onPress={async () => {
-              if (!signUpData.firstName) return setFirstNameError(true);
+              if (!signUpData.first_name) return setFirstNameError(true);
               setFirstNameError(false);
-              if (!signUpData.lastName) return setLastNameError(true);
+              if (!signUpData.last_name) return setLastNameError(true);
               setLastNameError(false);
               if (!EmailValidator.validate(signUpData.email)) return setEmailError(true);
               setEmailError(false);
@@ -146,7 +146,7 @@ export default function SignUpComponent({ onClose }) {
               setIsLoading(true);
               try {
                 const res = await AxiosWrapper.post(
-                  "http://127.0.0.1:8000/signup",
+                  "http://127.0.0.1:5001/signup",
                   signUpData,
                 );
                 setUserAlreadyExists(false);

@@ -74,7 +74,7 @@ export default function SignInComponent({ onClose }) {
           </Button>
           <Button
             isDisabled={isLoading}
-            color="default"
+            color="primary"
             // eslint-disable-next-line consistent-return
             onPress={async () => {
               if (!EmailValidator.validate(signInData.email)) return setEmailError(true);
@@ -86,7 +86,7 @@ export default function SignInComponent({ onClose }) {
 
               try {
                 const res = await AxiosWrapper.post(
-                  "http://127.0.0.1:8000/signin",
+                  "http://127.0.0.1:5001/signin",
                   signInData,
                 );
                 setWrongInfoError(false);
@@ -95,7 +95,7 @@ export default function SignInComponent({ onClose }) {
                 // eslint-disable-next-line no-undef
                 window.location = "http://localhost:3000/home/projects/";
               } catch (error) {
-                if (error.response.status === 404 || error.response.status === 400) {
+                if (error.response.status === 401 || error.response.status === 400) {
                   setIsLoading(false);
                   setWrongInfoError(true);
                 }
