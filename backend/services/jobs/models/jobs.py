@@ -102,8 +102,9 @@ class Job:
         cursor = db_conn.cursor()
         cursor.execute(stmt, params)
         res = cursor.fetchall()
+        jobs = [Job(*job) for job in res]
         cursor.close()
-        return res
+        return jobs
 
     @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:

@@ -93,8 +93,9 @@ class Project:
         cursor = db_conn.cursor()
         cursor.execute(stmt, params)
         res = cursor.fetchall()
+        projects = [Project(*project) for project in res]
         cursor.close()
-        return res
+        return projects
 
     @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:

@@ -66,8 +66,9 @@ class User:
         cursor = db_conn.cursor()
         cursor.execute(stmt, params)
         res = cursor.fetchall()
+        users = [User(*user) for user in res]
         cursor.close()
-        return res
+        return users
 
     @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:
