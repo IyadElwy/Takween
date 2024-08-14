@@ -8,7 +8,7 @@ export default function Logo({
     <Image
       style={style}
       className={spin ? styles.logoSpin : ""}
-      src="/images/logo_3.svg"
+      src="/images/takween_logo.svg"
       height={height}
       width={width}
       alt="Logo"

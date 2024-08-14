@@ -2,7 +2,6 @@ import {
   Navbar, NavbarBrand, NavbarContent, Button,
   Modal, ModalContent, useDisclosure,
 } from "@nextui-org/react";
-import { TypeAnimation } from "react-type-animation";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Logo from "../components/Reusable/logo";
@@ -42,57 +41,34 @@ export default function Root() {
         style={{ backgroundColor: "#3a4158" }}
       >
         <NavbarBrand>
-          <Logo spin height={50} width={50} />
-          <p className="font-bold text-inherit">MML</p>
+          <Logo spin height={40} width={40} />
+          <p className="font-bold text-inherit">Takween</p>
 
         </NavbarBrand>
 
         <NavbarContent as="div" justify="end">
-          <Button onPress={onOpenLogin} variant="faded" color="default">Log In</Button>
-          <Button onPress={onOpenSignUp} variant="faded" color="default">Sign Up</Button>
+          <Button onPress={onOpenLogin} variant="flat" color="primary">Log In</Button>
+          <Button onPress={onOpenSignUp} variant="flat" color="primary">Sign Up</Button>
         </NavbarContent>
       </Navbar>
       <div className="flex">
         <div className="w-2/5 p-5">
           <div className="flex justify-center items-center h-full">
-            <Logo spin height={350} width={350} />
+            <Logo spin height={200} width={200} />
           </div>
           <div className="flex justify-center items-center">
-            <h1 style={{ color: "#3a4158" }} className="text-6xl">Multi-Modal-Lab</h1>
+            <h1 style={{ color: "#3a4158" }} className="text-6xl">Takween</h1>
           </div>
         </div>
 
         <div className="w-3/5 p-5">
           <div className="flex justify-center items-center">
             <div className="p-4">
-              <div className="text-9xl" style={{ color: "#3a4158", marginTop: "50px", marginLeft: "0px" }}>Collect</div>
-              <div className="text-8xl" style={{ color: "#3a4158", marginTop: "20px", marginLeft: "40px" }}>Process</div>
-              <div className="text-5xl" style={{ color: "#3a4158", marginTop: "20px", marginLeft: "80px" }}>Collaborate</div>
-              <div className="text-1xl" style={{ color: "#3a4158", marginTop: "20px", marginLeft: "135px" }}>
-                <TypeAnimation
-                  sequence={[
-                  // Same substring at the start will only be typed out once, initially
-                    "But most importantly",
-                    1000, // wait 1s before replacing "Mice" with "Hamsters"
-                    "But most importantly Annotate",
-                    1000,
-                    "and then annotate again",
-                    1000,
-                    "and again",
-                    1000,
-                    "and then some more",
-                    1000,
-                    "until you have enough data :)",
-                    1000,
-                  ]}
-                  wrapper="span"
-                  speed={50}
-                  style={{ fontSize: "2em", display: "inline-block" }}
-                  repeat={2}
-                />
-
-              </div>
-
+              <div className="text-6xl" style={{ color: "#3a4158", marginTop: "50px", marginLeft: "0px" }}>Arabic Text</div>
+              <div className="text-5xl" style={{ color: "#3a4158", marginTop: "10px", marginLeft: "40px" }}>Collection</div>
+              <div className="text-4xl" style={{ color: "#3a4158", marginTop: "10px", marginLeft: "80px" }}>Processing</div>
+              <div className="text-3xl" style={{ color: "#3a4158", marginTop: "10px", marginLeft: "100px" }}>Collaboration</div>
+              <div className="text-2xl" style={{ color: "#3a4158", marginTop: "10px", marginLeft: "150px" }}><strong>All under one roof</strong></div>
             </div>
           </div>
         </div>
