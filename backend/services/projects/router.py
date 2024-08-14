@@ -4,12 +4,13 @@ from errors import (
     InvalidFilterException,
     InvalidSearchError,
     ProjectNotFoundError,
+    ProjectNotFoundException,
     UserNotFoundError,
+    UserNotFoundException,
     ValidationError,
     ValidationException,
 )
 from fastapi import APIRouter, Request
-from psycopg2.errors import ForeignKeyViolation, NoDataFound
 from pydantic import BaseModel
 from validators import (
     validate_create_project_body,
@@ -41,7 +42,7 @@ async def create_project(request: Request, project_body: CreateProjectBody):
         return project
     except ValidationException as e:
         raise ValidationError(e.validation_error)
-    except ForeignKeyViolation:
+    except UserNotFoundException:
         raise UserNotFoundError()
 
 
@@ -80,7 +81,7 @@ async def get_project(request: Request, project_id: int):
         return project
     except ValidationException as e:
         raise ValidationError(e.validation_error)
-    except NoDataFound:
+    except ProjectNotFoundException:
         raise ProjectNotFoundError()
 
 
@@ -91,5 +92,5 @@ async def delete_project(request: Request, project_id: int):
         Project.delete(request.state.config.db_conn, project_id)
     except ValidationException as e:
         raise ValidationError(e.validation_error)
-    except NoDataFound:
+    except ProjectNotFoundException:
         raise ProjectNotFoundError()

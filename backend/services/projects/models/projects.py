@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from errors import ProjectNotFoundException, UserNotFoundException
 from psycopg2.errors import ForeignKeyViolation, NoDataFound
 from psycopg2.extensions import connection
 
@@ -44,10 +45,7 @@ class Project:
             return Project(*project)
         except ForeignKeyViolation:
             db_conn.rollback()
-            raise ForeignKeyViolation()
-        except Exception as e:
-            db_conn.rollback()
-            raise e
+            raise UserNotFoundException()
 
     @classmethod
     def get(cls, db_conn: connection, id: int) -> Project:
@@ -61,7 +59,7 @@ class Project:
             cursor.close()
             return Project(*project)
         except NoDataFound:
-            raise NoDataFound()
+            raise ProjectNotFoundException()
 
     @classmethod
     def get_all(
@@ -112,4 +110,4 @@ class Project:
             cursor.close()
         except NoDataFound:
             db_conn.rollback()
-            raise NoDataFound()
+            raise ProjectNotFoundException()

@@ -13,6 +13,16 @@ class InvalidFilterException(Exception):
         super().__init__()
 
 
+class UserNotFoundException(Exception):
+    def __init__(self) -> None:
+        super().__init__('User not found')
+
+
+class ProjectNotFoundException(Exception):
+    def __init__(self) -> None:
+        super().__init__('Project not found')
+
+
 class ProjectNotFoundError(HTTPException):
     def __init__(self) -> None:
         super().__init__(404, 'Project not found')

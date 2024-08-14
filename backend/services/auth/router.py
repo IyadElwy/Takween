@@ -1,20 +1,21 @@
-from fastapi import APIRouter, Request
+import datetime
+
 import bcrypt
 import jwt
-import datetime
 from email_validator import validate_email
-from pydantic import BaseModel
-
-from models.user import User
 from errors import (
+    IncorrectLoginInfoError,
     UniqueFieldException,
     UserNotFoundException,
-    IncorrectLoginInfo,
-    UserWithEmailAlreadyExists,
-    ValidationException,
+    UserWithEmailAlreadyExistsError,
     ValidationError,
+    ValidationException,
 )
-from validators import validate_user_signup_info, validate_user_login_info
+from fastapi import APIRouter, Request
+from pydantic import BaseModel
+from validators import validate_user_login_info, validate_user_signup_info
+
+from models.user import User
 
 
 class SignUpBody(BaseModel):
@@ -63,7 +64,7 @@ async def sign_up(request: Request, sign_up_body: SignUpBody):
     except ValidationException as e:
         raise ValidationError(e.validation_error)
     except UniqueFieldException:
-        raise UserWithEmailAlreadyExists()
+        raise UserWithEmailAlreadyExistsError()
 
 
 @router.post('/signin')
@@ -85,8 +86,8 @@ async def sign_in(request: Request, sign_in_body: SignInBody):
             )
             return {'access_token': token}
         else:
-            raise IncorrectLoginInfo()
+            raise IncorrectLoginInfoError()
     except ValidationException as e:
         raise ValidationError(e.validation_error)
     except UserNotFoundException:
-        raise IncorrectLoginInfo()
+        raise IncorrectLoginInfoError()
