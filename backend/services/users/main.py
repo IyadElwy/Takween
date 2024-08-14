@@ -1,12 +1,16 @@
 import os
 
+import jwt
 import psycopg2
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from router import router
 
 load_dotenv()
+
+jwt_secret = os.getenv('JWT_SECRET')
 
 
 class Config:
@@ -39,6 +43,29 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+
+@app.middleware('http')
+async def authenticate_user(request: Request, call_next):
+    if request.method == 'OPTIONS':
+        response = JSONResponse(content={}, status_code=200)
+        response = await call_next(request)
+        return response
+    else:
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            token = auth_header.split('Bearer ')[1]
+            decoded_token = jwt.decode(
+                token, key=jwt_secret, algorithms=['HS256']
+            )
+            request.state.user_id = decoded_token['user_id']
+            response = await call_next(request)
+            return response
+        else:
+            response = JSONResponse(
+                content={'error': 'Authentication failed'}, status_code=401
+            )
+            return response
 
 
 @app.middleware('http')

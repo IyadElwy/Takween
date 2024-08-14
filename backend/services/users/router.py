@@ -50,6 +50,19 @@ async def get_all_users(
         raise InvalidSearchError(e.message)
 
 
+@router.get('/currentuser')
+async def get_current_user(request: Request):
+    try:
+        user_id = request.state.user_id
+        validate_user_id(user_id)
+        user = User.get_by_id(request.state.config.db_conn, user_id)
+        return user
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+    except UserNotFoundException:
+        raise UserNotFoundError()
+
+
 @router.get('/{user_id}')
 async def get_user(request: Request, user_id: int):
     try:

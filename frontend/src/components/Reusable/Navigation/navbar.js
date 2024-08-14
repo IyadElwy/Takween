@@ -22,7 +22,7 @@ export default function NavBar({
 
   useEffect(() => {
     const fetchUser = async () => {
-      const currentUser = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser")).data;
+      const currentUser = (await AxiosWrapper.get("http://127.0.0.1:5003/currentuser")).data;
       setUser(currentUser);
     };
     fetchUser();
@@ -42,7 +42,7 @@ export default function NavBar({
           width={40}
           alt="Logo"
         />
-        <Logo spin height={50} width={50} />
+        <Logo spin height={30} width={30} />
         <p className="font-bold text-inherit">MML</p>
         <div style={{ marginLeft: "50px" }} className="flex">
           {breadcrumbs.map((crumb, index) => (

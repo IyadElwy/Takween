@@ -27,12 +27,13 @@ export default function SideBar({ drawerState, setDrawerState }) {
           <div style={{ display: "flex", alignItems: "center" }}>
             <Logo
               spin
-              height={50}
-              width={50}
+              height={30}
+              width={30}
               style={{
                 marginTop: "5px",
                 marginBottom: "5px",
                 marginRight: "10px",
+                marginLeft: "10px",
               }}
             />
             <p className="font-bold text-inherit">Multi Modal Lab</p>

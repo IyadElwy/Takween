@@ -2,6 +2,10 @@ from errors import InvalidFilterException, ValidationException
 
 
 def validate_user_id(user_id: int) -> None:
+    if isinstance(user_id, str):
+        if not user_id.isnumeric():
+            raise ValidationException('user id must be valid')
+        user_id = int(user_id)
     if not user_id:
         raise ValidationException('user id must be provided')
     if user_id <= 0:

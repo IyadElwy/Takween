@@ -22,7 +22,7 @@ export default function NoProjectsComponent({ createProjectTrigger }) {
         breadcrumbs={[{ text: "Projects", href: "/home/projects" }]}
       />
       <div className={styles.noProjectDiv}>
-        <Logo spin height={350} width={350} />
+        <Logo spin height={200} width={200} />
         <h1>Create a project and start labeling your data</h1>
         <GhostButton onPress={createProjectTrigger}>
           Create Project
