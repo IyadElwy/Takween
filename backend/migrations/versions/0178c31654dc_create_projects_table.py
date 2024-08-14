@@ -22,7 +22,7 @@ def upgrade() -> None:
                 id SERIAL UNIQUE,
                 title TEXT NOT NULL,
                 user_id_of_owner INTEGER NOT NULL,
-                description TEXT NOT NULL,
+                description TEXT,
                 creation_date TIMESTAMP DEFAULT NOW() NOT NULL,
                 FOREIGN KEY (user_id_of_owner) REFERENCES Users (id)
                 )""")
