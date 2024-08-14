@@ -7,10 +7,10 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./backend/data/mongodb:/data/db
+      - mongodb-data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      MONGODB_INITDB_ROOT_PASSWORD: admin
 
   postgres:
     container_name: postgres
@@ -19,7 +19,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./backend/data/postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=takween_db
       - POSTGRES_USER=admin
