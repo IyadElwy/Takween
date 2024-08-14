@@ -129,7 +129,7 @@ export default function PartOfSpeechSetup({ onClose, projectId, language }) {
                 </Select>
                 <p className="text-xs text-gray-500 mt-3">If you can&apos;t see some fields, you might need to flatten your data-source</p>
                 <p className="text-xs text-gray-500">
-                  MML can Only see fields on the
+                  Takween can Only see fields on the
                   {" "}
                   <strong>first level</strong>
                 </p>

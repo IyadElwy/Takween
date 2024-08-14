@@ -43,7 +43,7 @@ export default function NavBar({
           alt="Logo"
         />
         <Logo spin height={30} width={30} />
-        <p className="font-bold text-inherit">MML</p>
+        <p className="font-bold text-inherit">Takween</p>
         <div style={{ marginLeft: "50px" }} className="flex">
           {breadcrumbs.map((crumb, index) => (
             <div key={`${crumb.text}-div`} className="flex">
