@@ -42,7 +42,9 @@ class User:
         sort_order: str,
         **filters: dict[str, str | int],
     ) -> list[User]:
-        stmt = """SELECT * FROM Users"""
+        stmt = (
+            """SELECT id, first_name, last_name, email, is_admin FROM Users"""
+        )
         params = []
         filters = {
             filter: value

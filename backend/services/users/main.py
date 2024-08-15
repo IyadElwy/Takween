@@ -3,6 +3,7 @@ import os
 import jwt
 import psycopg2
 from dotenv import load_dotenv
+from errors import UnAuthenticatedError
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -58,14 +59,12 @@ async def authenticate_user(request: Request, call_next):
             decoded_token = jwt.decode(
                 token, key=jwt_secret, algorithms=['HS256']
             )
+            request.state.bearer_token = token
             request.state.user_id = decoded_token['user_id']
             response = await call_next(request)
             return response
         else:
-            response = JSONResponse(
-                content={'error': 'Authentication failed'}, status_code=401
-            )
-            return response
+            return UnAuthenticatedError()
 
 
 @app.middleware('http')

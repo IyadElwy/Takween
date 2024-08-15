@@ -1,12 +1,16 @@
+from typing import Annotated
+
 from errors import (
     InvalidFilterException,
     InvalidSearchError,
+    UnAuthorizedError,
+    UnAuthorizedException,
     UserNotFoundError,
     UserNotFoundException,
     ValidationError,
     ValidationException,
 )
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from validators import validate_user_filter_request, validate_user_id
 
 from models.user import User
@@ -75,8 +79,27 @@ async def get_user(request: Request, user_id: int):
         raise UserNotFoundError()
 
 
+async def is_authorized_for_delete(request: Request, user_id: int):
+    try:
+        validate_user_id(user_id)
+        user = User.get_by_id(request.state.config.db_conn, user_id)
+        current_user_id = int(request.state.user_id)
+        if not user.is_admin and current_user_id != user.id:
+            raise UnAuthorizedException()
+        return user.id
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+    except UserNotFoundException:
+        raise UserNotFoundError()
+    except UnAuthorizedException:
+        raise UnAuthorizedError()
+
+
 @router.delete('/{user_id}')
-async def delete_user(request: Request, user_id: int):
+async def delete_user(
+    request: Request,
+    user_id: Annotated[int, Depends(is_authorized_for_delete)],
+):
     try:
         validate_user_id(user_id)
         User.delete(request.state.config.db_conn, user_id)

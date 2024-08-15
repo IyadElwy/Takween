@@ -1,4 +1,5 @@
 from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
 
 
 class ValidationException(Exception):
@@ -21,6 +22,20 @@ class UserNotFoundException(Exception):
 class ProjectNotFoundException(Exception):
     def __init__(self) -> None:
         super().__init__('Project not found')
+
+
+class UnAuthorizedException(Exception):
+    def __init__(self) -> None:
+        super().__init__('User not authorized')
+
+
+def UnAuthenticatedError():
+    return JSONResponse({'detail': 'User not authenticated'}, status_code=403)
+
+
+class UnAuthorizedError(HTTPException):
+    def __init__(self) -> None:
+        super().__init__(401, 'User not authorized')
 
 
 class ProjectNotFoundError(HTTPException):
