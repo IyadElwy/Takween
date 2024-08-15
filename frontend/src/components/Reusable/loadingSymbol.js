@@ -10,7 +10,7 @@ export default function LoadingSymbol({
         priority
         style={style}
         className={styles.loadingLogoSpin}
-        src="/images/logo_3.svg"
+        src="/images/takween_logo.svg"
         height={height}
         width={width}
         alt="Logo"

@@ -20,42 +20,40 @@ export default function ProjectsHome({ projects }) {
         isOpen={isOpenCreateNewProjectModal}
         onOpenChange={onOpenChangeCreateNewProjectModal}
       />
-      <NoProjectsComponent createProjectTrigger={onOpenCreateNewProjectModal} />
-      {/* {projects.length === 0
+      {projects.length === 0
         ? <NoProjectsComponent createProjectTrigger={onOpenCreateNewProjectModal} />
-        : <ProjectsOverview data={projects} createProjectTrigger={onOpenCreateNewProjectModal} />} */}
+        : <ProjectsOverview data={projects} createProjectTrigger={onOpenCreateNewProjectModal} />}
 
     </>
 
   );
 }
 
-// export async function getServerSideProps(context) {
-//   const cookies = context.req.headers.cookie || "";
-//   const { accessToken } = cookieParse.parse(cookies);
+export async function getServerSideProps(context) {
+  const cookies = context.req.headers.cookie || "";
+  const { accessToken } = cookieParse.parse(cookies);
 
-//   try {
-//     const projects = (await AxiosWrapper.get("http://127.0.0.1:8000/projects", {
-//       accessToken: accessToken || "",
-//     })).data;
+  try {
+    const currentUser = (await AxiosWrapper.get(
+      "http://127.0.0.1:5003/currentuser",
+      {
+        accessToken: accessToken || "",
+      },
+    )).data;
 
-//     const projectsWithUsers = await Promise.all(projects.map(async (project) => {
-//       const userCreatedProject = (await AxiosWrapper.get(`http://localhost:8000/users/${project.created_by_id}`, {
-//         accessToken: accessToken || "",
-//       })).data;
-//       return { ...project, user: userCreatedProject };
-//     }));
-
-//     return { props: { projects: projectsWithUsers } };
-//   } catch (error) {
-//     if (error.response.status === 401) {
-//       return {
-//         redirect: {
-//           destination: "/",
-//           permanent: false,
-//         },
-//       };
-//     }
-//   }
-//   return null;
-// }
+    const projects = (await AxiosWrapper.get(`http://127.0.0.1:5002/search?user_id_of_owner=${currentUser.id}&embed_users=true`, {
+      accessToken: accessToken || "",
+    })).data;
+    return { props: { projects } };
+  } catch (error) {
+    if (error.response.status === 401) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
+  return null;
+}

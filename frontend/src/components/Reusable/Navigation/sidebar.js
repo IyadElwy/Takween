@@ -27,8 +27,8 @@ export default function SideBar({ drawerState, setDrawerState }) {
           <div style={{ display: "flex", alignItems: "center" }}>
             <Logo
               spin
-              height={30}
-              width={30}
+              height={25}
+              width={25}
               style={{
                 marginTop: "5px",
                 marginBottom: "5px",
