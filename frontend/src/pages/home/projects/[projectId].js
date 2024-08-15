@@ -198,7 +198,6 @@ export default function ProjectDetailPage({
             <br />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
 
-              {user.can_add_data && (
               <Card
                 className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
                 isPressable
@@ -228,8 +227,6 @@ export default function ProjectDetailPage({
                 </CardHeader>
 
               </Card>
-              )}
-              {project.created_by_id === user.id && (
               <Card
                 className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px]"
                 isPressable
@@ -255,14 +252,12 @@ export default function ProjectDetailPage({
                 </CardHeader>
 
               </Card>
-              )}
             </div>
 
             <br />
             <Divider />
             <br />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {user.can_create_jobs && (
               <Card
                 className="py-4"
                 isPressable
@@ -287,9 +282,7 @@ export default function ProjectDetailPage({
                   </center>
                 </CardBody>
               </Card>
-              )}
 
-              {project.created_by_id === user.id && (
               <Card
                 className="py-4"
                 isPressable
@@ -314,7 +307,6 @@ export default function ProjectDetailPage({
                   </center>
                 </CardBody>
               </Card>
-              ) }
 
             </div>
           </div>
@@ -330,31 +322,21 @@ export async function getServerSideProps(context) {
   const { accessToken } = cookieParse.parse(cookies);
 
   try {
-    const project = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}`, {
-      accessToken: accessToken || "",
-    })).data;
-    const jobs = (await AxiosWrapper(`http://localhost:8000/projects/${projectId}/jobs`, {
+    const project = (await AxiosWrapper.get(`http://localhost:5002/${projectId}`, {
       accessToken: accessToken || "",
     })).data;
 
-    const jobsWithUsers = await Promise.all(jobs.jobs.map(async (job) => {
-      const userCreatedJob = (await AxiosWrapper.get(`http://localhost:8000/users/${job.created_by_id}`, {
-        accessToken: accessToken || "",
-      })).data;
-      return { ...job, user: userCreatedJob };
-    }));
-
-    const user = (await AxiosWrapper.get("http://127.0.0.1:8000/currentuser", {
+    const user = (await AxiosWrapper.get("http://127.0.0.1:5003/currentuser", {
       accessToken: accessToken || "",
     })).data;
 
     return {
       props: {
-        project: project.project, jobs: jobsWithUsers, projectId, user,
+        project, jobs: [], projectId, user,
       },
     };
   } catch (error) {
-    if (error.response.status === 401) {
+    if (error.response.status === 401 || error.response.status === 403) {
       return {
         redirect: {
           destination: "/",
@@ -362,6 +344,11 @@ export async function getServerSideProps(context) {
         },
       };
     }
+    return {
+      redirect: {
+        destination: "/projects",
+        permanent: false,
+      },
+    };
   }
-  return null;
 }

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 function ErrorPage({ statusCode }) {
   const router = useRouter();
 
-  if (statusCode === 401) {
+  if (statusCode === 401 || statusCode === 403) {
     router.push("/");
     return null;
   }
