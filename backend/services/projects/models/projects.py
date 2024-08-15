@@ -67,9 +67,24 @@ class Project:
         db_conn: connection,
         order_by: str,
         sort_order: str,
+        embed_users: bool,
         **filters: dict[str, str | int | datetime],
     ) -> list[Project]:
-        stmt = """SELECT * FROM Projects"""
+        stmt = (
+            """SELECT
+        Projects.id AS project_id,
+        Projects.title AS project_title,
+        Projects.user_id_of_owner AS user_id_of_owner,
+        Projects.description AS project_description,
+        Projects.creation_date AS project_creation_date,
+        Users.first_name AS user_first_name,
+        Users.last_name AS user_last_name,
+        Users.email AS user_email
+        FROM Projects INNER JOIN Users On 
+        Projects.user_id_of_owner = Users.id"""
+            if embed_users
+            else """SELECT * FROM Projects"""
+        )
         params = []
         filters = {
             filter: value
@@ -93,7 +108,18 @@ class Project:
         cursor = db_conn.cursor()
         cursor.execute(stmt, params)
         res = cursor.fetchall()
-        projects = [Project(*project) for project in res]
+        if embed_users:
+            projects = [
+                {
+                    **vars(Project(*project[:5])),
+                    'owner_first_name': project[5],
+                    'owner_last_name': project[6],
+                    'owner_email': project[7],
+                }
+                for project in res
+            ]
+        else:
+            projects = [Project(*project) for project in res]
         cursor.close()
         return projects
 

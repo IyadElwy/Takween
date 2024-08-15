@@ -59,6 +59,7 @@ async def get_all_projects(
     creation_date: datetime | None = None,
     order_by: str | None = 'creation_date',
     sort_order: str | None = 'asc',
+    embed_users: bool | None = False,
 ):
     try:
         validate_project_filter_request(
@@ -71,6 +72,7 @@ async def get_all_projects(
             request.state.config.db_conn,
             order_by=order_by,
             sort_order=sort_order,
+            embed_users=embed_users,
             user_id_of_owner=user_id_of_owner,
             creation_date=creation_date,
         )
