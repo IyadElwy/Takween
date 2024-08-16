@@ -7,6 +7,7 @@ from errors import UnAuthenticatedError
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from jwt.exceptions import PyJWTError
 from router import router
 
 load_dotenv()
@@ -56,13 +57,16 @@ async def authenticate_user(request: Request, call_next):
         auth_header = request.headers.get('Authorization')
         if auth_header:
             token = auth_header.split('Bearer ')[1]
-            decoded_token = jwt.decode(
-                token, key=jwt_secret, algorithms=['HS256']
-            )
-            request.state.bearer_token = token
-            request.state.user_id = decoded_token['user_id']
-            response = await call_next(request)
-            return response
+            try:
+                decoded_token = jwt.decode(
+                    token, key=jwt_secret, algorithms=['HS256']
+                )
+                request.state.bearer_token = token
+                request.state.user_id = decoded_token['user_id']
+                response = await call_next(request)
+                return response
+            except PyJWTError:
+                return UnAuthenticatedError()
         else:
             return UnAuthenticatedError()
 
