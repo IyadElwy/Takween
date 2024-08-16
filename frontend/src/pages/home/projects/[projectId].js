@@ -2,10 +2,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import {
-  ScrollShadow,
   Divider,
-  Card, CardHeader, CardFooter, CardBody,
-  Avatar, useDisclosure, Modal, ModalBody, ModalContent, Button, CircularProgress,
+  Card, CardHeader, CardFooter, Avatar, useDisclosure, Modal, ModalBody, ModalContent, Button, CircularProgress,
   Accordion, AccordionItem,
 } from "@nextui-org/react";
 import Link from "next/link";
@@ -148,9 +146,9 @@ export default function ProjectDetailPage({
               <ModalBody>
 
                 <div className="text-4xl">Are you sure?</div>
-                <p className="text-s text-gray-500 mb-2">This action cannot be undone</p>
+                <p className="text-xs text-gray-500">This action cannot be undone</p>
 
-                <div className="absolute bottom-0 right-0 mr-5 mb-5">
+                <div className="absolute bottom-0 right-0 mr-5 mb-5 pt-3">
                   <div className="flex space-x-4">
                     <Button
                       color="default"
@@ -293,7 +291,7 @@ export default function ProjectDetailPage({
                   className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
                   isPressable
                   onPress={() => {
-                    setModalComponent("newAnnotationJob");
+                    setModalComponent("manageUsers");
                     onOpen();
                   }}
                 >
