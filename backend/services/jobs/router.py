@@ -35,7 +35,9 @@ class CreateJobBody(BaseModel):
 router = APIRouter()
 
 
-async def is_authorized_for_create(request: Request, job_body: CreateJobBody):
+async def is_authorized_for_create(
+    request: Request, job_body: CreateJobBody
+) -> CreateJobBody:
     try:
         current_user_id = int(request.state.user_id)
         validate_create_job_body(
@@ -135,7 +137,7 @@ async def get_job(request: Request, job_id: int):
         raise JobNotFoundError()
 
 
-async def is_authorized_for_delete(request: Request, job_id: int):
+async def is_authorized_for_delete(request: Request, job_id: int) -> int:
     try:
         validate_job_id(job_id)
         job = Job.get(request.state.config.db_conn, job_id)

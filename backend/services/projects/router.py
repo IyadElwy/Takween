@@ -98,7 +98,7 @@ async def is_authorized_to_edit_project_memberships(
     request: Request,
     request_body: UpdateUserProjectPermissionsRequestBody
     | UserIdAndProjectIdRequestBody,
-):
+) -> UpdateUserProjectPermissionsRequestBody | UserIdAndProjectIdRequestBody:
     try:
         current_user_id = request.state.user_id
         validate_user_id(current_user_id)
@@ -209,7 +209,7 @@ async def get_project(request: Request, project_id: int):
         raise ProjectNotFoundError()
 
 
-async def is_authorized_for_delete(request: Request, project_id: int):
+async def is_authorized_for_delete(request: Request, project_id: int) -> int:
     try:
         validate_project_id(project_id)
         project = Project.get(request.state.config.db_conn, project_id)

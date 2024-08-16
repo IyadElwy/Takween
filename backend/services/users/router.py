@@ -85,7 +85,7 @@ async def get_user(request: Request, user_id: int):
         raise UserNotFoundError()
 
 
-async def is_authorized_for_delete(request: Request, user_id: int):
+async def is_authorized_for_delete(request: Request, user_id: int) -> int:
     try:
         validate_user_id(user_id)
         user = User.get_by_id(request.state.config.db_conn, user_id)
