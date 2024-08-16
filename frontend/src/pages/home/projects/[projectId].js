@@ -335,6 +335,7 @@ export default function ProjectDetailPage({
             className="p-2 border border-gray-300 rounded"
             style={{ width: "100%" }}
           />
+          {filteredJobs.length > 0 && (
           <Slider {...sliderSettingsJobs}>
             {filteredJobs.map((job) => (
               <div key={job.id}>
@@ -386,6 +387,7 @@ export default function ProjectDetailPage({
               </div>
             ))}
           </Slider>
+          )}
 
         </div>
 
