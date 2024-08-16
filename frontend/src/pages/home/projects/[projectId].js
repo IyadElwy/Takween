@@ -163,7 +163,7 @@ export default function ProjectDetailPage({
                       color="danger"
                       variant="ghost"
                       onPress={async () => {
-                        await AxiosWrapper.delete(`http://localhost:8000/projects/${projectId}`);
+                        await AxiosWrapper.delete(`http://localhost:5002/${projectId}`);
                         // eslint-disable-next-line no-undef
                         window.location = "http://localhost:3000/home/projects";
                       }}
