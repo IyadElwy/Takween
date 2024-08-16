@@ -40,12 +40,36 @@ class User:
         db_conn: connection,
         order_by: str,
         sort_order: str,
+        project_id_to_embed_user_assignments: bool,
         **filters: dict[str, str | int],
     ) -> list[User]:
         stmt = (
-            """SELECT id, first_name, last_name, email, is_admin FROM Users"""
+            """SELECT 
+                Users.id, 
+                Users.first_name, 
+                Users.last_name, 
+                Users.email,
+                Users.is_admin, 
+                ProjectUsers.project_id, 
+                ProjectUsers.is_owner, 
+                ProjectUsers.can_add_data, 
+                ProjectUsers.can_create_jobs
+            FROM 
+                Users
+            LEFT JOIN 
+                ProjectUsers 
+            ON 
+                Users.id = ProjectUsers.user_id AND ProjectUsers.project_id = %s"""
+            if project_id_to_embed_user_assignments
+            else (
+                """SELECT id, first_name, last_name, email, is_admin FROM Users"""
+            )
         )
-        params = []
+        params = (
+            [project_id_to_embed_user_assignments]
+            if project_id_to_embed_user_assignments
+            else []
+        )
         filters = {
             filter: value
             for filter, value in filters.items()
@@ -68,7 +92,19 @@ class User:
         cursor = db_conn.cursor()
         cursor.execute(stmt, params)
         res = cursor.fetchall()
-        users = [User(*user) for user in res]
+        if project_id_to_embed_user_assignments:
+            users = [
+                {
+                    **vars(User(*user[:5])),
+                    'project_id': user[5],
+                    'is_owner': user[6],
+                    'can_add_data': user[7],
+                    'can_create_jobs': user[8],
+                }
+                for user in res
+            ]
+        else:
+            users = [User(*user) for user in res]
         cursor.close()
         return users
 

@@ -11,7 +11,10 @@ from errors import (
     ValidationException,
 )
 from fastapi import APIRouter, Depends, Request
-from validators import validate_user_filter_request, validate_user_id
+from validators import (
+    validate_user_filter_request,
+    validate_user_id,
+)
 
 from models.user import User
 
@@ -28,12 +31,14 @@ async def get_all_users(
     is_admin: bool | None = None,
     order_by: str | None = 'id',
     sort_order: str | None = 'asc',
+    project_id_to_embed_user_assignments: int | None = None,
 ):
     try:
         validate_user_filter_request(
             order_by,
             sort_order,
             id=id,
+            project_id_to_embed_user_assignments=project_id_to_embed_user_assignments,
             first_name=first_name,
             last_name=last_name,
             email=email,
@@ -43,6 +48,7 @@ async def get_all_users(
             request.state.config.db_conn,
             order_by=order_by,
             sort_order=sort_order,
+            project_id_to_embed_user_assignments=project_id_to_embed_user_assignments,
             id=id,
             first_name=first_name,
             last_name=last_name,

@@ -15,7 +15,14 @@ def validate_user_id(user_id: int) -> None:
 def validate_user_filter_request(
     order_by: str, sort_order: str, **filters: dict[str, str | int]
 ) -> None:
-    permitted_filters = ['id', 'first_name', 'last_name', 'email', 'is_admin']
+    permitted_filters = [
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'is_admin',
+        'project_id_to_embed_user_assignments',
+    ]
     for filter in filters:
         if filter not in permitted_filters:
             raise InvalidFilterException(

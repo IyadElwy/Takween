@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from errors import ValidationException, InvalidFilterException
+from errors import InvalidFilterException, ValidationException
 
 
 def validate_project_id(project_id: int) -> None:
@@ -8,6 +8,17 @@ def validate_project_id(project_id: int) -> None:
         raise ValidationException('project id must be provided')
     if project_id <= 0:
         raise ValidationException('project id must be valid')
+
+
+def validate_user_id(user_id: int) -> None:
+    if isinstance(user_id, str):
+        if not user_id.isnumeric():
+            raise ValidationException('user id must be valid')
+        user_id = int(user_id)
+    if not user_id:
+        raise ValidationException('user id must be provided')
+    if user_id <= 0:
+        raise ValidationException('user id must be valid')
 
 
 def validate_create_project_body(title: str, user_id_of_owner: int) -> None:

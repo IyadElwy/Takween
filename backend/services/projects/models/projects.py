@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from errors import ProjectNotFoundException, UserNotFoundException
-from psycopg2.errors import ForeignKeyViolation, NoDataFound
+from psycopg2.errors import ForeignKeyViolation, NoDataFound, UniqueViolation
 from psycopg2.extensions import connection
 
 
@@ -30,19 +30,32 @@ class Project:
         user_id_of_owner: int,
         description: str,
     ) -> Project:
-        stmt = """INSERT INTO Projects
+        stmt_create_project = """INSERT INTO Projects
                         (title, user_id_of_owner, description)
                         VALUES
                         (%s, %s, %s)
                         RETURNING
                         id, title, user_id_of_owner, description, creation_date"""
+
+        stmt_create_joint_project_users = """INSERT INTO ProjectUsers
+                                            (user_id, project_id, is_owner,
+                                            can_add_data, can_create_jobs)
+                                            VALUES
+                                            (%s, %s, %s, %s, %s)"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (title, user_id_of_owner, description))
+            cursor.execute(
+                stmt_create_project, (title, user_id_of_owner, description)
+            )
             project = cursor.fetchone()
+            project_object = Project(*project)
+            cursor.execute(
+                stmt_create_joint_project_users,
+                (user_id_of_owner, project_object.id, True, True, True),
+            )
             db_conn.commit()
             cursor.close()
-            return Project(*project)
+            return project_object
         except ForeignKeyViolation:
             db_conn.rollback()
             raise UserNotFoundException()
@@ -138,3 +151,78 @@ class Project:
         except NoDataFound:
             db_conn.rollback()
             raise ProjectNotFoundException()
+
+    @classmethod
+    def add_user_to_project(
+        cls, db_conn: connection, user_id: int, project_id: int
+    ):
+        stmt = """INSERT INTO ProjectUsers
+                                            (user_id, project_id, is_owner,
+                                            can_add_data, can_create_jobs)
+                                            VALUES
+                                            (%s, %s, %s, %s, %s)"""
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, (user_id, project_id, False, False, False))
+            db_conn.commit()
+            cursor.close()
+        except ForeignKeyViolation as e:
+            db_conn.rollback()
+            err_msg = e.pgerror
+            if 'project_id' in err_msg:
+                raise ProjectNotFoundException()
+            elif 'user_id' in err_msg:
+                raise UserNotFoundException()
+        except UniqueViolation:
+            db_conn.rollback()
+            pass
+
+    @classmethod
+    def update_user_project_permissions(
+        cls,
+        db_conn: connection,
+        user_id: int,
+        project_id: int,
+        can_add_data: bool,
+        can_create_jobs: bool,
+    ):
+        stmt = """UPDATE ProjectUsers
+                  SET 
+                  can_add_data=%s,
+                  can_create_jobs=%s
+                  WHERE
+                  user_id=%s AND project_id=%s
+                  """
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(
+                stmt, (can_add_data, can_create_jobs, user_id, project_id)
+            )
+            db_conn.commit()
+            cursor.close()
+        except ForeignKeyViolation as e:
+            db_conn.rollback()
+            err_msg = e.pgerror
+            if 'project_id' in err_msg:
+                raise ProjectNotFoundException()
+            elif 'user_id' in err_msg:
+                raise UserNotFoundException()
+
+    @classmethod
+    def remove_user_as_member_from_project(
+        cls, db_conn: connection, user_id: int, project_id: int
+    ):
+        stmt = """DELETE FROM ProjectUsers
+                  WHERE user_id=%s AND project_id=%s"""
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, (user_id, project_id))
+            db_conn.commit()
+            cursor.close()
+        except ForeignKeyViolation as e:
+            db_conn.rollback()
+            err_msg = e.pgerror
+            if 'project_id' in err_msg:
+                raise ProjectNotFoundException()
+            elif 'user_id' in err_msg:
+                raise UserNotFoundException()

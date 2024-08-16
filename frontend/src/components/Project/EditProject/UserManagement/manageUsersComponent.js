@@ -40,14 +40,15 @@ export default function ManageUsersComponent({ onClose, projectId, projectCreate
   useEffect(() => {
     const fetchUsers = async () => {
       setIsLoading(true);
-      let allUsers = (await AxiosWrapper.get(`http://127.0.0.1:8000/projects/${projectId}/users`)).data;
+      let allUsers = (await AxiosWrapper.get(`http://127.0.0.1:5003/search?project_id_to_embed_user_assignments=${projectId}&is_admin=false`)).data;
       allUsers = allUsers.map((user) => ({
         id: user.id,
         name: `${user.first_name} ${user.last_name}`,
         email: user.email,
-        addData: user.can_add_data,
-        createJobs: user.can_create_jobs,
-        isMember: user.project_member,
+        isOwner: user.is_owner || false,
+        isMember: user.project_id || false,
+        addData: user.can_add_data || false,
+        createJobs: user.can_create_jobs || false,
       }));
       setUsers(allUsers);
       setIsLoading(false);
@@ -98,14 +99,20 @@ export default function ManageUsersComponent({ onClose, projectId, projectCreate
           <Switch
             onChange={(e) => { e.preventDefault(); }}
             isSelected={user.isMember}
-            isDisabled={user.id === projectCreatedById}
+            isDisabled={user.isOwner}
             onValueChange={async (value) => {
-              (await AxiosWrapper.patch(`http://127.0.0.1:8000/users/${user.id}`, {
-                projectId,
-                isMember: value,
-              }));
+              if (value) {
+                (await AxiosWrapper.post("http://127.0.0.1:5002/makeUserProjectMember", {
+                  user_id: user.id,
+                  project_id: projectId,
+                }));
+              } else {
+                (await AxiosWrapper.post("http://127.0.0.1:5002/removeUserFromProject", {
+                  user_id: user.id,
+                  project_id: projectId,
+                }));
+              }
               const random = Math.random();
-
               setRefresh(`${user.id}-${random}`);
             }}
           />
@@ -115,12 +122,16 @@ export default function ManageUsersComponent({ onClose, projectId, projectCreate
           <Switch
             onChange={(e) => { e.preventDefault(); }}
             isSelected={user.addData}
-            isDisabled={user.id === projectCreatedById}
+            isDisabled={user.isOwner || !user.isMember}
             onValueChange={async (value) => {
               if (user.isMember) {
-                (await AxiosWrapper.patch(`http://127.0.0.1:8000/users/${user.id}`, { addData: value }));
+                (await AxiosWrapper.patch("http://127.0.0.1:5002/updateUserProjectPermissions", {
+                  user_id: user.id,
+                  project_id: projectId,
+                  can_add_data: value,
+                  can_create_jobs: user.createJobs,
+                }));
                 const random = Math.random();
-
                 setRefresh(`${user.id}-${random}`);
               }
             }}
@@ -130,13 +141,17 @@ export default function ManageUsersComponent({ onClose, projectId, projectCreate
         return (
           <Switch
             onChange={(e) => { e.preventDefault(); }}
-            isDisabled={user.id === projectCreatedById}
+            isDisabled={user.isOwner || !user.isMember}
             isSelected={user.createJobs}
             onValueChange={async (value) => {
               if (user.isMember) {
-                (await AxiosWrapper.patch(`http://127.0.0.1:8000/users/${user.id}`, { createJobs: value }));
+                (await AxiosWrapper.patch("http://127.0.0.1:5002/updateUserProjectPermissions", {
+                  user_id: user.id,
+                  project_id: projectId,
+                  can_add_data: user.addData,
+                  can_create_jobs: value,
+                }));
                 const random = Math.random();
-
                 setRefresh(`${user.id}-${random}`);
               }
             }}
