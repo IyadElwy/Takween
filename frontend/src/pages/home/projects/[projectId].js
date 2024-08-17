@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import moment from "moment-timezone";
-import { useState } from "react";
+import { use, useState } from "react";
 import cookieParse from "cookie-parse";
 import Slider from "react-slick";
 import Navigation from "../../../components/Reusable/Navigation/navBarSideBar";
@@ -78,6 +78,7 @@ export default function ProjectDetailPage({
     slidesToShow: 2,
     slidesToScroll: 2,
     arrows: true,
+    adaptiveHeight: true,
   };
 
   const [searchInput, setSearchInput] = useState("");
@@ -200,122 +201,137 @@ export default function ProjectDetailPage({
 
             <div className="slider-container m-10">
 
-              <Slider {...sliderSettings}>
-                <Card
-                  isHoverable
-                  className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
-                  isPressable
-                  onPress={() => {
-                    setModalComponent("data");
-                    onOpen();
-                  }}
-                >
+              {(user.addData || user.createJobs)
+                && (
+                <Slider {...sliderSettings}>
+                  {user.addData
+                  && (
+                  <Card
+                    isHoverable
+                    className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
+                    isPressable
+                    onPress={() => {
+                      setModalComponent("data");
+                      onOpen();
+                    }}
+                  >
 
-                  <CardHeader className="flex gap-3">
+                    <CardHeader className="flex gap-3">
 
-                    <Image
-                      alt="nextui logo"
-                      height={40}
-                      radius="sm"
-                      src="/images/files.svg"
-                      width={50}
-                    />
-                    <div className="flex flex-col">
-                      <p className="text-sm">
-                        Explore your Project&apos;s
-                        {" "}
-                        <strong>Data</strong>
+                      <Image
+                        alt="nextui logo"
+                        height={40}
+                        radius="sm"
+                        src="/images/files.svg"
+                        width={50}
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-sm">
+                          Explore your Project&apos;s
+                          {" "}
+                          <strong>Data</strong>
 
-                      </p>
-                    </div>
-                  </CardHeader>
+                        </p>
+                      </div>
+                    </CardHeader>
 
-                </Card>
-                <Card
-                  isHoverable
-                  className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
-                  isPressable
-                  onPress={onOpenModalDelete}
-                >
+                  </Card>
+                  )}
+                  {user.isOwner
+                  && (
+                  <Card
+                    isHoverable
+                    className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
+                    isPressable
+                    onPress={onOpenModalDelete}
+                  >
 
-                  <CardHeader className="flex gap-3">
+                    <CardHeader className="flex gap-3">
 
-                    <Image
-                      alt="nextui logo"
-                      height={40}
-                      radius="sm"
-                      src="/images/delete.svg"
-                      width={50}
-                    />
-                    <div className="flex flex-col">
-                      <p className="text-md" style={{ color: "#bf0d0d" }}>
-                        Delete Project
-                        {" "}
+                      <Image
+                        alt="nextui logo"
+                        height={40}
+                        radius="sm"
+                        src="/images/delete.svg"
+                        width={50}
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-md" style={{ color: "#bf0d0d" }}>
+                          Delete Project
+                          {" "}
 
-                      </p>
-                    </div>
-                  </CardHeader>
+                        </p>
+                      </div>
+                    </CardHeader>
 
-                </Card>
-                <Card
-                  isHoverable
-                  className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
-                  isPressable
-                  onPress={() => {
-                    setModalComponent("newAnnotationJob");
-                    onOpen();
-                  }}
-                >
+                  </Card>
+                  )}
 
-                  <CardHeader className="flex gap-3">
+                  {user.createJobs
+                  && (
+                  <Card
+                    isHoverable
+                    className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
+                    isPressable
+                    onPress={() => {
+                      setModalComponent("newAnnotationJob");
+                      onOpen();
+                    }}
+                  >
 
-                    <Image
-                      alt="nextui logo"
-                      height={60}
-                      radius="sm"
-                      src="/images/annotation.svg"
-                      width={70}
-                    />
-                    <div className="flex flex-col">
-                      <p className="text-md">
-                        Create New Job
-                        {" "}
+                    <CardHeader className="flex gap-3">
 
-                      </p>
-                    </div>
-                  </CardHeader>
+                      <Image
+                        alt="nextui logo"
+                        height={60}
+                        radius="sm"
+                        src="/images/annotation.svg"
+                        width={70}
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-md">
+                          Create New Job
+                          {" "}
 
-                </Card>
-                <Card
-                  isHoverable
-                  className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
-                  isPressable
-                  onPress={() => {
-                    setModalComponent("manageUsers");
-                    onOpen();
-                  }}
-                >
+                        </p>
+                      </div>
+                    </CardHeader>
 
-                  <CardHeader className="flex gap-3">
+                  </Card>
+                  )}
 
-                    <Image
-                      alt="nextui logo"
-                      height={60}
-                      radius="sm"
-                      src="/images/users.svg"
-                      width={70}
-                    />
-                    <div className="flex flex-col">
-                      <p className="text-md">
-                        Manage  Users
-                        {" "}
+                  {user.isOwner
+                  && (
+                  <Card
+                    isHoverable
+                    className="max-w-[220px] min-w-[220px] min-h-[100px] max-h-[100px] m-4"
+                    isPressable
+                    onPress={() => {
+                      setModalComponent("manageUsers");
+                      onOpen();
+                    }}
+                  >
+                    <CardHeader className="flex gap-3">
 
-                      </p>
-                    </div>
-                  </CardHeader>
+                      <Image
+                        alt="nextui logo"
+                        height={60}
+                        radius="sm"
+                        src="/images/users.svg"
+                        width={70}
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-md">
+                          Manage  Users
+                          {" "}
+                        </p>
+                      </div>
+                    </CardHeader>
 
-                </Card>
-              </Slider>
+                  </Card>
+                  )}
+                </Slider>
+                )}
 
             </div>
 
@@ -404,10 +420,23 @@ export async function getServerSideProps(context) {
       accessToken: accessToken || "",
     })).data;
 
-    const user = (await AxiosWrapper.get("http://127.0.0.1:5003/currentuser", {
+    const currentuser = (await AxiosWrapper.get("http://127.0.0.1:5003/currentuser", {
       accessToken: accessToken || "",
     })).data;
 
+    const allUsers = (await AxiosWrapper.get(`http://127.0.0.1:5003/search?project_id_to_embed_user_assignments=${projectId}&id=${currentuser.id}`, {
+      accessToken: accessToken || "",
+    })).data;
+    const [user] = allUsers.map((u) => ({
+      id: u.id,
+      name: `${u.first_name} ${u.last_name}`,
+      email: u.email,
+      isOwner: u.is_owner || false,
+      isMember: u.project_id || false,
+      addData: u.can_add_data || false,
+      createJobs: u.can_create_jobs || false,
+    }));
+    console.log(user);
     const jobs = (await AxiosWrapper.get(`http://127.0.0.1:5000/search?project_id=${projectId}`, {
       accessToken: accessToken || "",
     })).data;
