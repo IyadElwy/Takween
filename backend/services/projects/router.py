@@ -82,6 +82,19 @@ async def get_all_projects(
         raise InvalidSearchError(e.message)
 
 
+@router.get('/currentuserprojects')
+async def get_user_projects(request: Request):
+    try:
+        currunt_user_id = request.state.user_id
+        validate_user_id(currunt_user_id)
+        projects = Project.get_user_projects(
+            request.state.config.db_conn, int(currunt_user_id)
+        )
+        return projects
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+
+
 class UserIdAndProjectIdRequestBody(BaseModel):
     user_id: int
     project_id: int

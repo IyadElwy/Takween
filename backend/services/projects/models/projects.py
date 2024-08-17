@@ -137,6 +137,46 @@ class Project:
         return projects
 
     @classmethod
+    def get_user_projects(cls, db_conn: connection, user_id: int) -> list[dict]:
+        stmt = """SELECT
+                Projects.id AS project_id,
+                Projects.title AS project_title,
+                Projects.creation_date AS project_creation_date,
+                Projects.description AS project_description,
+                Users.email AS user_email_of_owner,
+                ProjectUsers.is_owner AS is_owner,
+                ProjectUsers.can_add_data AS can_add_data,
+                ProjectUsers.can_create_jobs AS can_create_jobs,
+                (SELECT COUNT(*) FROM ProjectUsers WHERE project_id=Projects.id)
+                AS project_member_count
+                FROM Projects  
+                INNER JOIN ProjectUsers
+                ON
+                Projects.id=ProjectUsers.project_id
+                INNER JOIN Users
+                ON
+                Projects.user_id_of_owner=Users.id
+                WHERE user_id=%s"""
+        cursor = db_conn.cursor()
+        cursor.execute(stmt, (user_id,))
+        res = cursor.fetchall()
+        projects = [
+            {
+                'project_id': project[0],
+                'project_title': project[1],
+                'project_creation_date': project[2],
+                'project_description': project[3],
+                'user_email_of_owner': project[4],
+                'is_owner': project[5],
+                'can_add_data': project[6],
+                'can_create_jobs': project[7],
+                'project_member_count': project[8],
+            }
+            for project in res
+        ]
+        return projects
+
+    @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:
         stmt = """DELETE FROM Projects WHERE id=%s
                     RETURNING id"""
