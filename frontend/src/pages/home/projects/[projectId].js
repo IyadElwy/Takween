@@ -436,7 +436,6 @@ export async function getServerSideProps(context) {
       addData: u.can_add_data || false,
       createJobs: u.can_create_jobs || false,
     }));
-    console.log(user);
     const jobs = (await AxiosWrapper.get(`http://127.0.0.1:5000/search?project_id=${projectId}`, {
       accessToken: accessToken || "",
     })).data;
