@@ -10,7 +10,7 @@ export default function ProjectOverview({ createProjectTrigger, data }) {
   };
 
   const filteredProjects = data
-    .filter((project) => project.title.toLowerCase().includes(searchInput));
+    .filter((project) => project.project_title.toLowerCase().includes(searchInput));
 
   return (
     <>
@@ -30,15 +30,16 @@ export default function ProjectOverview({ createProjectTrigger, data }) {
       </div>
       <div
         style={{ margin: "20px" }}
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+        // className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+        className="grid grid-cols-4 gap-3"
       >
         {filteredProjects.map((project) => (
-          <div key={project.id} className="p-4">
+          <div key={project.project_id} className="p-0">
             <ProjectCard
-              key={project.id}
+              key={project.project_id}
               projectData={{
                 ...project,
-                href: `home/projects/${project.title}`,
+                href: `home/projects/${project.project_title}`,
               }}
             />
           </div>

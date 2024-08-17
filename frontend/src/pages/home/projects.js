@@ -34,14 +34,7 @@ export async function getServerSideProps(context) {
   const { accessToken } = cookieParse.parse(cookies);
 
   try {
-    const currentUser = (await AxiosWrapper.get(
-      "http://127.0.0.1:5003/currentuser",
-      {
-        accessToken: accessToken || "",
-      },
-    )).data;
-
-    const projects = (await AxiosWrapper.get(`http://127.0.0.1:5002/search?user_id_of_owner=${currentUser.id}&embed_users=true`, {
+    const projects = (await AxiosWrapper.get("http://127.0.0.1:5002/currentuserprojects", {
       accessToken: accessToken || "",
     })).data;
     return { props: { projects } };
