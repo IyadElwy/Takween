@@ -21,7 +21,8 @@ def upgrade() -> None:
     op.execute("""CREATE TABLE Projects(
                 id SERIAL UNIQUE,
                 title TEXT NOT NULL,
-                user_id_of_owner INTEGER NOT NULL REFERENCES Users (id) ON DELETE CASCADE,
+                user_id_of_owner INTEGER NOT NULL REFERENCES Users(id)
+                ON DELETE CASCADE,
                 description TEXT,
                 creation_date TIMESTAMP DEFAULT NOW() NOT NULL
                 )""")

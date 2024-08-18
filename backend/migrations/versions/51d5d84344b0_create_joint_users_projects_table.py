@@ -19,8 +19,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("""CREATE TABLE ProjectUsers (
-                user_id INTEGER REFERENCES Users(id) ON DELETE CASCADE NOT NULL,
-                project_id INTEGER REFERENCES Projects(id) ON DELETE CASCADE NOT NULL,
+                user_id INTEGER REFERENCES Users(id)
+                ON DELETE CASCADE NOT NULL,
+                project_id INTEGER REFERENCES Projects(id)
+                ON DELETE CASCADE NOT NULL,
                 is_owner BOOLEAN NOT NULL,
                 can_add_data BOOLEAN NOT NULL,
                 can_create_jobs BOOLEAN NOT NULL,

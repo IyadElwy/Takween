@@ -36,9 +36,11 @@ def upgrade() -> None:
         admin_password.encode(), salt.encode()
     ).decode('utf-8')
     op.execute(f"""INSERT INTO Users 
-                        (first_name, last_name, email, hashed_password, is_admin) 
+                        (first_name, last_name, email, 
+                        hashed_password, is_admin)
                         VALUES
-                        ('ADMIN', 'ADMIN', 'admin@takween.com', '{hashed_admin_password}', true)""")
+                        ('ADMIN', 'ADMIN', 'admin@takween.com', 
+                        '{hashed_admin_password}', true)""")
 
 
 def downgrade() -> None:
