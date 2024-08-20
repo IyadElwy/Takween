@@ -30,10 +30,14 @@ def upgrade() -> None:
                 is_admin BOOLEAN NOT NULL
                     )""")
     admin_password = 'admin'
+    system_password = 'system'
     load_dotenv()
     salt = os.getenv('SALT')
     hashed_admin_password = bcrypt.hashpw(
         admin_password.encode(), salt.encode()
+    ).decode('utf-8')
+    hashed_system_password = bcrypt.hashpw(
+        system_password.encode(), salt.encode()
     ).decode('utf-8')
     op.execute(f"""INSERT INTO Users 
                         (first_name, last_name, email, 
@@ -41,6 +45,12 @@ def upgrade() -> None:
                         VALUES
                         ('ADMIN', 'ADMIN', 'admin@takween.com', 
                         '{hashed_admin_password}', true)""")
+    op.execute(f"""INSERT INTO Users 
+                        (first_name, last_name, email, 
+                        hashed_password, is_admin)
+                        VALUES
+                        ('SYSTEM', '-', '-', 
+                        '{hashed_system_password}', true)""")
 
 
 def downgrade() -> None:
