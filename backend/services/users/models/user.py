@@ -89,24 +89,28 @@ class User:
             stmt += ' ASC'
         elif sort_order == 'desc':
             stmt += ' DESC'
-        cursor = db_conn.cursor()
-        cursor.execute(stmt, params)
-        res = cursor.fetchall()
-        if project_id_to_embed_user_assignments:
-            users = [
-                {
-                    **vars(User(*user[:5])),
-                    'project_id': user[5],
-                    'is_owner': user[6],
-                    'can_add_data': user[7],
-                    'can_create_jobs': user[8],
-                }
-                for user in res
-            ]
-        else:
-            users = [User(*user) for user in res]
-        cursor.close()
-        return users
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, params)
+            res = cursor.fetchall()
+            if project_id_to_embed_user_assignments:
+                users = [
+                    {
+                        **vars(User(*user[:5])),
+                        'project_id': user[5],
+                        'is_owner': user[6],
+                        'can_add_data': user[7],
+                        'can_create_jobs': user[8],
+                    }
+                    for user in res
+                ]
+            else:
+                users = [User(*user) for user in res]
+            cursor.close()
+            return users
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:
@@ -123,3 +127,6 @@ class User:
         except NoDataFound:
             db_conn.rollback()
             raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e

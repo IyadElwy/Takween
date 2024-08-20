@@ -50,6 +50,9 @@ class User:
         except UniqueViolation:
             db_conn.rollback()
             raise UniqueFieldException('email')
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get_by_email(cls, db_conn: connection, email: str) -> User:
@@ -64,6 +67,9 @@ class User:
             return User(*user)
         except NoDataFound:
             raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get_by_id(cls, db_conn: connection, id: int) -> User:
@@ -78,3 +84,6 @@ class User:
             return User(*user)
         except NoDataFound:
             raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e

@@ -55,6 +55,9 @@ class Job:
                 raise ProjectNotFoundException()
             elif 'user_id_of_owner' in err_msg:
                 raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get(cls, db_conn: connection, id: int) -> Job:
@@ -69,6 +72,9 @@ class Job:
             return Job(*job)
         except NoDataFound:
             raise JobNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get_all(
@@ -99,12 +105,16 @@ class Job:
             stmt += ' ASC'
         elif sort_order == 'desc':
             stmt += ' DESC'
-        cursor = db_conn.cursor()
-        cursor.execute(stmt, params)
-        res = cursor.fetchall()
-        jobs = [Job(*job) for job in res]
-        cursor.close()
-        return jobs
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, params)
+            res = cursor.fetchall()
+            jobs = [Job(*job) for job in res]
+            cursor.close()
+            return jobs
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:
@@ -121,3 +131,6 @@ class Job:
         except NoDataFound:
             db_conn.rollback()
             raise JobNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e

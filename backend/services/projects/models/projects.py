@@ -59,6 +59,9 @@ class Project:
         except ForeignKeyViolation:
             db_conn.rollback()
             raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get(cls, db_conn: connection, id: int) -> Project:
@@ -73,6 +76,9 @@ class Project:
             return Project(*project)
         except NoDataFound:
             raise ProjectNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get_all(
@@ -118,23 +124,27 @@ class Project:
             stmt += ' ASC'
         elif sort_order == 'desc':
             stmt += ' DESC'
-        cursor = db_conn.cursor()
-        cursor.execute(stmt, params)
-        res = cursor.fetchall()
-        if embed_users:
-            projects = [
-                {
-                    **vars(Project(*project[:5])),
-                    'owner_first_name': project[5],
-                    'owner_last_name': project[6],
-                    'owner_email': project[7],
-                }
-                for project in res
-            ]
-        else:
-            projects = [Project(*project) for project in res]
-        cursor.close()
-        return projects
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, params)
+            res = cursor.fetchall()
+            if embed_users:
+                projects = [
+                    {
+                        **vars(Project(*project[:5])),
+                        'owner_first_name': project[5],
+                        'owner_last_name': project[6],
+                        'owner_email': project[7],
+                    }
+                    for project in res
+                ]
+            else:
+                projects = [Project(*project) for project in res]
+            cursor.close()
+            return projects
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def get_user_projects(cls, db_conn: connection, user_id: int) -> list[dict]:
@@ -157,24 +167,28 @@ class Project:
                 ON
                 Projects.user_id_of_owner=Users.id
                 WHERE user_id=%s"""
-        cursor = db_conn.cursor()
-        cursor.execute(stmt, (user_id,))
-        res = cursor.fetchall()
-        projects = [
-            {
-                'project_id': project[0],
-                'project_title': project[1],
-                'project_creation_date': project[2],
-                'project_description': project[3],
-                'user_email_of_owner': project[4],
-                'is_owner': project[5],
-                'can_add_data': project[6],
-                'can_create_jobs': project[7],
-                'project_member_count': project[8],
-            }
-            for project in res
-        ]
-        return projects
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, (user_id,))
+            res = cursor.fetchall()
+            projects = [
+                {
+                    'project_id': project[0],
+                    'project_title': project[1],
+                    'project_creation_date': project[2],
+                    'project_description': project[3],
+                    'user_email_of_owner': project[4],
+                    'is_owner': project[5],
+                    'can_add_data': project[6],
+                    'can_create_jobs': project[7],
+                    'project_member_count': project[8],
+                }
+                for project in res
+            ]
+            return projects
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def delete(cls, db_conn: connection, id: int) -> None:
@@ -191,6 +205,9 @@ class Project:
         except NoDataFound:
             db_conn.rollback()
             raise ProjectNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def add_user_to_project(
@@ -216,6 +233,9 @@ class Project:
         except UniqueViolation:
             db_conn.rollback()
             pass
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def update_user_project_permissions(
@@ -247,6 +267,9 @@ class Project:
                 raise ProjectNotFoundException()
             elif 'user_id' in err_msg:
                 raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
 
     @classmethod
     def remove_user_as_member_from_project(
@@ -266,3 +289,6 @@ class Project:
                 raise ProjectNotFoundException()
             elif 'user_id' in err_msg:
                 raise UserNotFoundException()
+        except Exception as e:
+            db_conn.rollback()
+            raise e
