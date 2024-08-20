@@ -23,7 +23,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.execute("""CREATE TABLE Users(
                 id SERIAL UNIQUE,
-                first_name TEXT NOT NULL,
+                first_name TEXT NOT NULL CHECK first_name != 'system',
                 last_name TEXT NOT NULL,
                 email TEXT NOT NULL UNIQUE,
                 hashed_password TEXT NOT NULL,

@@ -1,4 +1,4 @@
-from email_validator import validate_email, EmailNotValidError
+from email_validator import EmailNotValidError, validate_email
 from errors import ValidationException
 
 
@@ -9,6 +9,8 @@ def validate_user_signup_info(
         raise ValidationException('First name must not be empty')
     if not first_name.isalpha():
         raise ValidationException('First name must only contain alphabets')
+    if first_name.lower() == 'system':
+        raise ValidationException("First name cannot be 'system'")
 
     if not last_name:
         raise ValidationException('Last name must not be empty')
