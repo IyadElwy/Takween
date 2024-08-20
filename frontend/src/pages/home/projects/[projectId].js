@@ -38,7 +38,7 @@ export default function ProjectDetailPage({
   const getCurrentModalComponent = (onClose) => {
     switch (modalComponent) {
       case "data":
-        return <AddDataComponent projectId={projectId} onClose={onClose} />;
+        return <AddDataComponent projectId={projectId} userId={user.id} onClose={onClose} />;
 
       case "newAnnotationJob":
         return <NewJobComponent projectId={projectId} onClose={onClose} />;
@@ -227,7 +227,7 @@ export default function ProjectDetailPage({
                       />
                       <div className="flex flex-col">
                         <p className="text-sm">
-                          Explore your Project&apos;s
+                          Edit your Project&apos;s
                           {" "}
                           <strong>Data</strong>
 
