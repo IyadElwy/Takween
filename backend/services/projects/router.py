@@ -83,12 +83,14 @@ async def get_all_projects(
 
 
 @router.get('/currentuserprojects')
-async def get_user_projects(request: Request):
+async def get_user_projects(request: Request, project_id: int | None = None):
     try:
         currunt_user_id = request.state.user_id
         validate_user_id(currunt_user_id)
+        if project_id:
+            validate_project_id(project_id)
         projects = Project.get_user_projects(
-            request.state.config.db_conn, int(currunt_user_id)
+            request.state.config.db_conn, int(currunt_user_id), project_id
         )
         return projects
     except ValidationException as e:

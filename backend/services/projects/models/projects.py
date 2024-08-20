@@ -147,7 +147,9 @@ class Project:
             raise e
 
     @classmethod
-    def get_user_projects(cls, db_conn: connection, user_id: int) -> list[dict]:
+    def get_user_projects(
+        cls, db_conn: connection, user_id: int, project_id: int | None
+    ) -> list[dict]:
         stmt = """SELECT
                 Projects.id AS project_id,
                 Projects.title AS project_title,
@@ -167,9 +169,13 @@ class Project:
                 ON
                 Projects.user_id_of_owner=Users.id
                 WHERE user_id=%s"""
+        if project_id:
+            stmt += ' AND project_id=%s'
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (user_id,))
+            cursor.execute(
+                stmt, (user_id, project_id) if project_id else (user_id,)
+            )
             res = cursor.fetchall()
             projects = [
                 {
