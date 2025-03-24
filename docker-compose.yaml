@@ -1,4 +1,12 @@
 services:
+  dev-container:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev-container
+    command: sleep infinity
+    volumes:
+      - ./:/Takween
 
   mongodb:
     container_name: mongo
@@ -15,7 +23,7 @@ services:
   postgres:
     container_name: postgres
     image: postgres:latest
-    restart: unless-stopped      
+    restart: unless-stopped
     ports:
       - "5432:5432"
     volumes:
@@ -26,8 +34,6 @@ services:
       - POSTGRES_PASSWORD=admin
       - PGHOST=localhost
       - PGPORT=5432
-
-
 
 volumes:
   mongodb-data:

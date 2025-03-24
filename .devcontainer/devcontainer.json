@@ -1,0 +1,49 @@
+{
+    "name": "Takween Dev Container",
+    "dockerComposeFile": "../docker-compose.yaml",
+    "service": "dev-container",
+    "workspaceFolder": "/Takween",
+    "forwardPorts": [
+        3000
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "charliermarsh.ruff",
+                "kevinrose.vsc-python-indent",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "njpwerner.autodocstring",
+                "mikestead.dotenv",
+                "dbaeumer.vscode-eslint",
+                "redhat.vscode-yaml",
+                "christian-kohler.path-intellisense",
+                "christian-kohler.npm-intellisense",
+                "codezombiech.gitignore",
+                "formulahendry.auto-close-tag",
+                "formulahendry.auto-rename-tag",
+                "yzhang.markdown-all-in-one",
+                "dsznajder.es7-react-js-snippets",
+                "bradlc.vscode-tailwindcss",
+                "davidanson.vscode-markdownlint",
+                "mgmcdermott.vscode-language-babel",
+                "xabikos.javascriptsnippets",
+                "ecmel.vscode-html-css",
+                "tamasfe.even-better-toml",
+                "ms-azuretools.vscode-docker",
+                "ms-kubernetes-tools.vscode-kubernetes-tools"
+            ],
+            "settings": {
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll": "explicit",
+                        "source.organizeImports": "explicit"
+                    },
+                    "editor.defaultFormatter": "charliermarsh.ruff"
+                }
+            }
+        }
+    }
+}

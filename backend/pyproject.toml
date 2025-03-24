@@ -1,0 +1,83 @@
+[project]
+name = "Takween"
+version = "1.1.0"
+
+dependencies = [
+    "alembic==1.13.2",
+    "arabic_reshaper==3.0.0",
+    "Arabic_Stopwords==0.4.3",
+    "email_validator==2.0.0.post2",
+    "fastapi==0.115.12",
+    "flatten_json==0.1.14",
+    "numpy==2.2.4",
+    "pandas==2.2.3",
+    "Pillow==11.1.0",
+    "polars==1.26.0",
+    "psycopg2-binary==2.9.10",
+    "PyArabic==0.6.15",
+    "pydantic==2.10.6",
+    "PyJWT==2.10.1",
+    "pymongo==4.5.0",
+    "pytesseract==0.3.10",
+    "python-dotenv==1.0.1",
+    "python_bcrypt==0.3.2",
+    "requests==2.32.3",
+    "ruff>=0.11.2",
+    "SpeechRecognition==3.10.0",
+    "SQLAlchemy==2.0.21",
+    "uvicorn==0.34.0",
+]
+
+
+[project.optional-dependencies]
+dev = ["ruff==0.11.2"]
+
+
+[tool.ruff]
+line-length = 120
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["Q000"]
+
+fixable = ["ALL"]
+unfixable = []
+
+
+[tool.ruff.format]
+quote-style = "single"
+
+indent-style = "space"
+
+line-ending = "auto"
