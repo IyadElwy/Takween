@@ -40,9 +40,7 @@ class User:
                         id, first_name, last_name, email, hashed_password, is_admin"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(
-                stmt, (first_name, last_name, email, hashed_password, is_admin)
-            )
+            cursor.execute(stmt, (first_name, last_name, email, hashed_password, is_admin))
             user = cursor.fetchone()
             db_conn.commit()
             cursor.close()

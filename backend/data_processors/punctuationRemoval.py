@@ -10,9 +10,7 @@ def process_punctuation_removal(job_data, file_path, original_datasource_path, f
         with open(file_path, '+a') as result_file:
             for current_object in data:
                 try:
-                    no_punctuation = re.sub(
-                        arabic_symbols_pattern, ' ', current_object[field_to_process])
-                    result_file.write(json.dumps(
-                        {field_to_process: no_punctuation}) + '\n')
+                    no_punctuation = re.sub(arabic_symbols_pattern, ' ', current_object[field_to_process])
+                    result_file.write(json.dumps({field_to_process: no_punctuation}) + '\n')
                 except Exception as e:
                     continue

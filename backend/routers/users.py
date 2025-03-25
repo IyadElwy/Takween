@@ -5,7 +5,7 @@ from models.models import User, Project
 router = APIRouter()
 
 
-@router.patch("/users/{id}")
+@router.patch('/users/{id}')
 async def update_user_fields(id, request: Request):
     try:
         body = await request.json()
@@ -64,7 +64,7 @@ async def update_user_fields(id, request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/users/{id}")
+@router.get('/users/{id}')
 async def get_user_by_id(id, request: Request):
     try:
         user = dict(await User.get(id=id))

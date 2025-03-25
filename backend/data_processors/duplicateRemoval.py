@@ -13,5 +13,4 @@ def process_duplicate_removal(job_data, file_path, original_datasource_path, fie
                     continue
 
             for current_object in unique_text:
-                result_file.write(json.dumps(
-                    {field_to_process: current_object}) + '\n')
+                result_file.write(json.dumps({field_to_process: current_object}) + '\n')

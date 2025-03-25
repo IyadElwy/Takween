@@ -3,19 +3,25 @@ import json
 from time import sleep
 import copy
 
-base_url = "https://youtube.googleapis.com/youtube/v3/search?part=snippet"
-comments_base_url = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies"
+base_url = 'https://youtube.googleapis.com/youtube/v3/search?part=snippet'
+comments_base_url = 'https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies'
 
 
 def extract_data_from_youtube_api(parameters, file_path):
     api_key = parameters['apiKey']
-    query = parameters['query'].replace(" ", "+")
+    query = parameters['query'].replace(' ', '+')
     language = 'ar' if parameters['language'] == 'Arabic' else 'en'
     order = parameters['order']
-    number_of_pages = 10_000_000 if parameters['numberOfPages'] == 'Until Pages Or Quota Exceeded' else int(
-        parameters['numberOfPages'])
-    comments_per_video = 10_000_000 if parameters['commentsPerVideo'] == 'Please Select Comments Per Video' else int(
-        parameters['commentsPerVideo'])
+    number_of_pages = (
+        10_000_000
+        if parameters['numberOfPages'] == 'Until Pages Or Quota Exceeded'
+        else int(parameters['numberOfPages'])
+    )
+    comments_per_video = (
+        10_000_000
+        if parameters['commentsPerVideo'] == 'Please Select Comments Per Video'
+        else int(parameters['commentsPerVideo'])
+    )
 
     search_url = f'{base_url}&key={api_key}&q={query}&order={order}&relevanceLanguage={language}'
     for _page_index in range(number_of_pages):
@@ -31,7 +37,8 @@ def extract_data_from_youtube_api(parameters, file_path):
                 'title': video['snippet']['title'],
                 'publishedAt': video['snippet']['publishedAt'],
                 'description': video['snippet']['description'],
-                "comments": []}
+                'comments': [],
+            }
             comment_count = 0
             video_id = video['id']['videoId']
             comments_url = f'{comments_base_url}&key={api_key}&videoId={video_id}'
@@ -43,10 +50,19 @@ def extract_data_from_youtube_api(parameters, file_path):
                     continue
                 comments = comments.json()
 
-                comments_to_save = [{
-                    'authorDisplayName': comment.get('snippet').get('topLevelComment').get('snippet').get('authorDisplayName'),
-                    'textOriginal':   comment.get('snippet').get('topLevelComment').get('snippet').get('textOriginal'),
-                } for comment in comments.get('items')]
+                comments_to_save = [
+                    {
+                        'authorDisplayName': comment.get('snippet')
+                        .get('topLevelComment')
+                        .get('snippet')
+                        .get('authorDisplayName'),
+                        'textOriginal': comment.get('snippet')
+                        .get('topLevelComment')
+                        .get('snippet')
+                        .get('textOriginal'),
+                    }
+                    for comment in comments.get('items')
+                ]
                 curr_video_info['comments'].append(comments_to_save)
 
                 nextPageTokenComments = comments.get('nextPageToken')
@@ -65,13 +81,11 @@ def extract_data_from_youtube_api(parameters, file_path):
                     for comment in comment_sec:
                         final_comments.append(comment)
 
-                unique_dict_set = set(tuple(sorted(d.items()))
-                                      for d in final_comments)
+                unique_dict_set = set(tuple(sorted(d.items())) for d in final_comments)
                 unique_dicts = [dict(t) for t in unique_dict_set]
 
                 for comment in unique_dicts:
-                    file.write(json.dumps(
-                        {"comment": comment, **curr_video_info_copy}) + '\n')
+                    file.write(json.dumps({'comment': comment, **curr_video_info_copy}) + '\n')
 
         nextPageTokenVideos = videos.get('nextPageToken')
         if nextPageTokenVideos and _page_index == 0:

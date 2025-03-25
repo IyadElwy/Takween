@@ -8,9 +8,7 @@ def process_diacritics_removal(job_data, file_path, original_datasource_path, fi
         with open(file_path, '+a') as result_file:
             for current_object in data:
                 try:
-                    no_diacritics = araby.strip_diacritics(
-                        current_object[field_to_process])
-                    result_file.write(json.dumps(
-                        {field_to_process: no_diacritics}) + '\n')
+                    no_diacritics = araby.strip_diacritics(current_object[field_to_process])
+                    result_file.write(json.dumps({field_to_process: no_diacritics}) + '\n')
                 except Exception as e:
                     continue

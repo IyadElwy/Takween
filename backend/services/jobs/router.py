@@ -35,14 +35,10 @@ class CreateJobBody(BaseModel):
 router = APIRouter()
 
 
-async def is_authorized_for_create(
-    request: Request, job_body: CreateJobBody
-) -> CreateJobBody:
+async def is_authorized_for_create(request: Request, job_body: CreateJobBody) -> CreateJobBody:
     try:
         current_user_id = int(request.state.user_id)
-        validate_create_job_body(
-            job_body.title, job_body.project_id, current_user_id
-        )
+        validate_create_job_body(job_body.title, job_body.project_id, current_user_id)
         bearer_token = request.state.bearer_token
         project_of_job = requests.get(
             f'http://localhost:5002/{job_body.project_id}',
@@ -56,10 +52,7 @@ async def is_authorized_for_create(
             headers={'Authorization': f'Bearer {bearer_token}'},
         )
         is_current_user_admin = current_user.json()['is_admin']
-        if (
-            not is_current_user_admin
-            and user_id_of_project_owner != current_user_id
-        ):
+        if not is_current_user_admin and user_id_of_project_owner != current_user_id:
             raise UnAuthorizedException()
         return job_body
     except ValidationException as e:
@@ -79,9 +72,7 @@ async def create_job(
 ):
     try:
         current_user_id = int(request.state.user_id)
-        validate_create_job_body(
-            job_body.title, job_body.project_id, current_user_id
-        )
+        validate_create_job_body(job_body.title, job_body.project_id, current_user_id)
         job = Job.create(
             request.state.config.db_conn,
             **{**job_body.model_dump(), 'user_id_of_owner': current_user_id},
@@ -154,10 +145,7 @@ async def is_authorized_for_delete(request: Request, job_id: int) -> int:
             headers={'Authorization': f'Bearer {bearer_token}'},
         )
         is_current_user_admin = current_user.json()['is_admin']
-        if (
-            not is_current_user_admin
-            and user_id_of_project_owner != current_user_id
-        ):
+        if not is_current_user_admin and user_id_of_project_owner != current_user_id:
             raise UnAuthorizedException()
         return job.id
     except ValidationException as e:
@@ -169,9 +157,7 @@ async def is_authorized_for_delete(request: Request, job_id: int) -> int:
 
 
 @router.delete('/{job_id}')
-async def delete_job(
-    request: Request, job_id: Annotated[int, Depends(is_authorized_for_delete)]
-):
+async def delete_job(request: Request, job_id: Annotated[int, Depends(is_authorized_for_delete)]):
     try:
         validate_job_id(job_id)
         Job.delete(request.state.config.db_conn, job_id)

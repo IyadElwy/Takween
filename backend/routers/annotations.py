@@ -15,18 +15,23 @@ import torch
 
 
 load_dotenv()
-username = os.getenv("MONGODB_USERNAME")
-password = os.getenv("MONGODB_PASSWORD")
-CONNECTION_URI = os.getenv("MONGODB_BASE_URI").replace(  # type: ignore
-    "{MONGODB_USERNAME}", username).replace("{MONGODB_PASSWORD}", password)  # type: ignore
+username = os.getenv('MONGODB_USERNAME')
+password = os.getenv('MONGODB_PASSWORD')
+CONNECTION_URI = (
+    os.getenv('MONGODB_BASE_URI')
+    .replace(  # type: ignore
+        '{MONGODB_USERNAME}', username
+    )
+    .replace('{MONGODB_PASSWORD}', password)
+)  # type: ignore
 
 mongodb = pymongo.MongoClient(CONNECTION_URI)
-mongodb = mongodb["annotations"]
+mongodb = mongodb['annotations']
 
 router = APIRouter()
 
 
-@router.get("/projects/{projectId}/jobs/{jobId}/annotations")
+@router.get('/projects/{projectId}/jobs/{jobId}/annotations')
 async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, onlyShowUnanotatedData: bool):
     try:
         project = await Project.get(id=projectId)
@@ -37,69 +42,89 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
         collection_name = job.annotation_collection_name
         collection = mongodb[collection_name]
         if job.active_learning:
-            finished_annotation_counts = collection.count_documents(
-                {"annotations": {"$exists": True, "$eq": []}}
-            )
+            finished_annotation_counts = collection.count_documents({'annotations': {'$exists': True, '$eq': []}})
             data_with_losses = []
             for i in range(0, finished_annotation_counts, itemsPerPage):
-                data_t = collection.find({"annotations": {"$exists": True, "$eq": []}},
-                                         ).sort([
-                                             ('_id', pymongo.ASCENDING),
-
-                                         ]).skip(
-                    i).limit(itemsPerPage)
+                data_t = (
+                    collection.find(
+                        {'annotations': {'$exists': True, '$eq': []}},
+                    )
+                    .sort(
+                        [
+                            ('_id', pymongo.ASCENDING),
+                        ]
+                    )
+                    .skip(i)
+                    .limit(itemsPerPage)
+                )
                 model = FeedForwardSentimentClassifier(
-                    len_unique_tokens=1000,
-                    embedding_dim=6,
-                    max_tokens=50,
-                    hidden_layer_1_n=256,
-                    out_n=3)
-                model.load_state_dict(torch.load(
-                    '/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt'))
+                    len_unique_tokens=1000, embedding_dim=6, max_tokens=50, hidden_layer_1_n=256, out_n=3
+                )
+                model.load_state_dict(
+                    torch.load('/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt')
+                )
 
-                data_with_losses.append(
-                    (i + itemsPerPage,  calculate_entropy_for_batch(list(data_t), model)))
+                data_with_losses.append((i + itemsPerPage, calculate_entropy_for_batch(list(data_t), model)))
                 # function to pass in this data as a batch and get the loss
                 if i > (100 * itemsPerPage):
                     break
             maximum_entropy = max(data_with_losses, key=lambda x: x[1])
-            custom_filter = {
-                "$or": [
-                    {"annotations": {"$exists": True, "$eq": []}},
-                    {"annotations": {"$exists": False}},
-                ],
-                # "wasReviewed": {"$exists": False}
-                # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
-            } if onlyShowUnanotatedData else {}
+            custom_filter = (
+                {
+                    '$or': [
+                        {'annotations': {'$exists': True, '$eq': []}},
+                        {'annotations': {'$exists': False}},
+                    ],
+                    # "wasReviewed": {"$exists": False}
+                    # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+                }
+                if onlyShowUnanotatedData
+                else {}
+            )
 
-            data = collection.find(custom_filter).sort([
-                ('annotations', pymongo.DESCENDING),
-                ('_id', pymongo.ASCENDING),
-            ]).skip(
-                maximum_entropy[0]).limit(itemsPerPage)
+            data = (
+                collection.find(custom_filter)
+                .sort(
+                    [
+                        ('annotations', pymongo.DESCENDING),
+                        ('_id', pymongo.ASCENDING),
+                    ]
+                )
+                .skip(maximum_entropy[0])
+                .limit(itemsPerPage)
+            )
 
         else:
-            custom_filter = {
-                "$or": [
-                    {"annotations": {"$exists": True, "$eq": []}},
-                    {"annotations": {"$exists": False}},
-                ],
-                # "wasReviewed": {"$exists": False}
-                # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
-            } if onlyShowUnanotatedData else {}
+            custom_filter = (
+                {
+                    '$or': [
+                        {'annotations': {'$exists': True, '$eq': []}},
+                        {'annotations': {'$exists': False}},
+                    ],
+                    # "wasReviewed": {"$exists": False}
+                    # } if onlyShowUnanotatedData else {"wasReviewed": {"$exists": False}}
+                }
+                if onlyShowUnanotatedData
+                else {}
+            )
 
-            data = collection.find(custom_filter).sort([
-                ('annotations', pymongo.DESCENDING),
-                ('_id', pymongo.ASCENDING),
-            ]).skip(
-                starting_line).limit(itemsPerPage)
+            data = (
+                collection.find(custom_filter)
+                .sort(
+                    [
+                        ('annotations', pymongo.DESCENDING),
+                        ('_id', pymongo.ASCENDING),
+                    ]
+                )
+                .skip(starting_line)
+                .limit(itemsPerPage)
+            )
 
         # number of finished annotations
-        finished_annotations = collection.count_documents(
-            {"annotations": {"$exists": True, "$not": {"$size": 0}}}
-        )
+        finished_annotations = collection.count_documents({'annotations': {'$exists': True, '$not': {'$size': 0}}})
         finished_annotations_by_user = collection.count_documents(
-            {"annotations": {"$exists": True, "$not": {"$size": 0}}, "annotations.user": "admin"})
+            {'annotations': {'$exists': True, '$not': {'$size': 0}}, 'annotations.user': 'admin'}
+        )
 
         data = list(data)
         for item in data:
@@ -108,8 +133,7 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
             for annotation in annotations:
                 del annotation['user']
 
-            are_equal = all(
-                d == annotations[0] for d in annotations)
+            are_equal = all(d == annotations[0] for d in annotations)
 
             item['conflict'] = not are_equal
 
@@ -118,8 +142,7 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
         if page == 0:
             totalRowCount = collection.count_documents({})
 
-        all_annotated_data = collection.find(
-            {"annotations": {"$exists": True, "$not": {"$size": 0}}})
+        all_annotated_data = collection.find({'annotations': {'$exists': True, '$not': {'$size': 0}}})
         count_of_conflicts = 0
         all_annotated_data = list(all_annotated_data)
         for item in all_annotated_data:
@@ -128,8 +151,7 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
             for annotation in annotations:
                 del annotation['user']
 
-            are_equal = all(
-                d == annotations[0] for d in annotations)
+            are_equal = all(d == annotations[0] for d in annotations)
 
             item['conflict'] = not are_equal
 
@@ -137,53 +159,41 @@ async def get_job_annotations(projectId, jobId, itemsPerPage: int, page: int, on
                 count_of_conflicts += 1
 
         if len(all_annotated_data) > 0:
-            stats = {'type': job.type,
-                     'conflict_percentage': f'{( (count_of_conflicts / len(all_annotated_data)) * 100):.2f}'
-                     }
+            stats = {
+                'type': job.type,
+                'conflict_percentage': f'{((count_of_conflicts / len(all_annotated_data)) * 100):.2f}',
+            }
         else:
-            stats = {'type': job.type,
-                     }
+            stats = {
+                'type': job.type,
+            }
 
         if job.type == 'text_classification':
             pipeline = [
-                {
-                    "$unwind": {
-                        "path": "$annotations",
-                        "preserveNullAndEmptyArrays": True
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$annotations.classes",
-                        "preserveNullAndEmptyArrays": True
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": "$annotations.classes",
-                        "count": {"$sum": 1}
-                    }
-                }
+                {'$unwind': {'path': '$annotations', 'preserveNullAndEmptyArrays': True}},
+                {'$unwind': {'path': '$annotations.classes', 'preserveNullAndEmptyArrays': True}},
+                {'$group': {'_id': '$annotations.classes', 'count': {'$sum': 1}}},
             ]
 
             result = list(collection.aggregate(pipeline))
-            stats = {**stats,
-                     'result': result,
-                     }
+            stats = {
+                **stats,
+                'result': result,
+            }
         return {
-            "entropy": f'{maximum_entropy[1]:.3f}' if job.active_learning else None,
-            "data": list(data),
-            "totalRowCount": totalRowCount,
-            "finishedAnnotations": finished_annotations,
-            "finishedAnnotationsByUser": finished_annotations_by_user,
-            "stats": stats
+            'entropy': f'{maximum_entropy[1]:.3f}' if job.active_learning else None,
+            'data': list(data),
+            'totalRowCount': totalRowCount,
+            'finishedAnnotations': finished_annotations,
+            'finishedAnnotationsByUser': finished_annotations_by_user,
+            'stats': stats,
         }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/projects/{projectId}/jobs/{jobId}/annotations/export")
+@router.get('/projects/{projectId}/jobs/{jobId}/annotations/export')
 async def export_data(projectId, jobId, type):
     try:
         project = await Project.get(id=projectId)
@@ -208,13 +218,15 @@ async def export_data(projectId, jobId, type):
             df = pd.DataFrame(data)
             df.to_csv(temp_file_path, index=False)
 
-        return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
+        return FileResponse(
+            temp_file_path, headers={'Content-Disposition': f'attachment; filename={collection_name}-data.ndjson'}
+        )
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/projects/{projectId}/jobs/{jobId}/annotations/merge/export")
+@router.get('/projects/{projectId}/jobs/{jobId}/annotations/merge/export')
 async def merge_and_export_data(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
@@ -228,37 +240,36 @@ async def merge_and_export_data(projectId, jobId):
         random_id = uuid.uuid4()
         temp_file_path = f'annotations/temp/{collection_name}-{random_id}-data.ndjson'
         with open(temp_file_path, 'a+') as temp:
-
             for item in data_query:
                 fake_item = copy.deepcopy(item)
                 annotations = fake_item['annotations']
                 for annotation in annotations:
                     del annotation['user']
-                are_equal = all(
-                    d == annotations[0] for d in annotations)
+                are_equal = all(d == annotations[0] for d in annotations)
 
                 users = [curr['user'] for curr in item['annotations']]
                 if are_equal:
-                    item['annotations'] = {"users": users, **annotations[0]}
+                    item['annotations'] = {'users': users, **annotations[0]}
                 else:
                     fake_item = copy.deepcopy(item)
                     for curr_ann in fake_item['annotations']:
                         curr_user = curr_ann['user']
                         # type: ignore
                         if curr_user['id'] == str(job.assigned_reviewer_id):
-                            item['annotations'] = {
-                                "user": curr_user, **curr_ann}
+                            item['annotations'] = {'user': curr_user, **curr_ann}
                             break
 
                 temp.write(json.dumps(item, default=str) + '\n')
 
-        return FileResponse(temp_file_path, headers={"Content-Disposition": f"attachment; filename={collection_name}-data.ndjson"})
+        return FileResponse(
+            temp_file_path, headers={'Content-Disposition': f'attachment; filename={collection_name}-data.ndjson'}
+        )
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/projects/{projectId}/jobs/{jobId}/annotations/{_id}")
+@router.get('/projects/{projectId}/jobs/{jobId}/annotations/{_id}')
 async def get_single_annotation(projectId, jobId, _id: int):
     try:
         project = await Project.get(id=projectId)
@@ -274,7 +285,7 @@ async def get_single_annotation(projectId, jobId, _id: int):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/projects/{projectId}/jobs/{jobId}/annotations")
+@router.post('/projects/{projectId}/jobs/{jobId}/annotations')
 async def create_annotation(projectId, jobId, data: Request):
     try:
         annotation_data = await data.json()
@@ -287,11 +298,7 @@ async def create_annotation(projectId, jobId, data: Request):
         collection = mongodb[collection_name]
 
         if annotation_data.get('wasReviewed'):
-            update_query = {
-                '$set': {
-                    'wasReviewed': True
-                }
-            }
+            update_query = {'$set': {'wasReviewed': True}}
         else:
             update_query = {
                 '$set': {
@@ -301,20 +308,16 @@ async def create_annotation(projectId, jobId, data: Request):
             }
 
         result = collection.find_one_and_update(
-            {'_id': annotation_data['_id']},
-            update_query,
-            return_document=pymongo.ReturnDocument.AFTER)
+            {'_id': annotation_data['_id']}, update_query, return_document=pymongo.ReturnDocument.AFTER
+        )
 
         if job.active_learning:
-
             model = FeedForwardSentimentClassifier(
-                len_unique_tokens=1000,
-                embedding_dim=6,
-                max_tokens=50,
-                hidden_layer_1_n=256,
-                out_n=3)
-            model.load_state_dict(torch.load(
-                '/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt'))
+                len_unique_tokens=1000, embedding_dim=6, max_tokens=50, hidden_layer_1_n=256, out_n=3
+            )
+            model.load_state_dict(
+                torch.load('/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt')
+            )
             train_on_item(result, model)
 
         return result
@@ -324,7 +327,7 @@ async def create_annotation(projectId, jobId, data: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/projects/{projectId}/jobs/{jobId}/visualization")
+@router.get('/projects/{projectId}/jobs/{jobId}/visualization')
 async def get_visualization_data(projectId, jobId):
     try:
         project = await Project.get(id=projectId)
@@ -334,46 +337,27 @@ async def get_visualization_data(projectId, jobId):
         collection = mongodb[collection_name]
 
         pipeline = [
-            {"$unwind": "$annotations"},
-            {"$group": {"_id": "$annotations.user.email", "count": {"$sum": 1}}},
-            {"$project": {"_id": 0, "user_email": "$_id", "count": 1}}
+            {'$unwind': '$annotations'},
+            {'$group': {'_id': '$annotations.user.email', 'count': {'$sum': 1}}},
+            {'$project': {'_id': 0, 'user_email': '$_id', 'count': 1}},
         ]
         result = list(collection.aggregate(pipeline))
 
-        finished_annotations = collection.count_documents(
-            {"annotations": {"$exists": True, "$not": {"$size": 0}}}
-        )
+        finished_annotations = collection.count_documents({'annotations': {'$exists': True, '$not': {'$size': 0}}})
         totalRowCount = collection.count_documents({})
 
         date_pipeline = [
+            {'$match': {'createdAt': {'$exists': True}}},
             {
-                "$match": {
-                    "createdAt": {"$exists": True}
+                '$project': {
+                    'year': {'$year': '$createdAt'},
+                    'month': {'$month': '$createdAt'},
+                    'day': {'$dayOfMonth': '$createdAt'},
                 }
             },
-            {
-                "$project": {
-                    "year": {"$year": "$createdAt"},
-                    "month": {"$month": "$createdAt"},
-                    "day": {"$dayOfMonth": "$createdAt"}
-                }
-            },
-            {
-                "$group": {
-                    "_id": {"year": "$year", "month": "$month", "day": "$day"},
-                    "count": {"$sum": 1}
-                }
-            },
-            {
-                "$project": {
-                    "_id": 0,
-                    "year": "$_id.year",
-                    "month": "$_id.month",
-                    "day": "$_id.day",
-                    "count": 1
-                }
-            },
-            {"$sort": {"year": 1, "month": 1, "day": 1}}
+            {'$group': {'_id': {'year': '$year', 'month': '$month', 'day': '$day'}, 'count': {'$sum': 1}}},
+            {'$project': {'_id': 0, 'year': '$_id.year', 'month': '$_id.month', 'day': '$_id.day', 'count': 1}},
+            {'$sort': {'year': 1, 'month': 1, 'day': 1}},
         ]
 
         date_result = list(collection.aggregate(date_pipeline))

@@ -44,9 +44,7 @@ class Project:
                                             (%s, %s, %s, %s, %s)"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(
-                stmt_create_project, (title, user_id_of_owner, description)
-            )
+            cursor.execute(stmt_create_project, (title, user_id_of_owner, description))
             project = cursor.fetchone()
             project_object = Project(*project)
             cursor.execute(
@@ -105,11 +103,7 @@ class Project:
             else """SELECT * FROM Projects"""
         )
         params = []
-        filters = {
-            filter: value
-            for filter, value in filters.items()
-            if value is not None
-        }
+        filters = {filter: value for filter, value in filters.items() if value is not None}
         for i, (filter, value) in enumerate(filters.items()):
             if value is not None:
                 if 0 < i < len(filters):
@@ -147,9 +141,7 @@ class Project:
             raise e
 
     @classmethod
-    def get_user_projects(
-        cls, db_conn: connection, user_id: int, project_id: int | None
-    ) -> list[dict]:
+    def get_user_projects(cls, db_conn: connection, user_id: int, project_id: int | None) -> list[dict]:
         stmt = """SELECT
                 Projects.id AS project_id,
                 Projects.title AS project_title,
@@ -173,9 +165,7 @@ class Project:
             stmt += ' AND project_id=%s'
         try:
             cursor = db_conn.cursor()
-            cursor.execute(
-                stmt, (user_id, project_id) if project_id else (user_id,)
-            )
+            cursor.execute(stmt, (user_id, project_id) if project_id else (user_id,))
             res = cursor.fetchall()
             projects = [
                 {
@@ -216,9 +206,7 @@ class Project:
             raise e
 
     @classmethod
-    def add_user_to_project(
-        cls, db_conn: connection, user_id: int, project_id: int
-    ):
+    def add_user_to_project(cls, db_conn: connection, user_id: int, project_id: int):
         stmt = """INSERT INTO ProjectUsers
                                             (user_id, project_id, is_owner,
                                             can_add_data, can_create_jobs)
@@ -261,9 +249,7 @@ class Project:
                   """
         try:
             cursor = db_conn.cursor()
-            cursor.execute(
-                stmt, (can_add_data, can_create_jobs, user_id, project_id)
-            )
+            cursor.execute(stmt, (can_add_data, can_create_jobs, user_id, project_id))
             db_conn.commit()
             cursor.close()
         except ForeignKeyViolation as e:
@@ -278,9 +264,7 @@ class Project:
             raise e
 
     @classmethod
-    def remove_user_as_member_from_project(
-        cls, db_conn: connection, user_id: int, project_id: int
-    ):
+    def remove_user_as_member_from_project(cls, db_conn: connection, user_id: int, project_id: int):
         stmt = """DELETE FROM ProjectUsers
                   WHERE user_id=%s AND project_id=%s"""
         try:

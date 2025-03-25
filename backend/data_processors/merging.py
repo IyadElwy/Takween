@@ -8,5 +8,4 @@ def process_merging(job_data, file_path, original_datasource_paths, field_to_pro
                 data = json.load(og_file)
                 for current_object in data:
                     if current_object.get(field_to_process):
-                        result_file.write(
-                            json.dumps({field_to_process: current_object.get(field_to_process)}) + '\n')
+                        result_file.write(json.dumps({field_to_process: current_object.get(field_to_process)}) + '\n')

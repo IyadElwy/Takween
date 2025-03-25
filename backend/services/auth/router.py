@@ -43,9 +43,7 @@ async def sign_up(request: Request, sign_up_body: SignUpBody):
             sign_up_body.password,
         )
         validate_user_signup_info(first_name, last_name, email, password)
-        hashed_password = bcrypt.hashpw(
-            password.encode(), request.state.config.jwt_salt.encode()
-        ).decode('utf-8')
+        hashed_password = bcrypt.hashpw(password.encode(), request.state.config.jwt_salt.encode()).decode('utf-8')
         user = User.create(
             request.state.config.db_conn,
             first_name=first_name,
@@ -57,9 +55,7 @@ async def sign_up(request: Request, sign_up_body: SignUpBody):
             'user_id': str(user.id),
             'exp': datetime.datetime.now() + datetime.timedelta(days=90),
         }
-        token = jwt.encode(
-            payload, request.state.config.jwt_secret, algorithm='HS256'
-        )
+        token = jwt.encode(payload, request.state.config.jwt_secret, algorithm='HS256')
         return {'access_token': token}
     except ValidationException as e:
         raise ValidationError(e.validation_error)
@@ -81,12 +77,9 @@ async def sign_in(request: Request, sign_in_body: SignInBody):
                 'user_id': str(user.id),
                 'exp': datetime.datetime.now() + datetime.timedelta(days=90),
             }
-            token = jwt.encode(
-                payload, request.state.config.jwt_secret, algorithm='HS256'
-            )
+            token = jwt.encode(payload, request.state.config.jwt_secret, algorithm='HS256')
             return {'access_token': token}
-        else:
-            raise IncorrectLoginInfoError()
+        raise IncorrectLoginInfoError()
     except ValidationException as e:
         raise ValidationError(e.validation_error)
     except UserNotFoundException:

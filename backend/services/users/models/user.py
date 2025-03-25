@@ -61,20 +61,10 @@ class User:
             ON 
                 Users.id = ProjectUsers.user_id AND ProjectUsers.project_id = %s"""
             if project_id_to_embed_user_assignments
-            else (
-                """SELECT id, first_name, last_name, email, is_admin FROM Users"""
-            )
+            else ("""SELECT id, first_name, last_name, email, is_admin FROM Users""")
         )
-        params = (
-            [project_id_to_embed_user_assignments]
-            if project_id_to_embed_user_assignments
-            else []
-        )
-        filters = {
-            filter: value
-            for filter, value in filters.items()
-            if value is not None
-        }
+        params = [project_id_to_embed_user_assignments] if project_id_to_embed_user_assignments else []
+        filters = {filter: value for filter, value in filters.items() if value is not None}
         for i, (filter, value) in enumerate(filters.items()):
             if value is not None:
                 if 0 < i < len(filters):

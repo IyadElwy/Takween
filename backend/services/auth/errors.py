@@ -3,9 +3,7 @@ from fastapi.exceptions import HTTPException
 
 class UniqueFieldException(Exception):
     def __init__(self, field_in_question) -> None:
-        super().__init__(
-            f'Unique constraint for field "{field_in_question}" violated'
-        )
+        super().__init__(f'Unique constraint for field "{field_in_question}" violated')
 
 
 class UserNotFoundException(Exception):

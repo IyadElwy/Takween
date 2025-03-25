@@ -2,9 +2,7 @@ from email_validator import EmailNotValidError, validate_email
 from errors import ValidationException
 
 
-def validate_user_signup_info(
-    first_name: str, last_name: str, email: str, password: str
-) -> None:
+def validate_user_signup_info(first_name: str, last_name: str, email: str, password: str) -> None:
     if not first_name:
         raise ValidationException('First name must not be empty')
     if not first_name.isalpha():

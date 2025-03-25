@@ -22,9 +22,7 @@ def process_text_anonymization(job_data, file_path, original_datasource_path, fi
         with open(file_path, '+a') as result_file:
             for current_object in data:
                 try:
-                    anonymized = anonymize_text(
-                        current_object[field_to_process])
-                    result_file.write(json.dumps(
-                        {field_to_process: anonymized}) + '\n')
+                    anonymized = anonymize_text(current_object[field_to_process])
+                    result_file.write(json.dumps({field_to_process: anonymized}) + '\n')
                 except Exception as e:
                     continue

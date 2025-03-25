@@ -33,16 +33,14 @@ class FeedForwardSentimentClassifier(nn.Module):
         self.embedding_dim = embedding_dim
         self.max_tokens = max_tokens
 
-        self.emb = nn.Embedding(num_embeddings=len_unique_tokens,
-                                embedding_dim=self.embedding_dim,)
-        self.fc1 = nn.Linear(300,
-                             hidden_layer_1_n)
-        self.fc2 = nn.Linear(hidden_layer_1_n,
-                             hidden_layer_1_n // 2)
-        self.fc3 = nn.Linear(hidden_layer_1_n // 2,
-                             hidden_layer_1_n // 4)
-        self.fc4 = nn.Linear(hidden_layer_1_n // 4,
-                             out_n)
+        self.emb = nn.Embedding(
+            num_embeddings=len_unique_tokens,
+            embedding_dim=self.embedding_dim,
+        )
+        self.fc1 = nn.Linear(300, hidden_layer_1_n)
+        self.fc2 = nn.Linear(hidden_layer_1_n, hidden_layer_1_n // 2)
+        self.fc3 = nn.Linear(hidden_layer_1_n // 2, hidden_layer_1_n // 4)
+        self.fc4 = nn.Linear(hidden_layer_1_n // 4, out_n)
 
     def forward(self, x):
         x = self.emb(x)
@@ -74,9 +72,7 @@ loss_func = nn.CrossEntropyLoss()
 
 
 def train_on_item(item, model):
-
-    optimizer = torch.optim.Adam(model.parameters(),
-                                 lr=1e-2)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2)
 
     sentence = item['data']['review_description']
     label = item['annotations'][0]['classes']
@@ -94,8 +90,9 @@ def train_on_item(item, model):
     loss.backward()
     optimizer.step()
     optimizer.zero_grad()
-    model.load_state_dict(torch.load(
-        '/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt'))
+    model.load_state_dict(
+        torch.load('/home/iyadelwy/Work/Bachelor/multi-modal-lab/backend/active_learning/model_params.pt')
+    )
 
 
 def calculate_entropy(predictions):

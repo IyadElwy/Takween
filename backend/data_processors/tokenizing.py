@@ -8,9 +8,7 @@ def process_tokenizing(job_data, file_path, original_datasource_path, field_to_p
         with open(file_path, '+a') as result_file:
             for current_object in data:
                 try:
-                    tokenize_sentence = tokenize(
-                        current_object[field_to_process])
-                    result_file.write(json.dumps(
-                        {field_to_process: tokenize_sentence}) + '\n')
+                    tokenize_sentence = tokenize(current_object[field_to_process])
+                    result_file.write(json.dumps({field_to_process: tokenize_sentence}) + '\n')
                 except Exception as e:
                     continue

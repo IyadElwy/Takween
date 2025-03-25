@@ -8,7 +8,6 @@ def process_flattening(job_data, file_path, original_datasource_path):
         with open(file_path, '+a') as result_file:
             for current_object in data:
                 try:
-                    result_file.write(json.dumps(
-                        flatten(current_object)) + '\n')
+                    result_file.write(json.dumps(flatten(current_object)) + '\n')
                 except Exception as e:
                     continue

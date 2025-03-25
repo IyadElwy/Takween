@@ -86,11 +86,7 @@ class Job:
     ) -> list[Job]:
         stmt = """SELECT * FROM Jobs"""
         params = []
-        filters = {
-            filter: value
-            for filter, value in filters.items()
-            if value is not None
-        }
+        filters = {filter: value for filter, value in filters.items() if value is not None}
         for i, (filter, value) in enumerate(filters.items()):
             if value is not None:
                 if 0 < i < len(filters):

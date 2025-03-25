@@ -89,9 +89,7 @@ async def get_user_projects(request: Request, project_id: int | None = None):
         validate_user_id(currunt_user_id)
         if project_id:
             validate_project_id(project_id)
-        projects = Project.get_user_projects(
-            request.state.config.db_conn, int(currunt_user_id), project_id
-        )
+        projects = Project.get_user_projects(request.state.config.db_conn, int(currunt_user_id), project_id)
         return projects
     except ValidationException as e:
         raise ValidationError(e.validation_error)
@@ -111,8 +109,7 @@ class UpdateUserProjectPermissionsRequestBody(BaseModel):
 
 async def is_authorized_to_edit_project_memberships(
     request: Request,
-    request_body: UpdateUserProjectPermissionsRequestBody
-    | UserIdAndProjectIdRequestBody,
+    request_body: UpdateUserProjectPermissionsRequestBody | UserIdAndProjectIdRequestBody,
 ) -> UpdateUserProjectPermissionsRequestBody | UserIdAndProjectIdRequestBody:
     try:
         current_user_id = request.state.user_id
@@ -168,9 +165,7 @@ async def update_user_project_permissions(
         current_user_id = request.state.user_id
         validate_user_id(current_user_id)
         validate_user_id(update_user_project_permissions_request_body.user_id)
-        validate_project_id(
-            update_user_project_permissions_request_body.project_id
-        )
+        validate_project_id(update_user_project_permissions_request_body.project_id)
         Project.update_user_project_permissions(
             request.state.config.db_conn,
             **update_user_project_permissions_request_body.model_dump(),
@@ -194,12 +189,8 @@ async def remove_user_as_member_from_project(
     try:
         current_user_id = request.state.user_id
         validate_user_id(current_user_id)
-        validate_user_id(
-            remove_user_as_member_from_project_request_body.user_id
-        )
-        validate_project_id(
-            remove_user_as_member_from_project_request_body.project_id
-        )
+        validate_user_id(remove_user_as_member_from_project_request_body.user_id)
+        validate_project_id(remove_user_as_member_from_project_request_body.project_id)
         Project.remove_user_as_member_from_project(
             request.state.config.db_conn,
             **remove_user_as_member_from_project_request_body.model_dump(),
@@ -236,10 +227,7 @@ async def is_authorized_for_delete(request: Request, project_id: int) -> int:
         )
         is_current_user_admin = current_user.json()['is_admin']
 
-        if (
-            not is_current_user_admin
-            and project.user_id_of_owner != current_user_id
-        ):
+        if not is_current_user_admin and project.user_id_of_owner != current_user_id:
             raise UnAuthorizedException()
         return project.id
     except ValidationException as e:

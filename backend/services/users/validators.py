@@ -12,9 +12,7 @@ def validate_user_id(user_id: int) -> None:
         raise ValidationException('user id must be valid')
 
 
-def validate_user_filter_request(
-    order_by: str, sort_order: str, **filters: dict[str, str | int]
-) -> None:
+def validate_user_filter_request(order_by: str, sort_order: str, **filters: dict[str, str | int]) -> None:
     permitted_filters = [
         'id',
         'first_name',
@@ -25,9 +23,7 @@ def validate_user_filter_request(
     ]
     for filter in filters:
         if filter not in permitted_filters:
-            raise InvalidFilterException(
-                f'Field "{filter}" is not a valid query parameter'
-            )
+            raise InvalidFilterException(f'Field "{filter}" is not a valid query parameter')
 
     permitted_order_filters = [
         'id',
@@ -37,10 +33,6 @@ def validate_user_filter_request(
         'is_admin',
     ]
     if order_by not in permitted_order_filters:
-        raise InvalidFilterException(
-            f'Field "{order_by}" cannot be used to order by'
-        )
+        raise InvalidFilterException(f'Field "{order_by}" cannot be used to order by')
     if sort_order not in ['asc', 'desc']:
-        raise InvalidFilterException(
-            'Sort ordering is either by asc or desc order'
-        )
+        raise InvalidFilterException('Sort ordering is either by asc or desc order')
