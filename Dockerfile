@@ -9,7 +9,7 @@ FROM base AS dev-container
 RUN apt install -y curl build-essential python3-dev && \
     curl -LsSf https://astral.sh/uv/install.sh | sh && \
     . $HOME/.local/bin/env && \
-    uv python install 3.13 --default --preview
+    uv python install 3.11 --default --preview
 
 
 RUN curl -o- \

@@ -6,6 +6,7 @@ dependencies = [
     "alembic==1.13.2",
     "arabic_reshaper==3.0.0",
     "Arabic_Stopwords==0.4.3",
+    "bcrypt>=4.3.0",
     "email_validator==2.0.0.post2",
     "fastapi==0.115.12",
     "flatten_json==0.1.14",
@@ -20,11 +21,11 @@ dependencies = [
     "pymongo==4.5.0",
     "pytesseract==0.3.10",
     "python-dotenv==1.0.1",
-    "python_bcrypt==0.3.2",
+    "python-multipart>=0.0.20",
     "requests==2.32.3",
     "ruff>=0.11.2",
     "SpeechRecognition==3.10.0",
-    "SQLAlchemy==2.0.21",
+    "sqlalchemy==2.0.38",
     "uvicorn==0.34.0",
 ]
 
@@ -67,12 +68,50 @@ exclude = [
 
 target-version = "py313"
 
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = ["Q000"]
 
+[tool.ruff.lint]
+
+select = ["ALL"]
 fixable = ["ALL"]
 unfixable = []
+
+
+ignore = [
+    "Q000",
+    "Q003",
+    #### modules
+    "ANN", # flake8-annotations
+    "COM", # flake8-commas
+    "C90", # mccabe complexity
+    "DJ",  # django
+    "EXE", # flake8-executable
+    "T10", # debugger
+    "TID", # flake8-tidy-imports
+    #### specific rules
+    # "D100",   # ignore missing docs
+    "D203",
+    # "D101",
+    # "D102",
+    # "D103",
+    # "D104",
+    # "D105",
+    # "D106",
+    # "D107",
+    # "D200",
+    # "D205",
+    "D212",
+    # "D400",
+    # "D401",
+    # "D415",
+    # "E402",   # false positives for local imports
+    # "E501",   # line too long
+    # "TRY003", # external messages in exceptions are too verbose
+    # "TD002",
+    # "TD003",
+    # "FIX002", # too verbose descriptions of todos
+    "COM812",
+
+]
 
 
 [tool.ruff.format]
