@@ -12,37 +12,28 @@ class DataSource:
         project_id: int,
         user_id_of_owner: int,
         data_source_name: str,
-        chosen_field: str,
         status: str,
     ) -> None:
         self.id = id
         self.project_id = project_id
         self.user_id_of_owner = user_id_of_owner
         self.data_source_name = data_source_name
-        self.chosen_field = chosen_field
         self.status = status
 
     @classmethod
-    def create(
-        cls,
-        db_conn: connection,
-        project_id: int,
-        user_id_of_owner: int,
-        data_source_name: str,
-        chosen_field: str,
-    ) -> DataSource:
+    def create(cls, db_conn: connection, project_id: int, user_id_of_owner: int, data_source_name: str) -> DataSource:
         stmt = """INSERT INTO DataSource
                    (project_id, user_id_of_owner, 
-                   data_source_name, chosen_field)
+                   data_source_name)
                    VALUES
-                   (%s, %s, %s, %s)
+                   (%s, %s, %s)
                    RETURNING id, project_id, user_id_of_owner, 
-                   data_source_name, chosen_field, status"""
+                   data_source_name, status"""
         try:
             cursor = db_conn.cursor()
             cursor.execute(
                 stmt,
-                (project_id, user_id_of_owner, data_source_name, chosen_field),
+                (project_id, user_id_of_owner, data_source_name),
             )
             data_source = DataSource(*cursor.fetchone())
             db_conn.commit()
@@ -53,7 +44,7 @@ class DataSource:
             err_msg = e.pgerror
             if 'project_id' in err_msg:
                 raise ProjectNotFoundException()
-            elif 'user_id_of_owner' in err_msg:
+            if 'user_id_of_owner' in err_msg:
                 raise UserNotFoundException()
         except Exception as e:
             db_conn.rollback()

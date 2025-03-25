@@ -10,6 +10,7 @@ dependencies = [
     "email_validator==2.0.0.post2",
     "fastapi==0.115.12",
     "flatten_json==0.1.14",
+    "minio>=7.2.15",
     "numpy==2.2.4",
     "pandas==2.2.3",
     "Pillow==11.1.0",
@@ -26,6 +27,7 @@ dependencies = [
     "ruff>=0.11.2",
     "SpeechRecognition==3.10.0",
     "sqlalchemy==2.0.38",
+    "timedelta>=2020.12.3",
     "uvicorn==0.34.0",
 ]
 

@@ -32,16 +32,31 @@
                 "ecmel.vscode-html-css",
                 "tamasfe.even-better-toml",
                 "ms-azuretools.vscode-docker",
-                "ms-kubernetes-tools.vscode-kubernetes-tools"
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "gruntfuggly.todo-tree"
             ],
             "settings": {
                 "[python]": {
                     "editor.formatOnSave": true,
                     "editor.codeActionsOnSave": {
-                        "source.fixAll": "explicit",
-                        "source.organizeImports": "explicit"
+                        "source.fixAll": "always",
+                        "source.organizeImports": "always"
                     },
                     "editor.defaultFormatter": "charliermarsh.ruff"
+                },
+                "[javascript]": {
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.eslint": "always"
+                    },
+                    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+                },
+                "[javascriptreact]": {
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.eslint": "always"
+                    },
+                    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
                 }
             }
         }

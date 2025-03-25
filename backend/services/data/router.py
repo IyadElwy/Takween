@@ -1,6 +1,7 @@
 from typing import Annotated
 
 import requests
+import timedelta
 from errors import (
     ProjectNotFoundError,
     ProjectNotFoundException,
@@ -11,7 +12,7 @@ from errors import (
     ValidationError,
     ValidationException,
 )
-from fastapi import Depends, Form, Request, UploadFile
+from fastapi import Depends, Form, Request
 from fastapi.routing import APIRouter
 from validators import validate_create_data_source_body, validate_id
 
@@ -42,29 +43,25 @@ def authorize_to_create_new_datasource(
         raise UnAuthorizedError()
 
 
-@router.post('/')
-def add_data_source(
+@router.post('/datasource/init')
+async def initialize_new_data_source(
     request: Request,
-    file: UploadFile,
+    user_id: Annotated[Annotated[int, Form()], Depends(authorize_to_create_new_datasource)],
     project_id: Annotated[int, Form()],
-    user_id: Annotated[
-        Annotated[int, Form()], Depends(authorize_to_create_new_datasource)
-    ],
     data_source_name: Annotated[str, Form()],
-    chosen_field: Annotated[str, Form()],
 ):
     try:
-        validate_create_data_source_body(
-            file, project_id, user_id, data_source_name, chosen_field
-        )
+        validate_create_data_source_body(project_id, user_id, data_source_name)
         data_source = DataSource.create(
             request.state.config.db_conn,
             project_id,
             user_id,
             data_source_name,
-            chosen_field,
         )
-        return data_source
+        presigned_put_url = request.state.config.minio_client.presigned_put_object(
+            'data', str(data_source.id), timedelta.Timedelta(hours=2)
+        )
+        return {'dataSourceId': str(data_source.id), 'presignedPutUrl': presigned_put_url}
     except ValidationException as e:
         raise ValidationError(e.validation_error)
     except UserNotFoundException:
@@ -73,9 +70,7 @@ def add_data_source(
         raise ProjectNotFoundError()
 
 
-def authorize_as_internal_system_op(
-    request: Request, data_source_id: int
-) -> int:
+def authorize_as_internal_system_op(request: Request, data_source_id: int) -> int:
     try:
         current_user_id = int(request.state.user_id)
         bearer_token = request.state.bearer_token
@@ -98,9 +93,7 @@ def finished_saving_new_datasource(
 ):
     try:
         validate_id(data_source_id)
-        DataSource.update_status_to_ready(
-            request.state.config.db_conn, data_source_id
-        )
+        DataSource.update_status_to_ready(request.state.config.db_conn, data_source_id)
     except ValidationException as e:
         raise ValidationError(e.validation_error)
 

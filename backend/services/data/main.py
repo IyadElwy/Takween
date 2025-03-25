@@ -8,6 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from jwt.exceptions import PyJWTError
+from minio import Minio
 from pymongo import MongoClient
 from router import router
 
@@ -20,6 +21,7 @@ class Config:
     def __init__(self) -> None:
         self.db_conn = None
         self.mongodb_client = None
+        self.minio_client = None
 
 
 config = Config()
@@ -36,12 +38,18 @@ config.db_conn = conn
 username = os.getenv('MONGODB_USERNAME')
 password = os.getenv('MONGODB_PASSWORD')
 CONNECTION_URI = (
-    os.getenv('MONGODB_BASE_URI')
-    .replace('{MONGODB_USERNAME}', username)
-    .replace('{MONGODB_PASSWORD}', password)
+    os.getenv('MONGODB_BASE_URI').replace('{MONGODB_USERNAME}', username).replace('{MONGODB_PASSWORD}', password)
 )
 mongodb_client = MongoClient(CONNECTION_URI)
 config.mongodb_client = mongodb_client
+
+
+minio_access_key = os.getenv('MINIO_ACCESS_KEY')
+minio_secret_key = os.getenv('MINIO_SECRET_KEY')
+# TODO: REMOVE secure=False and create TLS con
+# TODO: ADD dynamic hosts in env file
+minio_client = Minio('play.min.io:9000', secure=True, access_key=minio_access_key, secret_key=minio_secret_key)
+config.minio_client = minio_client
 
 app = FastAPI()
 
@@ -64,22 +72,19 @@ async def authenticate_user(request: Request, call_next):
         response = JSONResponse(content={}, status_code=200)
         response = await call_next(request)
         return response
-    else:
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            token = auth_header.split('Bearer ')[1]
-            try:
-                decoded_token = jwt.decode(
-                    token, key=jwt_secret, algorithms=['HS256']
-                )
-                request.state.bearer_token = token
-                request.state.user_id = decoded_token['user_id']
-                response = await call_next(request)
-                return response
-            except PyJWTError:
-                return UnAuthenticatedError()
-        else:
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split('Bearer ')[1]
+        try:
+            decoded_token = jwt.decode(token, key=jwt_secret, algorithms=['HS256'])
+            request.state.bearer_token = token
+            request.state.user_id = decoded_token['user_id']
+            response = await call_next(request)
+            return response
+        except PyJWTError:
             return UnAuthenticatedError()
+    else:
+        return UnAuthenticatedError()
 
 
 @app.middleware('http')
