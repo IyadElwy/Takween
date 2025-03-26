@@ -2,16 +2,24 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from errors import (
+from psycopg2.errors import ForeignKeyViolation, NoDataFound
+from psycopg2.extensions import connection
+from pydantic import BaseModel
+
+from errors.exceptions import (
     JobNotFoundException,
     ProjectNotFoundException,
     UserNotFoundException,
 )
-from psycopg2.errors import ForeignKeyViolation, NoDataFound
-from psycopg2.extensions import connection
 
 
-class Job:
+class Job(BaseModel):
+    id: int
+    title: str
+    project_id: int
+    user_id_of_owner: int
+    creation_date: datetime
+
     def __init__(
         self,
         id: int,
@@ -20,11 +28,13 @@ class Job:
         user_id_of_owner: int,
         creation_date: datetime,
     ) -> None:
-        self.id = id
-        self.title = title
-        self.project_id = project_id
-        self.user_id_of_owner = user_id_of_owner
-        self.creation_date = creation_date
+        super().__init__(
+            id=id,
+            title=title,
+            project_id=project_id,
+            user_id_of_owner=user_id_of_owner,
+            creation_date=creation_date,
+        )
 
     @classmethod
     def create(
@@ -53,7 +63,7 @@ class Job:
             err_msg = e.pgerror
             if 'project_id' in err_msg:
                 raise ProjectNotFoundException()
-            elif 'user_id_of_owner' in err_msg:
+            if 'user_id_of_owner' in err_msg:
                 raise UserNotFoundException()
         except Exception as e:
             db_conn.rollback()

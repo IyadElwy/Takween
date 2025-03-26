@@ -3,19 +3,21 @@ import datetime
 import bcrypt
 import jwt
 from email_validator import validate_email
-from errors import (
-    IncorrectLoginInfoError,
-    UniqueFieldException,
-    UserNotFoundException,
-    UserWithEmailAlreadyExistsError,
-    ValidationError,
-    ValidationException,
-)
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
-from validators import validate_user_login_info, validate_user_signup_info
 
-from models.user import User
+from errors.exceptions import (
+    UniqueFieldException,
+    UserNotFoundException,
+    ValidationException,
+)
+from errors.http import (
+    IncorrectLoginInfoError,
+    UserWithEmailAlreadyExistsError,
+    ValidationError,
+)
+from models.auth import User
+from validators.auth import validate_user_login_info, validate_user_signup_info
 
 
 class SignUpBody(BaseModel):

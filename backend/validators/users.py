@@ -1,4 +1,4 @@
-from errors import InvalidFilterException, ValidationException
+from errors.exceptions import InvalidFilterException, ValidationException
 
 
 def validate_user_id(user_id: int) -> None:

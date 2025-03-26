@@ -2,29 +2,31 @@ from datetime import datetime
 from typing import Annotated
 
 import requests
-from errors import (
-    InvalidFilterException,
-    InvalidSearchError,
-    JobNotFoundError,
-    JobNotFoundException,
-    ProjectNotFoundError,
-    ProjectNotFoundException,
-    UnAuthorizedError,
-    UnAuthorizedException,
-    UserNotFoundError,
-    UserNotFoundException,
-    ValidationError,
-    ValidationException,
-)
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
-from validators import (
+
+from errors.exceptions import (
+    InvalidFilterException,
+    JobNotFoundException,
+    ProjectNotFoundException,
+    UnAuthorizedException,
+    UserNotFoundException,
+    ValidationException,
+)
+from errors.http import (
+    InvalidSearchError,
+    JobNotFoundError,
+    ProjectNotFoundError,
+    UnAuthorizedError,
+    UserNotFoundError,
+    ValidationError,
+)
+from models.jobs import Job
+from validators.jobs import (
     validate_create_job_body,
     validate_job_filter_request,
     validate_job_id,
 )
-
-from models.jobs import Job
 
 
 class CreateJobBody(BaseModel):

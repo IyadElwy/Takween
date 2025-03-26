@@ -1,22 +1,24 @@
 from typing import Annotated
 
-from errors import (
+from fastapi import APIRouter, Depends, Request
+
+from errors.exceptions import (
     InvalidFilterException,
-    InvalidSearchError,
-    UnAuthorizedError,
     UnAuthorizedException,
-    UserNotFoundError,
     UserNotFoundException,
-    ValidationError,
     ValidationException,
 )
-from fastapi import APIRouter, Depends, Request
-from validators import (
+from errors.http import (
+    InvalidSearchError,
+    UnAuthorizedError,
+    UserNotFoundError,
+    ValidationError,
+)
+from models.user import User
+from validators.users import (
     validate_user_filter_request,
     validate_user_id,
 )
-
-from models.user import User
 
 router = APIRouter()
 

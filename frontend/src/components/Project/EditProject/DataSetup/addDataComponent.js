@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-len */
 import {
-  Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, CircularProgress,
+  Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Progress,
 } from "@nextui-org/react";
 import byteSize from "byte-size";
 import { useState, useRef, useEffect } from "react";
@@ -25,38 +25,48 @@ export default function AddDataComponent({
   const [dataSourceName, setDataSourceName] = useState("erferf");
   const [error, setError] = useState(false);
 
-  const [value, setValue] = useState(0);
-
   const dataUploadWorker = new Worker(new URL("../../../../../workers/dataUpload.js", import.meta.url));
   dataUploadWorker.onmessage = (e) => {
-    console.log(e.data);
-    // if (e.data.progress) {
-    setValue(e.data.progress);
-    // }
-    // setIsLoading(false);
+    if (e.data.status === "done") {
+      setDataSources((prevDataSources) => ({
+        ...prevDataSources,
+        [e.data.dataSourceId]: {
+          ...prevDataSources[e.data.dataSourceId],
+          status: "ready",
+          loadingValue: 100,
+        },
+      }));
+    }
   };
 
   useEffect(() => {
-    // const fetchDataSources = async () => {
-    //   setIsLoading(true);
-    //   const dataSources = (await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/file-data-sources`)).data;
-    //   setSelectedFiles(dataSources.map((ds) => ({
-    //     id: ds.id,
-    //     name: ds.file_name,
-    //     type: ds.file_type,
-    //     size: ds.size,
-    //     exampleData: ds.exampleData,
-    //   })));
-    //   setIsLoading(false);
-    // };
+    const fetchDataSources = async () => {
+      setIsLoading(true);
+      const fetchedDataSources = (await AxiosWrapper.get(`http://127.0.0.1:5004/datasource/project/${projectId}`)).data;
+      setDataSources({
+        ...dataSources,
+        ...fetchedDataSources.reduce((obj, v) => ({
+          ...obj,
+          [v.id]: {
+            name: v.data_source_name,
+            status: v.status,
+            loadingValue: v.status === "ready" ? 100 : 0,
+          },
+        }), {}),
+      });
+      setIsLoading(false);
+    };
 
-    // fetchDataSources();
-  }, [value]);
+    fetchDataSources();
+  }, []);
+
+  useEffect(() => () => {
+    dataUploadWorker.terminate();
+  }, []);
 
   const fileInputRef = useRef(null);
   const handleChooseFile = async (e) => {
     try {
-      // setIsLoading(true);
       if (e.target.files.length > 0) {
         const formData = new FormData();
         formData.append("project_id", projectId);
@@ -68,12 +78,14 @@ export default function AddDataComponent({
             "Content-Type": "multipart/form-data",
           },
         }).then((response) => response.data);
-
-        setDataSources({
+        setDataSources((prevDataSources) => ({
+          ...prevDataSources,
           [dataSourceId]: {
-
+            name: dataSourceName,
+            status: "processing",
+            loadingValue: 0,
           },
-        });
+        }));
 
         dataUploadWorker.postMessage({ dataSourceId, presignedPutUrl, file: e.target.files[0] });
 
@@ -138,33 +150,38 @@ export default function AddDataComponent({
             <TableHeader>
               <TableColumn>Data Source Name</TableColumn>
               <TableColumn>Owner</TableColumn>
+              <TableColumn>Status</TableColumn>
             </TableHeader>
             <TableBody emptyContent="No rows to display.">
-              {/* {Object.entries(dataSources).forEach((file) => { */}
-              { /* const {
-                  id, data_source_name, user_id_of_owner,
-                } = file; */ }
-              {/* return ( */}
-              <TableRow key={1}>
-                <TableCell>
-                  {/* {truncate_with_ellipsis(data_source_name, 20)} */}
-                  {/* {" "} */}
-                  <CircularProgress
-                    aria-label="Loading..."
-                    color="success"
-                    showValueLabel
-                    size="lg"
-                    value={value}
-                  />
-                </TableCell>
-                <TableCell>
-                  {/* {
-                        user_id_of_owner
+              {Object.entries(dataSources).map((file) => {
+                const [
+                  id, { name, status, loadingValue },
+                ] = file;
+                return (
+                  <TableRow key={id}>
+                    <TableCell>
+                      {truncate_with_ellipsis(name, 20)}
+                    </TableCell>
+                    <TableCell>
+                      {/* {
+                        status
                       } */}
-                </TableCell>
-              </TableRow>
-              {/* ); */}
-              {/* })} */}
+                    </TableCell>
+                    <TableCell>
+                      <Progress
+                        isIndeterminate={status === "processing"}
+                        aria-label="Uploading..."
+                        className="max-w-md"
+                        color="success"
+                        showValueLabel
+                        size="sm"
+                        value={loadingValue}
+                        label={status === "processing" ? "Uploading..." : "Ready"}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
 
             </TableBody>
           </Table>

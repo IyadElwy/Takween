@@ -1,6 +1,6 @@
 from email_validator import EmailNotValidError, validate_email
 
-from errors import ValidationException
+from errors.exceptions import ValidationException
 
 
 def validate_user_signup_info(first_name: str, last_name: str, email: str, password: str) -> None:

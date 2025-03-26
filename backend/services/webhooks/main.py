@@ -1,19 +1,17 @@
 import os
 
-import jwt
 import psycopg2
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from jwt.exceptions import PyJWTError
 from router import router
 
 from errors.http import UnAuthenticatedError
 
 load_dotenv()
 
-jwt_secret = os.getenv('JWT_SECRET')
+web_hook_secret = os.getenv('WEB_HOOK_SECRET')
 
 
 class Config:
@@ -32,12 +30,9 @@ conn = psycopg2.connect(
 )
 config.db_conn = conn
 
-
 app = FastAPI()
 
-origins = [
-    'http://localhost:3000',
-]
+origins = ['*']
 
 app.add_middleware(
     CORSMiddleware,
@@ -49,24 +44,19 @@ app.add_middleware(
 
 
 @app.middleware('http')
-async def authenticate_user(request: Request, call_next):
+async def authenticate_service(request: Request, call_next):
     if request.method == 'OPTIONS':
         response = JSONResponse(content={}, status_code=200)
         response = await call_next(request)
         return response
     auth_header = request.headers.get('Authorization')
     if auth_header:
-        token = auth_header.split('Bearer ')[1]
-        try:
-            decoded_token = jwt.decode(token, key=jwt_secret, algorithms=['HS256'])
-            request.state.bearer_token = token
-            request.state.user_id = decoded_token['user_id']
-            response = await call_next(request)
-            return response
-        except PyJWTError:
+        secret = auth_header.split('Bearer ')[1]
+        if secret != web_hook_secret:
             return UnAuthenticatedError()
-    else:
-        return UnAuthenticatedError()
+        response = await call_next(request)
+        return response
+    return UnAuthenticatedError()
 
 
 @app.middleware('http')

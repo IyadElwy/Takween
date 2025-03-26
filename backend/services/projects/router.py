@@ -2,28 +2,30 @@ from datetime import datetime
 from typing import Annotated
 
 import requests
-from errors import (
-    InvalidFilterException,
-    InvalidSearchError,
-    ProjectNotFoundError,
-    ProjectNotFoundException,
-    UnAuthorizedError,
-    UnAuthorizedException,
-    UserNotFoundError,
-    UserNotFoundException,
-    ValidationError,
-    ValidationException,
-)
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
-from validators import (
+
+from errors.exceptions import (
+    InvalidFilterException,
+    ProjectNotFoundException,
+    UnAuthorizedException,
+    UserNotFoundException,
+    ValidationException,
+)
+from errors.http import (
+    InvalidSearchError,
+    ProjectNotFoundError,
+    UnAuthorizedError,
+    UserNotFoundError,
+    ValidationError,
+)
+from models.projects import Project
+from validators.projects import (
     validate_create_project_body,
     validate_project_filter_request,
     validate_project_id,
     validate_user_id,
 )
-
-from models.projects import Project
 
 
 class CreateProjectBody(BaseModel):

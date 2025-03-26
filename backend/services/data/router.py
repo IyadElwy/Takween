@@ -5,53 +5,64 @@ import timedelta
 from fastapi import Depends, Form, Request
 from fastapi.routing import APIRouter
 
-from errors import (
-    DataSourceNotFoundError,
+from errors.exceptions import (
     DataSourceNotFoundException,
-    ProjectNotFoundError,
     ProjectNotFoundException,
-    UnAuthorizedError,
     UnAuthorizedException,
-    UserNotFoundError,
     UserNotFoundException,
-    ValidationError,
     ValidationException,
 )
+from errors.http import (
+    DataSourceNotFoundError,
+    ProjectNotFoundError,
+    UnAuthorizedError,
+    UserNotFoundError,
+    ValidationError,
+)
 from models.datasource import DataSource
-from validators import validate_create_data_source_body, validate_id
+from models.projects import Project
+from validators.data import validate_create_data_source_body, validate_id
 
 router = APIRouter()
 
 
-def authorize_to_get_datasource(request: Request, project_id: int):
+def authorize_to_get_data_source(request: Request, project_id: int):
     try:
         current_user_id = int(request.state.user_id)
         # check if user in project users table
-    except:
-        pass
+        project = Project.get_user_projects(request.state.config.db_conn, current_user_id, project_id)
+        if not project:
+            raise UnAuthorizedException()
+        return project_id
+    except UnAuthorizedException:
+        raise UnAuthorizedError()
 
 
-@router.get('/datasource/{id}')
-async def get_datasource(request: Request, id: Annotated[int, Depends(authorize_to_get_datasource)], project_id: int):
+@router.get('/datasource/project/{project_id}')
+async def get_data_sources_by_project_id(
+    request: Request, project_id: Annotated[int, Depends(authorize_to_get_data_source)]
+):
+    try:
+        validate_id(project_id)
+        return DataSource.get_by_project(request.state.config.db_conn, project_id)
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+
+
+@router.get('/datasource/project/{projwwect_id}/{datasource_id}')
+async def get_data_source(
+    request: Request,
+    project_id: Annotated[int, Depends(authorize_to_get_data_source)],
+    data_source_id: int,
+):
     try:
         validate_id(id)
-        data_source = DataSource.get_by_id(request.state.config.db_conn, id)
+        data_source = DataSource.get_by_id(request.state.config.db_conn, data_source_id)
         return data_source
     except ValidationException as e:
         raise ValidationError(e.validation_error)
     except DataSourceNotFoundException:
         raise DataSourceNotFoundError()
-
-
-@router.get('/datasource/project/{id}')
-async def get_datasources_by_project_id(
-    request: Request, id: Annotated[int, Depends(authorize_to_get_datasource)], project_id: int
-):
-    try:
-        validate_id(id)
-        return DataSource.get_by_project(request.state.config.db_conn, id)
-    except ValidationException as e:
-        raise ValidationError(e.validation_error)
 
 
 def authorize_to_create_new_datasource(

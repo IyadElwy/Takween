@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-from errors import DataSourceNotFoundException, ProjectNotFoundException, UserNotFoundException
 from psycopg2.errors import ForeignKeyViolation, NoDataFound
 from psycopg2.extensions import connection
+from pydantic import BaseModel
+
+from errors.exceptions import DataSourceNotFoundException, ProjectNotFoundException, UserNotFoundException
 
 
-class DataSource:
+class DataSource(BaseModel):
+    id: int
+    project_id: int
+    user_id_of_owner: int
+    data_source_name: str
+    status: str
+
     def __init__(
         self,
         id: int,
@@ -14,11 +22,13 @@ class DataSource:
         data_source_name: str,
         status: str,
     ) -> None:
-        self.id = id
-        self.project_id = project_id
-        self.user_id_of_owner = user_id_of_owner
-        self.data_source_name = data_source_name
-        self.status = status
+        super().__init__(
+            id=id,
+            project_id=project_id,
+            user_id_of_owner=user_id_of_owner,
+            data_source_name=data_source_name,
+            status=status,
+        )
 
     @classmethod
     def create(cls, db_conn: connection, project_id: int, user_id_of_owner: int, data_source_name: str) -> DataSource:

@@ -1,4 +1,4 @@
-from errors import ValidationException
+from errors.exceptions import ValidationException
 
 
 def validate_create_data_source_body(
@@ -21,6 +21,10 @@ def validate_create_data_source_body(
 
 
 def validate_id(id: int):
+    if type(id) is str:
+        if not id.isnumeric():
+            raise ValidationException('Datasource id must be valid')
+        id = int(id)
     if not id:
         raise ValidationException('Datasource id must be provided')
     if id <= 0:

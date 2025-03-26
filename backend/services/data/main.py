@@ -3,7 +3,6 @@ import os
 import jwt
 import psycopg2
 from dotenv import load_dotenv
-from errors import UnAuthenticatedError
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -11,6 +10,8 @@ from jwt.exceptions import PyJWTError
 from minio import Minio
 from pymongo import MongoClient
 from router import router
+
+from errors.http import UnAuthenticatedError
 
 load_dotenv()
 

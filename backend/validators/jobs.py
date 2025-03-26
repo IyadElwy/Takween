@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from errors import InvalidFilterException, ValidationException
+from errors.exceptions import InvalidFilterException, ValidationException
 
 
 def validate_job_id(job_id: int) -> None:

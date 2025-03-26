@@ -2,12 +2,20 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from errors import ProjectNotFoundException, UserNotFoundException
 from psycopg2.errors import ForeignKeyViolation, NoDataFound, UniqueViolation
 from psycopg2.extensions import connection
+from pydantic import BaseModel
+
+from errors.exceptions import ProjectNotFoundException, UserNotFoundException
 
 
-class Project:
+class Project(BaseModel):
+    id: int
+    title: str
+    user_id_of_owner: int
+    description: str
+    creation_date: datetime
+
     def __init__(
         self,
         id: int,
@@ -16,11 +24,13 @@ class Project:
         description: str,
         creation_date: datetime,
     ) -> None:
-        self.id = id
-        self.title = title
-        self.user_id_of_owner = user_id_of_owner
-        self.description = description
-        self.creation_date = creation_date
+        super().__init__(
+            id=id,
+            title=title,
+            user_id_of_owner=user_id_of_owner,
+            description=description,
+            creation_date=creation_date,
+        )
 
     @classmethod
     def create(
@@ -222,11 +232,10 @@ class Project:
             err_msg = e.pgerror
             if 'project_id' in err_msg:
                 raise ProjectNotFoundException()
-            elif 'user_id' in err_msg:
+            if 'user_id' in err_msg:
                 raise UserNotFoundException()
         except UniqueViolation:
             db_conn.rollback()
-            pass
         except Exception as e:
             db_conn.rollback()
             raise e
@@ -257,7 +266,7 @@ class Project:
             err_msg = e.pgerror
             if 'project_id' in err_msg:
                 raise ProjectNotFoundException()
-            elif 'user_id' in err_msg:
+            if 'user_id' in err_msg:
                 raise UserNotFoundException()
         except Exception as e:
             db_conn.rollback()
@@ -277,7 +286,7 @@ class Project:
             err_msg = e.pgerror
             if 'project_id' in err_msg:
                 raise ProjectNotFoundException()
-            elif 'user_id' in err_msg:
+            if 'user_id' in err_msg:
                 raise UserNotFoundException()
         except Exception as e:
             db_conn.rollback()
