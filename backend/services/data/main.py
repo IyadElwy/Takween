@@ -49,7 +49,7 @@ minio_access_key = os.getenv('MINIO_ACCESS_KEY')
 minio_secret_key = os.getenv('MINIO_SECRET_KEY')
 # TODO: REMOVE secure=False and create TLS con
 # TODO: ADD dynamic hosts in env file
-minio_client = Minio('play.min.io:9000', secure=True, access_key=minio_access_key, secret_key=minio_secret_key)
+minio_client = Minio('minio:9000', secure=False, access_key=minio_access_key, secret_key=minio_secret_key)
 config.minio_client = minio_client
 
 app = FastAPI()
