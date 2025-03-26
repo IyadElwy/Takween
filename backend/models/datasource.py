@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from errors import ProjectNotFoundException, UserNotFoundException
-from psycopg2.errors import ForeignKeyViolation
+from errors import DataSourceNotFoundException, ProjectNotFoundException, UserNotFoundException
+from psycopg2.errors import ForeignKeyViolation, NoDataFound
 from psycopg2.extensions import connection
 
 
@@ -76,3 +76,30 @@ class DataSource:
         except Exception as e:
             db_conn.rollback()
             raise e
+
+    @classmethod
+    def get_by_id(cls, db_conn: connection, id: int) -> DataSource:
+        stmt = """SELECT id, project_id, user_id_of_owner, 
+                   data_source_name, status FROM DataSource
+                   WHERE id=%s"""
+        try:
+            cursor = db_conn.cursor()
+            cursor.execute(stmt, (id,))
+            data_source = cursor.fetchone()
+            cursor.close()
+            if not data_source:
+                raise NoDataFound()
+            return DataSource(*data_source)
+        except NoDataFound:
+            raise DataSourceNotFoundException()
+
+    @classmethod
+    def get_by_project(cls, db_conn: connection, project_id: int) -> list[DataSource]:
+        stmt = """SELECT id, project_id, user_id_of_owner, 
+                   data_source_name, status FROM DataSource
+                   WHERE project_id=%s"""
+        cursor = db_conn.cursor()
+        cursor.execute(stmt, (project_id,))
+        data_sources_res = cursor.fetchall()
+        cursor.close()
+        return [DataSource(*data_source) for data_source in data_sources_res]

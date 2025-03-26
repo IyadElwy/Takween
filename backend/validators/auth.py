@@ -1,4 +1,5 @@
 from email_validator import EmailNotValidError, validate_email
+
 from errors import ValidationException
 
 
