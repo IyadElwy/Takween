@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-len */
 import {
-  Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Progress,
+  Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Progress, ButtonGroup,
 } from "@nextui-org/react";
 import byteSize from "byte-size";
 import { useState, useRef, useEffect } from "react";
@@ -13,6 +13,8 @@ import Image from "next/image";
 import AxiosWrapper from "../../../../utils/axiosWrapper";
 import LoadingSymbol from "../../../Reusable/loadingSymbol";
 import closerLookButtonStyles from "../../../../styles/components/Reusable/navbar.module.css";
+import DeleteDocumentIcon from "@/components/Icons/DeleteDocument";
+import EditDocumentIcon from "@/components/Icons/EditDocumentIcons";
 
 export default function AddDataComponent({
   onClose,
@@ -22,7 +24,6 @@ export default function AddDataComponent({
   const [dataSources, setDataSources] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFileKey, setSelectedFileKey] = useState([]);
-  const [dataSourceName, setDataSourceName] = useState("erferf");
   const [error, setError] = useState(false);
 
   const dataUploadWorker = new Worker(new URL("../../../../../workers/dataUpload.js", import.meta.url));
@@ -50,6 +51,10 @@ export default function AddDataComponent({
           [v.id]: {
             name: v.data_source_name,
             status: v.status,
+            creationTime: v.creation_time,
+            size: v.size,
+            type: v.type,
+            userIdOfOwner: v.user_id_of_owner,
             loadingValue: v.status === "ready" ? 100 : 0,
           },
         }), {}),
@@ -71,7 +76,7 @@ export default function AddDataComponent({
         const formData = new FormData();
         formData.append("project_id", projectId);
         formData.append("user_id", userId);
-        formData.append("data_source_name", dataSourceName);
+        formData.append("data_source_name", e.target.files[0].name);
 
         const { dataSourceId, presignedPutUrl } = await AxiosWrapper.post("http://127.0.0.1:5004/datasource/init", formData, {
           headers: {
@@ -81,7 +86,7 @@ export default function AddDataComponent({
         setDataSources((prevDataSources) => ({
           ...prevDataSources,
           [dataSourceId]: {
-            name: dataSourceName,
+            name: e.target.files[0].name,
             status: "processing",
             loadingValue: 0,
           },
@@ -138,95 +143,84 @@ export default function AddDataComponent({
 
   return (
     isLoading ? <LoadingSymbol height={200} width={200} /> : (
-      <>
-        <div>
+      <div className="flex flex-col max-h-[90vh] w-full overflow-hidden">
+
+        {/* Table Container (Scrolls inside) */}
+        <div className="flex-1 overflow-auto">
           <Table
-            className="mt-3"
+            className="p-2 bg-white rounded-lg shadow-md"
             aria-label="Example empty table"
             selectionMode="single"
             selectedKeys={selectedFileKey}
             onSelectionChange={setSelectedFileKey}
           >
             <TableHeader>
-              <TableColumn>Data Source Name</TableColumn>
-              <TableColumn>Owner</TableColumn>
-              <TableColumn>Status</TableColumn>
+              <TableColumn className="text-center">Data Source Name</TableColumn>
+              <TableColumn className="text-center">Owner</TableColumn>
+              <TableColumn className="text-center">Created</TableColumn>
+              <TableColumn className="text-center">Type</TableColumn>
+              <TableColumn className="text-center">Size</TableColumn>
+              <TableColumn className="text-center">Edit</TableColumn>
+              <TableColumn className="text-center">Status</TableColumn>
             </TableHeader>
             <TableBody emptyContent="No rows to display.">
-              {Object.entries(dataSources).map((file) => {
-                const [
-                  id, { name, status, loadingValue },
-                ] = file;
-                return (
-                  <TableRow key={id}>
-                    <TableCell>
-                      {truncate_with_ellipsis(name, 20)}
-                    </TableCell>
-                    <TableCell>
-                      {/* {
-                        status
-                      } */}
-                    </TableCell>
-                    <TableCell>
-                      <Progress
-                        isIndeterminate={status === "processing"}
-                        aria-label="Uploading..."
-                        className="max-w-md"
-                        color="success"
-                        showValueLabel
-                        size="sm"
-                        value={loadingValue}
-                        label={status === "processing" ? "Uploading..." : "Ready"}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-
+              {Object.entries(dataSources).map(([id, {
+                name, status, loadingValue, creationTime, size, type, userIdOfOwner,
+              }]) => (
+                <TableRow key={id}>
+                  <TableCell className="text-center">{truncate_with_ellipsis(name, 20)}</TableCell>
+                  <TableCell className="text-center">{userIdOfOwner}</TableCell>
+                  <TableCell className="text-center">{creationTime}</TableCell>
+                  <TableCell className="text-center">{type}</TableCell>
+                  <TableCell className="text-center">{size}</TableCell>
+                  <TableCell className="text-center">
+                    <Button color="danger" startContent={<DeleteDocumentIcon />} variant="bordered">
+                      Delete Datasource
+                    </Button>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Progress
+                      isIndeterminate={status === "processing"}
+                      aria-label="Uploading..."
+                      className="max-w-md"
+                      color="success"
+                      showValueLabel
+                      size="sm"
+                      value={loadingValue}
+                      label={status === "processing" ? "Uploading..." : "Ready"}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
 
-        <div className="absolute bottom-0 right-0 mr-5 mb-5">
+        {/* Bottom Section (Fixed, No Extra Scroll) */}
+        <div className="py-2 flex items-center justify-between px-5 border-t">
+          <p className="text-xs text-gray-500">
+            Permitted file types: csv, tsv, json | Files will be converted to Json
+          </p>
           <div className="flex space-x-4">
-
-            <Button
-              onPress={() => fileInputRef.current.click()}
-              style={{ marginBottom: "10px" }}
-              variant="bordered"
-            >
+            <Button onPress={() => fileInputRef.current.click()} variant="bordered">
               Choose File
               <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleChooseFile}
-                className="border rounded-lg px-4 py-2 mr-5"
-                style={{ display: "none" }}
+                className="hidden"
               />
-
             </Button>
-            <Button onPress={() => {
-              onClose();
-            }}
-            >
-              Done
-            </Button>
-
+            <Button onPress={onClose}>Done</Button>
           </div>
-
         </div>
 
         {error && (
-          <p className="text-s text-red-500 mt-3">
+          <p className="text-s text-red-500 text-center mt-1">
             File type not supported
           </p>
         )}
-        <div className="absolute bottom-0 left-5 mr-5 mb-5">
-          <p className="text-xs text-gray-500 mt-3">
-            Permitted file types are: csv, tsv, json | Files will be converted to Json
-          </p>
-        </div>
-      </>
+      </div>
     )
   );
 }

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from psycopg2.errors import ForeignKeyViolation, NoDataFound
 from psycopg2.extensions import connection
 from pydantic import BaseModel
@@ -13,6 +15,9 @@ class DataSource(BaseModel):
     user_id_of_owner: int
     data_source_name: str
     status: str
+    creation_time: datetime
+    size: int
+    type: str
 
     def __init__(
         self,
@@ -21,6 +26,9 @@ class DataSource(BaseModel):
         user_id_of_owner: int,
         data_source_name: str,
         status: str,
+        creation_time: datetime,
+        size: int,
+        type: str,
     ) -> None:
         super().__init__(
             id=id,
@@ -28,6 +36,9 @@ class DataSource(BaseModel):
             user_id_of_owner=user_id_of_owner,
             data_source_name=data_source_name,
             status=status,
+            creation_time=creation_time,
+            size=size,
+            type=type,
         )
 
     @classmethod
@@ -61,13 +72,18 @@ class DataSource(BaseModel):
             raise e
 
     @classmethod
-    def update_status_to_ready(cls, db_conn: connection, id: int) -> None:
+    def update_status_to_ready(
+        cls, db_conn: connection, id: int, creation_time: datetime, size: int, type: str
+    ) -> None:
         stmt = """UPDATE DataSource
-                  SET status='ready'
+                  SET status='ready',
+                    creation_time=%s,
+                    size=%s,
+                    type=%s
                   WHERE id=%s"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (id,))
+            cursor.execute(stmt, (creation_time, size, type, id))
             db_conn.commit()
             cursor.close()
         except Exception as e:
@@ -90,7 +106,9 @@ class DataSource(BaseModel):
     @classmethod
     def get_by_id(cls, db_conn: connection, id: int) -> DataSource:
         stmt = """SELECT id, project_id, user_id_of_owner, 
-                   data_source_name, status FROM DataSource
+                   data_source_name, status, creation_time,
+                   size, type
+                   FROM DataSource
                    WHERE id=%s"""
         try:
             cursor = db_conn.cursor()
@@ -106,7 +124,8 @@ class DataSource(BaseModel):
     @classmethod
     def get_by_project(cls, db_conn: connection, project_id: int) -> list[DataSource]:
         stmt = """SELECT id, project_id, user_id_of_owner, 
-                   data_source_name, status FROM DataSource
+                   data_source_name, status, creation_time,
+                   size, type FROM DataSource
                    WHERE project_id=%s"""
         cursor = db_conn.cursor()
         cursor.execute(stmt, (project_id,))

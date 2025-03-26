@@ -33,7 +33,8 @@
                 "tamasfe.even-better-toml",
                 "ms-azuretools.vscode-docker",
                 "ms-kubernetes-tools.vscode-kubernetes-tools",
-                "gruntfuggly.todo-tree"
+                "gruntfuggly.todo-tree",
+                "clemenspeters.format-json"
             ],
             "settings": {
                 "[python]": {
