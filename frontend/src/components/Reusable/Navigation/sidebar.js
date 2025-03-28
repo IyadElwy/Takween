@@ -48,7 +48,7 @@ export default function SideBar({ drawerState, setDrawerState }) {
                 <ListItemText primary="Projects" className="ml-3" />
               </ListItemButton>
             </Link>
-            <Link href="/home/data-collection">
+            {/* <Link href="/home/data-collection">
               <ListItemButton key="dataCollection" disablePadding>
                 <DataCollectionIcon />
                 <ListItemText primary="Data Collection" className="ml-3" />
@@ -59,7 +59,7 @@ export default function SideBar({ drawerState, setDrawerState }) {
                 <DataProcessing />
                 <ListItemText primary="Data Processing" className="ml-3" />
               </ListItemButton>
-            </Link>
+            </Link> */}
           </List>
         </List>
       </Drawer>

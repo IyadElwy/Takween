@@ -43,7 +43,7 @@ export default function ProjectDetailPage({
             projectId={projectId}
             userId={user.id}
             onClose={onClose}
-            projectOwnerUserId={project.created_by_id}
+            projectOwnerUserId={project.user_id_of_owner}
           />
         );
 
@@ -55,7 +55,7 @@ export default function ProjectDetailPage({
           <ManageUsersComponent
             projectId={projectId}
             onClose={onClose}
-            projectCreatedById={project.created_by_id}
+            projectCreatedById={project.user_id_of_owner}
           />
         );
 

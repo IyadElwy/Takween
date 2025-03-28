@@ -227,7 +227,6 @@ export default function AddDataComponent({
                 }]) => (
                   <TableRow key={dataSourceId}>
                     <TableCell className="text-center">
-
                       <Tooltip content={`${name}`}>
                         <span className="cursor-pointer">{truncate_with_ellipsis(name, 40)}</span>
                       </Tooltip>
@@ -250,7 +249,7 @@ export default function AddDataComponent({
                         color="danger"
                         startContent={<DeleteDocumentIcon />}
                         variant="bordered"
-                        disabled={userId !== userIdOfOwner && userId !== projectOwnerUserId}
+                        isDisabled={userId !== userIdOfOwner && userId !== projectOwnerUserId}
                         onPress={() => {
                           setCurrentDataSourceToDeleteId(dataSourceId);
                           onOpenModalDelete();
