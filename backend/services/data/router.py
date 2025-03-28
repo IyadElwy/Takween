@@ -38,33 +38,6 @@ def authorize_to_get_data_source(request: Request, project_id: int):
         raise UnAuthorizedError()
 
 
-@router.get('/datasource/project/{project_id}')
-async def get_data_sources_by_project_id(
-    request: Request, project_id: Annotated[int, Depends(authorize_to_get_data_source)]
-):
-    try:
-        validate_id(project_id)
-        return DataSource.get_by_project(request.state.config.db_conn, project_id)
-    except ValidationException as e:
-        raise ValidationError(e.validation_error)
-
-
-@router.get('/datasource/project/{projwwect_id}/{datasource_id}')
-async def get_data_source(
-    request: Request,
-    project_id: Annotated[int, Depends(authorize_to_get_data_source)],
-    data_source_id: int,
-):
-    try:
-        validate_id(id)
-        data_source = DataSource.get_by_id(request.state.config.db_conn, data_source_id)
-        return data_source
-    except ValidationException as e:
-        raise ValidationError(e.validation_error)
-    except DataSourceNotFoundException:
-        raise DataSourceNotFoundError()
-
-
 def authorize_to_create_new_datasource(
     request: Request,
     user_id: Annotated[int, Form()],
@@ -85,6 +58,46 @@ def authorize_to_create_new_datasource(
         return user_id
     except Exception:
         raise UnAuthorizedError()
+
+
+def authorize_to_delete_data_source(request: Request, project_id: int, data_source_id: int):
+    try:
+        current_user_id = int(request.state.user_id)
+        # check if user is data source owner
+        project = Project.get(request.state.config.db_conn, project_id)
+        data_source = DataSource.get_by_id(request.state.config.db_conn, data_source_id)
+        if data_source.user_id_of_owner != current_user_id and project.user_id_of_owner != current_user_id:
+            raise UnAuthorizedException()
+        return project_id
+    except (UnAuthorizedException, DataSourceNotFoundException):
+        raise UnAuthorizedError()
+
+
+@router.get('/datasource/project/{project_id}')
+async def get_data_sources_by_project_id(
+    request: Request, project_id: Annotated[int, Depends(authorize_to_get_data_source)]
+):
+    try:
+        validate_id(project_id)
+        return DataSource.get_by_project(request.state.config.db_conn, project_id)
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+
+
+@router.get('/datasource/project/{project_id}/{data_source_id}')
+async def get_data_source(
+    request: Request,
+    project_id: Annotated[int, Depends(authorize_to_get_data_source)],
+    data_source_id: int,
+):
+    try:
+        validate_id(id)
+        data_source = DataSource.get_by_id(request.state.config.db_conn, data_source_id)
+        return data_source
+    except ValidationException as e:
+        raise ValidationError(e.validation_error)
+    except DataSourceNotFoundException:
+        raise DataSourceNotFoundError()
 
 
 @router.post('/datasource/init')
@@ -114,41 +127,17 @@ async def initialize_new_data_source(
         raise ProjectNotFoundError()
 
 
-def authorize_as_internal_system_op(request: Request, data_source_id: int) -> int:
-    try:
-        current_user_id = int(request.state.user_id)
-        bearer_token = request.state.bearer_token
-        current_user = requests.get(
-            f'http://localhost:5003/{current_user_id}',
-            headers={'Authorization': f'Bearer {bearer_token}'},
-        )
-        is_current_user_system = current_user.json()['first_name'] == 'system'
-        if not is_current_user_system:
-            raise UnAuthorizedException()
-        return data_source_id
-    except Exception:
-        raise UnAuthorizedError()
-
-
-@router.post('internal/finishedsavingnewdatasource')
-def finished_saving_new_datasource(
+@router.delete('/datasource/project/{project_id}/{data_source_id}')
+async def delete_data_source(
     request: Request,
-    data_source_id: Annotated[int, Depends(authorize_as_internal_system_op)],
+    project_id: Annotated[int, Depends(authorize_to_delete_data_source)],
+    data_source_id: int,
 ):
     try:
         validate_id(data_source_id)
-        DataSource.update_status_to_ready(request.state.config.db_conn, data_source_id)
-    except ValidationException as e:
-        raise ValidationError(e.validation_error)
-
-
-@router.post('internal/errorwhilesavingnewdatasource')
-def error_while_saving_new_data_source(
-    request: Request,
-    data_source_id: Annotated[int, Depends(authorize_as_internal_system_op)],
-):
-    try:
-        validate_id(data_source_id)
+        # delete minio data
+        request.state.config.minio_client.remove_object('data', str(data_source_id))
         DataSource.delete(request.state.config.db_conn, data_source_id)
+        return {'status': 200}
     except ValidationException as e:
         raise ValidationError(e.validation_error)

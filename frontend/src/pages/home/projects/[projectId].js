@@ -38,7 +38,14 @@ export default function ProjectDetailPage({
   const getCurrentModalComponent = (onClose) => {
     switch (modalComponent) {
       case "data":
-        return <AddDataComponent projectId={projectId} userId={user.id} onClose={onClose} />;
+        return (
+          <AddDataComponent
+            projectId={projectId}
+            userId={user.id}
+            onClose={onClose}
+            projectOwnerUserId={project.created_by_id}
+          />
+        );
 
       case "newAnnotationJob":
         return <NewJobComponent projectId={projectId} onClose={onClose} />;

@@ -15,9 +15,10 @@ class DataSource(BaseModel):
     user_id_of_owner: int
     data_source_name: str
     status: str
-    creation_time: datetime
-    size: int
-    type: str
+    creation_time: datetime | None
+    size: int | None
+    type: str | None
+    owner_email: str | None
 
     def __init__(
         self,
@@ -29,6 +30,7 @@ class DataSource(BaseModel):
         creation_time: datetime,
         size: int,
         type: str,
+        owner_email: str,
     ) -> None:
         super().__init__(
             id=id,
@@ -39,6 +41,7 @@ class DataSource(BaseModel):
             creation_time=creation_time,
             size=size,
             type=type,
+            owner_email=owner_email,
         )
 
     @classmethod
@@ -49,14 +52,15 @@ class DataSource(BaseModel):
                    VALUES
                    (%s, %s, %s)
                    RETURNING id, project_id, user_id_of_owner, 
-                   data_source_name, status"""
+                   data_source_name, status, creation_time,
+                   size, type"""
         try:
             cursor = db_conn.cursor()
             cursor.execute(
                 stmt,
                 (project_id, user_id_of_owner, data_source_name),
             )
-            data_source = DataSource(*cursor.fetchone())
+            data_source = DataSource(*(*cursor.fetchone(), None))
             db_conn.commit()
             cursor.close()
             return data_source
@@ -105,11 +109,11 @@ class DataSource(BaseModel):
 
     @classmethod
     def get_by_id(cls, db_conn: connection, id: int) -> DataSource:
-        stmt = """SELECT id, project_id, user_id_of_owner, 
-                   data_source_name, status, creation_time,
-                   size, type
-                   FROM DataSource
-                   WHERE id=%s"""
+        stmt = """SELECT DataSource.id, DataSource.project_id, DataSource.user_id_of_owner,
+                   DataSource.data_source_name, DataSource.status, DataSource.creation_time,
+                   DataSource.size, DataSource.type, Users.email
+                   FROM DataSource INNER JOIN Users ON DataSource.user_id_of_owner=Users.id
+                   WHERE DataSource.id=%s;"""
         try:
             cursor = db_conn.cursor()
             cursor.execute(stmt, (id,))
@@ -123,10 +127,11 @@ class DataSource(BaseModel):
 
     @classmethod
     def get_by_project(cls, db_conn: connection, project_id: int) -> list[DataSource]:
-        stmt = """SELECT id, project_id, user_id_of_owner, 
-                   data_source_name, status, creation_time,
-                   size, type FROM DataSource
-                   WHERE project_id=%s"""
+        stmt = """SELECT DataSource.id, DataSource.project_id, DataSource.user_id_of_owner,
+                   DataSource.data_source_name, DataSource.status, DataSource.creation_time,
+                   DataSource.size, DataSource.type, Users.email
+                   FROM DataSource INNER JOIN Users ON DataSource.user_id_of_owner=Users.id
+                   WHERE DataSource.project_id=%s;"""
         cursor = db_conn.cursor()
         cursor.execute(stmt, (project_id,))
         data_sources_res = cursor.fetchall()
