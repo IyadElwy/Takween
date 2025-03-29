@@ -34,7 +34,8 @@
                 "ms-azuretools.vscode-docker",
                 "ms-kubernetes-tools.vscode-kubernetes-tools",
                 "gruntfuggly.todo-tree",
-                "clemenspeters.format-json"
+                "clemenspeters.format-json",
+                "EthanSK.restore-terminals"
             ],
             "settings": {
                 "[python]": {
@@ -58,7 +59,107 @@
                         "source.fixAll.eslint": "always"
                     },
                     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-                }
+                },
+                "restoreTerminals.terminals": [
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "auth",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/auth/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "data",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/data/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "jobs",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/jobs/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "projects",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/projects/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "users",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/users/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "webhooks",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/webhooks/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "data_engine",
+                                "commands": [
+                                    "source backend/env/bin/activate",
+                                    "python3 backend/services/data_engin/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "frontend",
+                                "commands": [
+                                    "cd frontend",
+                                    "npm run dev"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "free_roam",
+                                "commands": [
+                                    "source backend/env/bin/activate"
+                                ]
+                            }
+                        ]
+                    },
+                ]
             }
         }
     }
