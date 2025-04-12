@@ -279,7 +279,7 @@ export default function AddDataComponent({
           {/* Bottom Section (Fixed, No Extra Scroll) */}
           <div className="py-2 flex items-center justify-between px-5 border-t">
             <p className="text-xs text-gray-500">
-              Permitted file types: csv, tsv, json | Files will be converted to Json
+              Permitted file types: csv, json, parquet
             </p>
             <div className="flex space-x-4">
               <Button onPress={() => fileInputRef.current.click()} variant="bordered">
