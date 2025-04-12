@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime
 
 from psycopg2.errors import ForeignKeyViolation, NoDataFound
@@ -77,17 +78,19 @@ class DataSource(BaseModel):
 
     @classmethod
     def update_status_to_ready(
-        cls, db_conn: connection, id: int, creation_time: datetime, size: int, type: str
+        cls, db_conn: connection, id: int, creation_time: datetime, size: int, type: str, annotatable_fields: dict
     ) -> None:
+        annotatable_fields_json = json.dumps(annotatable_fields)
         stmt = """UPDATE DataSource
                   SET status='ready',
                     creation_time=%s,
                     size=%s,
-                    type=%s
+                    type=%s,
+                    annotatable_fields=%s
                   WHERE id=%s"""
         try:
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (creation_time, size, type, id))
+            cursor.execute(stmt, (creation_time, size, type, annotatable_fields_json, id))
             db_conn.commit()
             cursor.close()
         except Exception as e:

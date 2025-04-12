@@ -13,6 +13,7 @@ dependencies = [
     "Arabic_Stopwords==0.4.3",
     "bcrypt>=4.3.0",
     "email_validator==2.0.0.post2",
+    "env>=0.1.0",
     "fastapi==0.115.12",
     "flatten_json==0.1.14",
     "minio>=7.2.15",
@@ -27,6 +28,7 @@ dependencies = [
     "pymongo==4.5.0",
     "pytesseract==0.3.10",
     "python-dotenv==1.0.1",
+    "python-magic>=0.4.27",
     "python-multipart>=0.0.20",
     "requests==2.32.3",
     "ruff>=0.11.2",
@@ -38,7 +40,7 @@ dependencies = [
 
 
 [tool.setuptools]
-packages = ["models", "errors", "validators", "utils"]
+packages = ["models", "errors", "validators", "utils", "enums"]
 
 [project.optional-dependencies]
 dev = ["ruff==0.11.2"]

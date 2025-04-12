@@ -64,76 +64,12 @@
                     {
                         "splitTerminals": [
                             {
-                                "name": "auth",
+                                "name": "free_roam",
                                 "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/auth/run.py"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "splitTerminals": [
-                            {
-                                "name": "data",
-                                "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/data/run.py"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "splitTerminals": [
-                            {
-                                "name": "jobs",
-                                "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/jobs/run.py"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "splitTerminals": [
-                            {
-                                "name": "projects",
-                                "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/projects/run.py"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "splitTerminals": [
-                            {
-                                "name": "users",
-                                "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/users/run.py"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "splitTerminals": [
-                            {
-                                "name": "webhooks",
-                                "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/webhooks/run.py"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "splitTerminals": [
-                            {
-                                "name": "data_engine",
-                                "commands": [
-                                    "source backend/env/bin/activate",
-                                    "python3 backend/services/data_engin/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml ",
+                                    "source .venv/bin/activate"
                                 ]
                             }
                         ]
@@ -152,13 +88,80 @@
                     {
                         "splitTerminals": [
                             {
-                                "name": "free_roam",
+                                "name": "auth",
                                 "commands": [
-                                    "source backend/env/bin/activate"
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/auth/run.py"
                                 ]
                             }
                         ]
                     },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "data",
+                                "commands": [
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/data/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "jobs",
+                                "commands": [
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/jobs/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "projects",
+                                "commands": [
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/projects/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "users",
+                                "commands": [
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/users/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "webhooks",
+                                "commands": [
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/webhooks/run.py"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
+                                "name": "data_engine",
+                                "commands": [
+                                    "source backend/.venv/bin/activate",
+                                    "python3 backend/services/data_engine/run.py"
+                                ]
+                            }
+                        ]
+                    }
                 ]
             }
         }

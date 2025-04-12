@@ -6,6 +6,7 @@ Requires-Dist: arabic_reshaper==3.0.0
 Requires-Dist: Arabic_Stopwords==0.4.3
 Requires-Dist: bcrypt>=4.3.0
 Requires-Dist: email_validator==2.0.0.post2
+Requires-Dist: env>=0.1.0
 Requires-Dist: fastapi==0.115.12
 Requires-Dist: flatten_json==0.1.14
 Requires-Dist: minio>=7.2.15
@@ -20,6 +21,7 @@ Requires-Dist: PyJWT==2.10.1
 Requires-Dist: pymongo==4.5.0
 Requires-Dist: pytesseract==0.3.10
 Requires-Dist: python-dotenv==1.0.1
+Requires-Dist: python-magic>=0.4.27
 Requires-Dist: python-multipart>=0.0.20
 Requires-Dist: requests==2.32.3
 Requires-Dist: ruff>=0.11.2

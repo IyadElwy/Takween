@@ -4,6 +4,8 @@ Takween.egg-info/SOURCES.txt
 Takween.egg-info/dependency_links.txt
 Takween.egg-info/requires.txt
 Takween.egg-info/top_level.txt
+enums/__init__.py
+enums/file_type.py
 errors/__init__.py
 errors/exceptions.py
 errors/http.py

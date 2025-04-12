@@ -6,7 +6,8 @@ RUN apt update && apt upgrade -y \
 
 FROM base AS dev-container
 
-RUN apt install -y curl build-essential python3-dev && \
+RUN apt install -y curl build-essential \
+    python3-dev libmagic1 postgresql-client && \
     curl -LsSf https://astral.sh/uv/install.sh | sh && \
     . $HOME/.local/bin/env && \
     uv python install 3.11 --default --preview

@@ -296,6 +296,12 @@ wheels = [
 ]
 
 [[package]]
+name = "env"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/67/97052e313f44543fadca265228f527c5394385916a13eb8b7932d7dad490/env-0.1.0.tar.gz", hash = "sha256:e07975087b08dd2aea45bf83447c7e21f43cf916bbc2a0722fceb66e54d03935", size = 1813 }
+
+[[package]]
 name = "fastapi"
 version = "0.115.12"
 source = { registry = "https://pypi.org/simple" }
@@ -837,6 +843,15 @@ wheels = [
 ]
 
 [[package]]
+name = "python-magic"
+version = "0.4.27"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/db/0b3e28ac047452d079d375ec6798bf76a036a08182dbb39ed38116a49130/python-magic-0.4.27.tar.gz", hash = "sha256:c1ba14b08e4a5f5c31a302b7721239695b2f0f058d125bd5ce1ee36b9d9d3c3b", size = 14677 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6c/73/9f872cb81fc5c3bb48f7227872c28975f998f3e7c2b1c16e95e6432bbb90/python_magic-0.4.27-py2.py3-none-any.whl", hash = "sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3", size = 13840 },
+]
+
+[[package]]
 name = "python-multipart"
 version = "0.0.20"
 source = { registry = "https://pypi.org/simple" }
@@ -976,13 +991,14 @@ wheels = [
 [[package]]
 name = "takween"
 version = "1.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "arabic-reshaper" },
     { name = "arabic-stopwords" },
     { name = "bcrypt" },
     { name = "email-validator" },
+    { name = "env" },
     { name = "fastapi" },
     { name = "flatten-json" },
     { name = "minio" },
@@ -997,6 +1013,7 @@ dependencies = [
     { name = "pymongo" },
     { name = "pytesseract" },
     { name = "python-dotenv" },
+    { name = "python-magic" },
     { name = "python-multipart" },
     { name = "requests" },
     { name = "ruff" },
@@ -1018,6 +1035,7 @@ requires-dist = [
     { name = "arabic-stopwords", specifier = "==0.4.3" },
     { name = "bcrypt", specifier = ">=4.3.0" },
     { name = "email-validator", specifier = "==2.0.0.post2" },
+    { name = "env", specifier = ">=0.1.0" },
     { name = "fastapi", specifier = "==0.115.12" },
     { name = "flatten-json", specifier = "==0.1.14" },
     { name = "minio", specifier = ">=7.2.15" },
@@ -1032,6 +1050,7 @@ requires-dist = [
     { name = "pymongo", specifier = "==4.5.0" },
     { name = "pytesseract", specifier = "==0.3.10" },
     { name = "python-dotenv", specifier = "==1.0.1" },
+    { name = "python-magic", specifier = ">=0.4.27" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "requests", specifier = "==2.32.3" },
     { name = "ruff", specifier = ">=0.11.2" },

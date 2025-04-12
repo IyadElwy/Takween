@@ -64,7 +64,7 @@ export default function AddDataComponent({
         ...prevDataSources,
         [e.data.dataSourceId]: {
           ...prevDataSources[e.data.dataSourceId],
-          status: "ready",
+          status: "processing",
           loadingValue: 100,
         },
       }));
