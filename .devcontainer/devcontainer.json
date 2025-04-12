@@ -77,6 +77,17 @@
                     {
                         "splitTerminals": [
                             {
+                                "name": "psql",
+                                "commands": [
+                                    "cd backend",
+                                    "PGPASSWORD=admin psql -h postgres -U admin -d takween_db"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "splitTerminals": [
+                            {
                                 "name": "frontend",
                                 "commands": [
                                     "cd frontend",
