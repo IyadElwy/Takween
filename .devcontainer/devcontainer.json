@@ -68,7 +68,7 @@
                                 "commands": [
                                     "cd backend",
                                     "uv pip install -e .",
-                                    "uv pip install -r pyproject.toml ",
+                                    "uv pip install -r pyproject.toml",
                                     "source .venv/bin/activate"
                                 ]
                             }
@@ -101,8 +101,11 @@
                             {
                                 "name": "auth",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/auth/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/auth/run.py"
                                 ]
                             }
                         ]
@@ -112,8 +115,11 @@
                             {
                                 "name": "data",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/data/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/data/run.py"
                                 ]
                             }
                         ]
@@ -123,8 +129,11 @@
                             {
                                 "name": "jobs",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/jobs/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/jobs/run.py"
                                 ]
                             }
                         ]
@@ -134,8 +143,11 @@
                             {
                                 "name": "projects",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/projects/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/projects/run.py"
                                 ]
                             }
                         ]
@@ -145,8 +157,11 @@
                             {
                                 "name": "users",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/users/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/users/run.py"
                                 ]
                             }
                         ]
@@ -156,8 +171,11 @@
                             {
                                 "name": "webhooks",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/webhooks/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/webhooks/run.py"
                                 ]
                             }
                         ]
@@ -167,8 +185,11 @@
                             {
                                 "name": "data_engine",
                                 "commands": [
-                                    "source backend/.venv/bin/activate",
-                                    "python3 backend/services/data_engine/run.py"
+                                    "cd backend",
+                                    "uv pip install -e .",
+                                    "uv pip install -r pyproject.toml",
+                                    "source .venv/bin/activate",
+                                    "python3 services/data_engine/run.py"
                                 ]
                             }
                         ]
