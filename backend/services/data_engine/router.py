@@ -28,7 +28,7 @@ async def initialize_data_source(request: Request, data_source_id: int):
         if not file_type:
             return None
         df = convert_to_parquet(file_bytes, file_type)
-        df.insert_column(0, pl.Series('record_id', list(range(df.height))))
+        df.insert_column(0, pl.Series('__record_id', list(range(df.height))))
         parquet_file_io = io.BytesIO()
         df.write_parquet(parquet_file_io)
         parquet_file_io.seek(0)
