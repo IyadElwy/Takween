@@ -11,10 +11,11 @@ import AxiosWrapper from "../../../../../utils/axiosWrapper";
 
 export default function NamedEntityRecognitionSetup({ onClose, projectId, language }) {
   const [jobData, setJobData] = useState({
-    type: "namedEntityRecognition",
-    name: null,
-    dataSource: null,
-    fieldToAnnotate: null,
+    type: "NamedEntityRecognition",
+    project_id: projectId,
+    title: null,
+    data_source_id: null,
+    annotation_field: null,
     tags: [],
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -51,14 +52,14 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
   useEffect(() => {
     const retrieveDataSources = async () => {
       setIsLoading(true);
-      const dataSourcesRes = await AxiosWrapper.get(`http://localhost:8000/projects/${projectId}/file-data-sources`);
+      const dataSourcesRes = await AxiosWrapper.get(`http://127.0.0.1:5004/datasource/project/${projectId}`);
       setDataSources(dataSourcesRes.data);
       setIsLoading(false);
     };
     retrieveDataSources();
   }, []);
 
-  const getCurrentDataSource = () => dataSources.find((file) => file.id === selectedDSKey.currentKey);
+  const getCurrentDataSource = () => dataSources.find((ds) => ds.id === Number(selectedDSKey.currentKey));
 
   const getKeysFromExampleData = (exampleData) => {
     let parsedExample = exampleData;
@@ -79,7 +80,7 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
             size="lg"
             placeholder="Enter Job Name"
             onValueChange={(value) => {
-              setJobData({ ...jobData, name: value });
+              setJobData({ ...jobData, title: value });
             }}
             isInvalid={jobNameError}
             errorMessage={jobNameError && "Please enter a job name"}
@@ -95,14 +96,14 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
             selectedKeys={selectedDSKey}
             onSelectionChange={(key) => {
               setSelectedDSKey(key);
-              setJobData({ ...jobData, dataSource: dataSources.find((file) => file.id === key.currentKey) });
+              setJobData({ ...jobData, data_source_id: dataSources.find((file) => file.id === Number(key.currentKey)).id });
             }}
             isInvalid={dataSourceError}
             errorMessage={dataSourceError && "Please choose a data-source"}
           >
             {dataSources.map((option) => (
               <SelectItem key={option.id} value={option.id}>
-                {`${option.file_name}`}
+                {`${option.data_source_name}`}
               </SelectItem>
             ))}
           </Select>
@@ -113,26 +114,27 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
           {selectedDSKey.length === 0 ? <div />
             : (
               <>
-                <JsonView
+                {/* <JsonView
                   src={getCurrentDataSource().exampleData}
                   displaySize="collapsed"
                 />
-                <br />
+                <br /> */}
                 <Select
                   label="Field to Annotate"
                   variant="bordered"
                   size="lg"
                   onSelectionChange={(key) => {
-                    setJobData({ ...jobData, fieldToAnnotate: key.currentKey });
+                    setJobData({ ...jobData, annotation_field: key.currentKey });
                   }}
                   isInvalid={chosenFieldError}
                   errorMessage={chosenFieldError && "Please choose a field to annotate"}
                 >
-                  {getKeysFromExampleData(getCurrentDataSource().exampleData).map((option) => (
+                  {getCurrentDataSource().annotatable_fields.map((option) => (
                     <SelectItem key={option} value={option}>
                       {`${option}`}
                     </SelectItem>
                   ))}
+
                 </Select>
                 <p className="text-xs text-gray-500 mt-3">If you can&apos;t see some fields, you might need to flatten your data-source</p>
                 <p className="text-xs text-gray-500">
@@ -252,16 +254,16 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
               color="default"
                 // eslint-disable-next-line consistent-return
               onPress={async () => {
-                if (!jobData.name) {
+                if (!jobData.title) {
                   return setJobNameErrorState(true);
                 }
                 setJobNameErrorState(false);
 
-                if (!jobData.dataSource) {
+                if (!jobData.data_source_id) {
                   return setDataSourceErrorState(true);
                 }
                 setDataSourceErrorState(false);
-                if (!jobData.fieldToAnnotate) {
+                if (!jobData.annotation_field) {
                   return setChosenFieldErrorState(true);
                 }
                 setChosenFieldErrorState(false);
@@ -270,10 +272,10 @@ export default function NamedEntityRecognitionSetup({ onClose, projectId, langua
                 }
                 setAddedTagsErrorErrorState(false);
                 setIsLoading(true);
-                const createdJob = await AxiosWrapper.post(`http://localhost:8000/projects/${projectId}/jobs`, jobData);
-                const jobId = createdJob.data.id;
+                const createdJob = await AxiosWrapper.post("http://127.0.0.1:5000", jobData);
+                // const jobId = createdJob.data.id;
                 // eslint-disable-next-line no-undef
-                window.location = `http://localhost:3000/home/projects/${projectId}/jobs/${jobId}`;
+                // window.location = `http://localhost:3000/home/projects/${projectId}/jobs/${jobId}`;
               }}
             >
               Finish

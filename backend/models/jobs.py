@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime
 
 from psycopg2.errors import ForeignKeyViolation, NoDataFound
@@ -19,6 +20,9 @@ class Job(BaseModel):
     project_id: int
     user_id_of_owner: int
     creation_date: datetime
+    data_source_id: int
+    annotation_field: str
+    job_meta_data: dict
 
     def __init__(
         self,
@@ -27,6 +31,9 @@ class Job(BaseModel):
         project_id: int,
         user_id_of_owner: int,
         creation_date: datetime,
+        data_source_id: int,
+        annotation_field: str,
+        job_meta_data: dict,
     ) -> None:
         super().__init__(
             id=id,
@@ -34,6 +41,9 @@ class Job(BaseModel):
             project_id=project_id,
             user_id_of_owner=user_id_of_owner,
             creation_date=creation_date,
+            data_source_id=data_source_id,
+            annotation_field=annotation_field,
+            job_meta_data=job_meta_data,
         )
 
     @classmethod
@@ -43,17 +53,28 @@ class Job(BaseModel):
         title: str,
         project_id: int,
         user_id_of_owner: int,
+        data_source_id: int,
+        annotation_field: str,
+        job_meta_data: dict,
     ) -> Job:
         stmt = """INSERT INTO Jobs
-                        (title, project_id, user_id_of_owner)
+                        (title, project_id, user_id_of_owner,
+                        data_source_id, annotation_field,
+                        job_meta_data)
                         VALUES
-                        (%s, %s, %s)
+                        (%s, %s, %s, %s, %s, %s)
                         RETURNING
-                        id, title, project_id, 
-                        user_id_of_owner, creation_date"""
+                        id, title, project_id,
+                        user_id_of_owner, creation_date,
+                        data_source_id, annotation_field,
+                        job_meta_data
+                        """
         try:
+            job_meta_data_json = json.dumps(job_meta_data)
             cursor = db_conn.cursor()
-            cursor.execute(stmt, (title, project_id, user_id_of_owner))
+            cursor.execute(
+                stmt, (title, project_id, user_id_of_owner, data_source_id, annotation_field, job_meta_data_json)
+            )
             job = cursor.fetchone()
             db_conn.commit()
             cursor.close()

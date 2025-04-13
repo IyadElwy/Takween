@@ -19,6 +19,7 @@ class DataSource(BaseModel):
     creation_time: datetime | None
     size: int | None
     type: str | None
+    annotatable_fields: list[str] | None
     owner_email: str | None
 
     def __init__(
@@ -31,6 +32,7 @@ class DataSource(BaseModel):
         creation_time: datetime,
         size: int,
         type: str,
+        annotatable_fields: list[str],
         owner_email: str,
     ) -> None:
         super().__init__(
@@ -42,6 +44,7 @@ class DataSource(BaseModel):
             creation_time=creation_time,
             size=size,
             type=type,
+            annotatable_fields=annotatable_fields,
             owner_email=owner_email,
         )
 
@@ -61,7 +64,7 @@ class DataSource(BaseModel):
                 stmt,
                 (project_id, user_id_of_owner, data_source_name),
             )
-            data_source = DataSource(*(*cursor.fetchone(), None))
+            data_source = DataSource(*(*cursor.fetchone(), None, None))
             db_conn.commit()
             cursor.close()
             return data_source
@@ -114,7 +117,7 @@ class DataSource(BaseModel):
     def get_by_id(cls, db_conn: connection, id: int) -> DataSource:
         stmt = """SELECT DataSource.id, DataSource.project_id, DataSource.user_id_of_owner,
                    DataSource.data_source_name, DataSource.status, DataSource.creation_time,
-                   DataSource.size, DataSource.type, Users.email
+                   DataSource.size, DataSource.type, DataSource.annotatable_fields, Users.email
                    FROM DataSource INNER JOIN Users ON DataSource.user_id_of_owner=Users.id
                    WHERE DataSource.id=%s;"""
         try:
@@ -132,7 +135,7 @@ class DataSource(BaseModel):
     def get_by_project(cls, db_conn: connection, project_id: int) -> list[DataSource]:
         stmt = """SELECT DataSource.id, DataSource.project_id, DataSource.user_id_of_owner,
                    DataSource.data_source_name, DataSource.status, DataSource.creation_time,
-                   DataSource.size, DataSource.type, Users.email
+                   DataSource.size, DataSource.type, DataSource.annotatable_fields, Users.email
                    FROM DataSource INNER JOIN Users ON DataSource.user_id_of_owner=Users.id
                    WHERE DataSource.project_id=%s;"""
         cursor = db_conn.cursor()

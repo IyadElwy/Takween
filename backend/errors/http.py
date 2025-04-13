@@ -14,7 +14,7 @@ class IncorrectLoginInfoError(HTTPException):
 
 class ValidationError(HTTPException):
     def __init__(self, message) -> None:
-        super().__init__(403, message)
+        super().__init__(400, message)
 
 
 def UnAuthenticatedError():

@@ -3,8 +3,8 @@ import "slick-carousel/slick/slick-theme.css";
 
 import {
   Divider,
-  Card, CardHeader, CardFooter, Avatar, useDisclosure, Modal, ModalBody, ModalContent, Button, CircularProgress,
-  Accordion, AccordionItem,
+  Card, CardHeader, CardFooter, Avatar, useDisclosure, Modal, ModalBody, ModalContent, Button,
+  CircularProgress, Accordion, AccordionItem,
 } from "@nextui-org/react";
 import Link from "next/link";
 import Image from "next/image";

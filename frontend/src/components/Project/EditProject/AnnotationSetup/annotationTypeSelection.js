@@ -23,23 +23,6 @@ const annotationTypes = {
       img: "pos.svg",
     },
   ],
-  nlpArabic: [
-    {
-      name: "textClassificationArabic",
-      displayName: "Text Classification",
-      img: "classification.svg",
-    },
-    {
-      name: "namedEntityRecognitionArabic",
-      displayName: "Named Entity Recognition",
-      img: "ner.svg",
-    },
-    {
-      name: "partOfSpeechArabic",
-      displayName: "Part Of Speech Tagging",
-      img: "pos.svg",
-    },
-  ],
 };
 
 export default function AnnotationTypeSelection({
@@ -59,23 +42,6 @@ export default function AnnotationTypeSelection({
             selectionMode="single"
             selectedKeys={selectedKeys}
           >
-            <ListboxItem
-              startContent={
-                (
-                  <Image
-                    width="30px"
-                    height="30px"
-                    alt="tabular"
-                    src="/images/pos.svg"
-                  />
-)
-}
-              key="nlpArabic"
-              isSe
-            >
-              NLP عربي
-
-            </ListboxItem>
             <ListboxItem
               startContent={
                 (
